@@ -99,7 +99,6 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
                 SampleText(text = name, fontSize = 24, textColor = colorResource(id = R.color.white))
                 SampleText(text = designation, fontSize = 24, textColor = colorResource(id = R.color.white))
                 SampleText(text = bio, fontSize = 24, textColor = colorResource(id = R.color.white))
-                SampleText(text = "Interested Subjects: ", fontSize = 24, textColor = colorResource(id = R.color.white))
             }
         }
 
