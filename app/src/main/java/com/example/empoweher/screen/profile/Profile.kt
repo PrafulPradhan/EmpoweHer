@@ -47,11 +47,15 @@ import com.google.firebase.auth.FirebaseAuth
 @Composable
 fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
     val name = getInfoUser(thing = "name", userId = userId)
+    val designation = getInfoUser(thing = "designation", userId = userId)
+    val bio = getInfoUser(thing = "bio", userId = userId)
     val dp = getInfoUser(thing = "Dp", userId = userId)
     val image = rememberAsyncImagePainter(model = dp)
     val followers=getChildCount(path = "/Users/$userId/followers")
     val following=getChildCount(path = "/Users/$userId/following")
     val context = LocalContext.current
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -92,9 +96,9 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
             Column(modifier = Modifier.padding()){
                 Spacer(modifier = Modifier.height(10.dp))
                 Spacer(modifier = Modifier.height(5.dp))
-                SampleText(text = "Name: Timothy gupta", fontSize = 24, textColor = colorResource(id = R.color.white))
-                SampleText(text = "Designation: Student", fontSize = 24, textColor = colorResource(id = R.color.white))
-                SampleText(text = "Bio: Student", fontSize = 24, textColor = colorResource(id = R.color.white))
+                SampleText(text = name, fontSize = 24, textColor = colorResource(id = R.color.white))
+                SampleText(text = designation, fontSize = 24, textColor = colorResource(id = R.color.white))
+                SampleText(text = bio, fontSize = 24, textColor = colorResource(id = R.color.white))
                 SampleText(text = "Interested Subjects: ", fontSize = 24, textColor = colorResource(id = R.color.white))
             }
         }

@@ -83,8 +83,8 @@ fun App(
     val startDestination = if (googleAuthUiClient.getSignedInUser() != null) {
         Screen.Home.route
     } else {
-//        Screen.Login.route
-        Screen.Home.route
+        Screen.Login.route
+//        Screen.Home.route
     }
     Surface(
         modifier = Modifier.fillMaxSize(),
