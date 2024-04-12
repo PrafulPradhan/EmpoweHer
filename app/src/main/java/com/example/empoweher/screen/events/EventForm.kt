@@ -847,13 +847,14 @@ fun EventForm(){
                             ref.getDownloadUrl().addOnSuccessListener {
                                 it
                                 dbref.child(id).child("eventImage").setValue(it.toString())
-                                val intent = Intent(context, Twitter::class.java)
-                                intent.putExtra("eventImage", it.toString())
-                                intent.putExtra("eventId", id)
-                                intent.putExtra("eventName",name)
-                                context.startActivity(intent)
                             }
                         }
+                        val intent = Intent(context, Twitter::class.java)
+//                       intent.putExtra("eventImage", it.toString())
+                        intent.putExtra("eventId", id)
+                        Log.d("Raja Mausa",name)
+                        intent.putExtra("eventName",name)
+                        context.startActivity(intent)
                         Toast.makeText(context, "Form Submitted", Toast.LENGTH_SHORT).show()
                         name = ""
                         description = ""

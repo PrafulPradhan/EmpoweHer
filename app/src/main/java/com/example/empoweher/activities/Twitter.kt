@@ -33,9 +33,11 @@ class Twitter : AppCompatActivity() {
         setContent {
             val py=Python.getInstance()
             val module=py.getModule("hello")
-            val eventImage=intent.getStringExtra("eventImage")
+            Log.d("Raja Mausa","hello")
+//            val eventImage=intent.getStringExtra("eventImage")
             val eventName=intent.getStringExtra("eventName")
             val eventId=intent.getStringExtra("eventId")
+            Log.d("Rani Mausi",eventName!!)
             val obj = module.callAttr("a", eventName)
         }
     }
