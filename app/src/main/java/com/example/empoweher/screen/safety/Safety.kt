@@ -106,7 +106,7 @@ fun Safety(navigateToNextScreen: (route: String)->Unit) {
                 routed = {
 //                    val navigate = Intent(context, LocationActivity::class.java)
 //                    context.startActivity(navigate)
-                    val navigate = Intent(context, Twitter::class.java)
+                    val navigate = Intent(context, LocationActivity::class.java)
                     context.startActivity(navigate)
                 },
                 true

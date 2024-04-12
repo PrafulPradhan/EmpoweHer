@@ -187,7 +187,7 @@ fun Events(navigateToNextScreen: (route: String)->Unit){
                                 else{
                                     val intent = Intent(
                                         Intent.ACTION_VIEW,
-                                        Uri.parse("https://postimg.cc/Bjp9qzQ7")
+                                        Uri.parse("https://docs.google.com/forms/d/e/1FAIpQLSeBf0Ld60zVD0a4t3g36kFiYs232XCD8HfoI7z8Yt1mjMjhfg/viewform")
                                     ).setPackage("com.android.chrome")
                                     context.startActivity(intent)
                                 }

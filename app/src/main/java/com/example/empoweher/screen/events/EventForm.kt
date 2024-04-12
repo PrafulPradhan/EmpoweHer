@@ -1,6 +1,7 @@
 package com.example.empoweher.screen.events
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.util.Log
@@ -59,6 +60,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import coil.compose.rememberAsyncImagePainter
 import com.example.empoweher.R
+import com.example.empoweher.activities.Twitter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import java.text.SimpleDateFormat
@@ -86,6 +88,9 @@ fun EventForm(){
         mutableStateOf("")
     }
     var city by remember {
+        mutableStateOf("")
+    }
+    var eventImage by remember {
         mutableStateOf("")
     }
 
@@ -815,33 +820,56 @@ fun EventForm(){
                         val id = dbref.push().key!!
                         val current = LocalDateTime.now()
                         val currentFirebaseUser = FirebaseAuth.getInstance().currentUser
-                        var vacancy=capacity
-                        val e = Event(id,name,description,address,city,btnTextStart,btnTextEnd,hour+":"+minute+":"+second,duration,tag,currentFirebaseUser!!.uid+"/"+current.toString(),cost,capacity,vacancy,contactNumber,""+currentFirebaseUser!!.uid)
+                        var vacancy = capacity
+                        val e = Event(
+                            id,
+                            name,
+                            description,
+                            address,
+                            city,
+                            btnTextStart,
+                            btnTextEnd,
+                            hour + ":" + minute + ":" + second,
+                            duration,
+                            tag,
+                            currentFirebaseUser!!.uid + "/" + current.toString(),
+                            cost,
+                            capacity,
+                            vacancy,
+                            contactNumber,
+                            "" + currentFirebaseUser!!.uid
+                        )
                         dbref.child(id).setValue(e);
-                        val storage=FirebaseStorage.getInstance()
-                        val ref= storage.getReference()
-                            .child(currentFirebaseUser!!.uid+"/"+current.toString())
+                        val storage = FirebaseStorage.getInstance()
+                        val ref = storage.getReference()
+                            .child(currentFirebaseUser!!.uid + "/" + current.toString())
                         ref.putFile(selectedImage!!).addOnSuccessListener {
-                            ref.getDownloadUrl().addOnSuccessListener {it
+                            ref.getDownloadUrl().addOnSuccessListener {
+                                it
                                 dbref.child(id).child("eventImage").setValue(it.toString())
+                                val intent = Intent(context, Twitter::class.java)
+                                intent.putExtra("eventImage", it.toString())
+                                intent.putExtra("eventId", id)
+                                intent.putExtra("eventName",name)
+                                context.startActivity(intent)
                             }
                         }
-                        Toast.makeText(context,"Form Submitted",Toast.LENGTH_SHORT).show()
-                        name=""
-                        description=""
-                        address=""
-                        city=""
-                        hour=""
-                        minute=""
-                        second=""
-                        duration=""
-                        tag=""
-                        selectedImage=null
-                        cost=""
-                        capacity=""
-                        contactNumber=""
-                        startDate=calendar1.timeInMillis
-                        endDate=calendar2.timeInMillis
+                        Toast.makeText(context, "Form Submitted", Toast.LENGTH_SHORT).show()
+                        name = ""
+                        description = ""
+                        address = ""
+                        city = ""
+                        hour = ""
+                        minute = ""
+                        second = ""
+                        duration = ""
+                        tag = ""
+                        selectedImage = null
+                        cost = ""
+                        capacity = ""
+                        contactNumber = ""
+                        startDate = calendar1.timeInMillis
+                        endDate = calendar2.timeInMillis
                     }
                     else{
                         Toast.makeText(context,"Please Fill All Fields",Toast.LENGTH_SHORT).show()

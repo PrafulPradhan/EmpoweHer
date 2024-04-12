@@ -303,7 +303,12 @@ fun DetailedEventCard(eventId:String?="",navigateToNextScreen: (route: String)->
 
                     Users.child(currentUser).child("bookedEvents").child(eventId).setValue(eventId).addOnSuccessListener {
                         booked=true
-                        context.startActivity(Intent(context, Payment::class.java))
+                        val intent = Intent(context, Payment::class.java)
+                        intent.putExtra("eventId", eventId)
+                        context.startActivity(intent)
+
+
+
                     }
 
 
