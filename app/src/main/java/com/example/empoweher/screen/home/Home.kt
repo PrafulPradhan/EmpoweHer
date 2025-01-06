@@ -1,5 +1,6 @@
 package com.example.empoweher.screen.home
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
@@ -45,6 +46,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.privacysandbox.tools.core.model.Method
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.example.empoweher.R
 import com.example.empoweher.auth.signin.TypewriterText
 import com.example.empoweher.composables.EventCard
@@ -58,8 +62,26 @@ import com.example.empoweher.model.Screen
 import com.example.empoweher.screen.Details.converterHeight
 import com.example.empoweher.viewmodel.mainviewmodel
 import com.google.firebase.auth.FirebaseAuth
+import org.json.JSONObject
+import com.android.volley.Request
 
 
+fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit, onError: (String) -> Unit) {
+    val queue = Volley.newRequestQueue(context)
+    Log.d("Hii Outside","dhruv")
+    val jsonObjectRequest = JsonObjectRequest(
+        Request.Method.GET, url, null,
+        { response ->
+            onSuccess(response) // Return the raw JSON response
+        },
+        { error ->
+            onError("Request failed: ${error.message}")
+        }
+    )
+    Log.d("Hii Outside","raju")
+    queue.add(jsonObjectRequest)
+    Log.d("Hii Outside","pcaps")
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
     fun Home(navigateToNextScreen: (route: String)->Unit) {
@@ -68,6 +90,20 @@ import com.google.firebase.auth.FirebaseAuth
     var currentFirebaseUser ="PCAPS"
     try {
         currentFirebaseUser = FirebaseAuth.getInstance().currentUser!!.uid
+        Log.d("Hii Outside","aman")
+        fetchJsonData(
+            context = context,
+            url = "https://scrapeapi-aerf.onrender.com/get_schemes", // Replace with your API URL
+            onSuccess = { jsonResponse ->
+//            println("Received JSON: $jsonResponse")
+                Log.d("Schemes", "Received JSON: $jsonResponse")
+                // Pass this jsonResponse to your separate parsing function
+            },
+            onError = { error ->
+//            println("Error: $error")
+                Log.d("Schemes", "Error : $error")
+            }
+        )
     }
     catch (e:Exception){
 
