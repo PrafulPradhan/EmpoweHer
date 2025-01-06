@@ -6,7 +6,6 @@ plugins {
     id("com.google.gms.google-services")
     id("kotlin-kapt")
     id("com.chaquo.python")
-
 }
 
 android {
