@@ -64,7 +64,10 @@ import com.example.empoweher.viewmodel.mainviewmodel
 import com.google.firebase.auth.FirebaseAuth
 import org.json.JSONObject
 import com.android.volley.Request
+import kotlinx.coroutines.delay
+import org.json.JSONArray
 
+var schemesArray=JSONArray()
 
 fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit, onError: (String) -> Unit) {
     val queue = Volley.newRequestQueue(context)
@@ -72,15 +75,28 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
     val jsonObjectRequest = JsonObjectRequest(
         Request.Method.GET, url, null,
         { response ->
-            onSuccess(response) // Return the raw JSON response
+            try {
+                // Extract the array "schemes" from the JSON response
+                schemesArray = response.getJSONArray("schemes")
+
+                // Iterate through the array
+                for (i in 0 until schemesArray.length()) {
+                    val scheme = schemesArray.getJSONObject(i)
+                    val name = scheme.getString("name")
+                    val link = scheme.getString("link")
+                    // Log or process the data
+                    Log.d("SCHEME_INFO", "Name: $name, Link: $link")
+                }
+            } catch (e: Exception) {
+                Log.e("JSON_ERROR", "Error parsing JSON: ${e.message}")
+            }
         },
         { error ->
-            onError("Request failed: ${error.message}")
+            Log.e("VOLLEY_ERROR", "Request failed: ${error.message}")
         }
     )
-    Log.d("Hii Outside","raju")
+    // Add the request to the queue
     queue.add(jsonObjectRequest)
-    Log.d("Hii Outside","pcaps")
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,19 +104,16 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
     val context = LocalContext.current
     val scrollState = rememberScrollState()
     var currentFirebaseUser ="PCAPS"
+    var schemes=JSONObject()
     try {
         currentFirebaseUser = FirebaseAuth.getInstance().currentUser!!.uid
-        Log.d("Hii Outside","aman")
         fetchJsonData(
             context = context,
-            url = "https://scrapeapi-aerf.onrender.com/get_schemes", // Replace with your API URL
+            url = "https://scrapeapi-aerf.onrender.com/get_schemes",
             onSuccess = { jsonResponse ->
-//            println("Received JSON: $jsonResponse")
-                Log.d("Schemes", "Received JSON: $jsonResponse")
-                // Pass this jsonResponse to your separate parsing function
+                schemes=jsonResponse
             },
             onError = { error ->
-//            println("Error: $error")
                 Log.d("Schemes", "Error : $error")
             }
         )
@@ -171,14 +184,14 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
                     .fillMaxWidth()
                     .padding(top = converterHeight(5, context).dp)
             )
-            SchemeCard(schemeName = "Beti Bachao Beti Padhao","https://wcd.nic.in/schemes/beti-bachao-beti-padhao-scheme")
-            SchemeCard(schemeName = "One Stop Centre","https://wcd.nic.in/schemes/one-stop-centre-scheme-1")
-            SchemeCard(schemeName = "Women Helpline","https://wcd.nic.in/schemes/women-helpline-scheme-2")
-            SchemeCard(schemeName = "Pradhan Mantri Matru Vandana Yojana","https://wcd.nic.in/schemes/pradhan-mantri-matru-vandana-yojana")
-            SchemeCard(schemeName = "Shakti Sadan","https://wcd.nic.in/schemes/shakti-sadan")
-            SchemeCard(schemeName = "Sakhi Niwas - Working Women Hostel","https://wcd.nic.in/schemes/sakhi-niwas-working-women-hostel")
-            SchemeCard(schemeName = "Paalna - National Creche Scheme","https://wcd.nic.in/schemes/paalna-national-creche-scheme")
-            SchemeCard(schemeName = "Nirbhaya","https://wcd.nic.in/schemes/nirbhaya")
+            for (i in 0 until schemesArray.length()) {
+                val scheme = schemesArray.getJSONObject(i)
+                val name = scheme.getString("name")
+                val link = scheme.getString("link")
+                Log.d("Schemes","s")
+                SchemeCard(schemeName = name, link)
+                Log.d("Schemes","n")
+            }
         }
         Column(
             modifier= Modifier
