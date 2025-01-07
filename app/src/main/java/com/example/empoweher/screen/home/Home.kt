@@ -24,6 +24,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -66,6 +68,12 @@ import org.json.JSONObject
 import com.android.volley.Request
 import kotlinx.coroutines.delay
 import org.json.JSONArray
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.ui.Alignment
+
 
 var schemesArray=JSONArray()
 
@@ -192,6 +200,7 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
                 SchemeCard(schemeName = name, link)
                 Log.d("Schemes","n")
             }
+            FloatingActionButtonExample(navigateToNextScreen)
         }
         Column(
             modifier= Modifier
@@ -267,5 +276,18 @@ fun SchemeCard(schemeName:String,uriString:String){
             fontFamily = FontFamily(Font(R.font.font1)),
             textAlign = TextAlign.Center
         )
+    }
+}
+
+
+@Composable
+fun FloatingActionButtonExample(navigateToNextScreen: (route: String) -> Unit) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        FloatingActionButton(
+            onClick = {navigateToNextScreen(Screen.ChatBot.route)},
+            modifier = Modifier.align(Alignment.BottomEnd)
+        ) {
+            Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
+        }
     }
 }
