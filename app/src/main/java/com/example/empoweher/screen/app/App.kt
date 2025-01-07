@@ -41,6 +41,8 @@ import com.example.empoweher.composables.getInfo
 import com.example.empoweher.composables.getValue
 import com.example.empoweher.composables.onBoarding
 import com.example.empoweher.model.Screen
+import com.example.empoweher.screen.ChatBot.ChatScreen
+import com.example.empoweher.screen.ChatBot.WelcomeScreen
 import com.example.empoweher.screen.Details.Details
 import com.example.empoweher.screen.Details.DetailsDesignation
 import com.example.empoweher.screen.Details.DetailsDp
@@ -470,6 +472,42 @@ fun App(
                     })
 
                 }
+
+                composable(route = Screen.ChatBot.route) {
+
+                    LaunchedEffect(shouldShowScaffold){
+                        shouldShowScaffold = false
+                    }
+                    DisposableEffect(shouldShowScaffold) {
+                        onDispose {
+                            shouldShowScaffold = true
+                        }
+                    }
+                    WelcomeScreen(navigateToNextScreen = { route ->
+                        navController.navigate(route)
+                    })
+
+                }
+
+                composable(route = Screen.ChatScreen.route) {
+                    LaunchedEffect(shouldShowScaffold){
+                        shouldShowScaffold = false
+                    }
+                    DisposableEffect(shouldShowScaffold) {
+                        onDispose {
+                            shouldShowScaffold = true
+                        }
+                    }
+                    ChatScreen()
+
+                }
+
+
+
+
+
+
+
             }
         }
     }

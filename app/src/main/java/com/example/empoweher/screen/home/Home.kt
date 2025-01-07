@@ -24,6 +24,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -31,6 +33,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -44,19 +47,32 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.android.volley.Request
+import androidx.privacysandbox.tools.core.model.Method
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.example.empoweher.R
 import com.example.empoweher.auth.signin.TypewriterText
 import com.example.empoweher.composables.EventCard
+import com.example.empoweher.composables.HeartAnimation
 import com.example.empoweher.composables.QuestionCard
+import com.example.empoweher.composables.getInfo
+import com.example.empoweher.composables.getValue
+import com.example.empoweher.composables.onBoarding
 import com.example.empoweher.composables.slider
 import com.example.empoweher.model.Screen
 import com.example.empoweher.screen.Details.converterHeight
+import com.example.empoweher.viewmodel.mainviewmodel
 import com.google.firebase.auth.FirebaseAuth
-import org.json.JSONArray
 import org.json.JSONObject
+import com.android.volley.Request
+import kotlinx.coroutines.delay
+import org.json.JSONArray
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.ui.Alignment
+
 
 var schemesArray=JSONArray()
 
@@ -172,7 +188,6 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
                     .fillMaxWidth()
                     .padding(top = converterHeight(5, context).dp)
             )
-
             for (i in 0 until schemesArray.length()) {
                 val scheme = schemesArray.getJSONObject(i)
                 val name = scheme.getString("name")
@@ -256,5 +271,18 @@ fun SchemeCard(schemeName:String,uriString:String){
             fontFamily = FontFamily(Font(R.font.font1)),
             textAlign = TextAlign.Center
         )
+    }
+}
+
+
+@Composable
+fun FloatingActionButtonExample(navigateToNextScreen: (route: String) -> Unit) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        FloatingActionButton(
+            onClick = {navigateToNextScreen(Screen.ChatBot.route)},
+            modifier = Modifier.align(Alignment.BottomEnd)
+        ) {
+            Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
+        }
     }
 }
