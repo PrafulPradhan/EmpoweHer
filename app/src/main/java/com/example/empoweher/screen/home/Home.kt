@@ -31,7 +31,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -39,33 +38,25 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.privacysandbox.tools.core.model.Method
+import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.example.empoweher.R
 import com.example.empoweher.auth.signin.TypewriterText
 import com.example.empoweher.composables.EventCard
-import com.example.empoweher.composables.HeartAnimation
 import com.example.empoweher.composables.QuestionCard
-import com.example.empoweher.composables.getInfo
-import com.example.empoweher.composables.getValue
-import com.example.empoweher.composables.onBoarding
 import com.example.empoweher.composables.slider
 import com.example.empoweher.model.Screen
 import com.example.empoweher.screen.Details.converterHeight
-import com.example.empoweher.viewmodel.mainviewmodel
 import com.google.firebase.auth.FirebaseAuth
-import org.json.JSONObject
-import com.android.volley.Request
-import kotlinx.coroutines.delay
 import org.json.JSONArray
+import org.json.JSONObject
 
 var schemesArray=JSONArray()
 
@@ -76,10 +67,7 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
         Request.Method.GET, url, null,
         { response ->
             try {
-                // Extract the array "schemes" from the JSON response
                 schemesArray = response.getJSONArray("schemes")
-
-                // Iterate through the array
                 for (i in 0 until schemesArray.length()) {
                     val scheme = schemesArray.getJSONObject(i)
                     val name = scheme.getString("name")
@@ -184,6 +172,7 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
                     .fillMaxWidth()
                     .padding(top = converterHeight(5, context).dp)
             )
+
             for (i in 0 until schemesArray.length()) {
                 val scheme = schemesArray.getJSONObject(i)
                 val name = scheme.getString("name")
