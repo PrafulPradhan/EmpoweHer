@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.example.empoweher"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.empoweher"
@@ -38,7 +38,7 @@ android {
         chaquopy {
             defaultConfig {
                 version = "3.12"
-                buildPython("C:/Users/Rajveer Tolani/AppData/Local/Programs/Python/Python312/python.exe")
+                buildPython("C:/Users/DELL/AppData/Local/Programs/Python/Python312/python.exe")
                 pip {
                     install("tweepy")
                 }

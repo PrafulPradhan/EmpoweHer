@@ -42,6 +42,7 @@ import com.example.empoweher.composables.getValue
 import com.example.empoweher.composables.onBoarding
 import com.example.empoweher.model.Screen
 import com.example.empoweher.screen.ChatBot.ChatScreen
+import com.example.empoweher.screen.ChatBot.NavigationBot
 import com.example.empoweher.screen.ChatBot.WelcomeScreen
 import com.example.empoweher.screen.Details.Details
 import com.example.empoweher.screen.Details.DetailsDesignation
@@ -498,16 +499,14 @@ fun App(
                             shouldShowScaffold = true
                         }
                     }
-                    ChatScreen()
+                    NavigationBot(navigateToNextScreen = { route ->
+                        navController.navigate(route)
+                    })
 
                 }
 
 
-
-
-
-
-
+                
             }
         }
     }

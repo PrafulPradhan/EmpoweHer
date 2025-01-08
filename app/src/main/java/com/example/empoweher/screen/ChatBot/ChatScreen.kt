@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen() {
+fun ChatScreen(navigateToNextScreen: (route: String) -> Unit) {
     val chatbot = remember { ChatbotLogic() }
     val messages = remember { mutableStateListOf("Bot: ${chatbot.getMessage()}") }
     var userInput by remember { mutableStateOf("") }
@@ -94,7 +94,7 @@ fun ChatScreen() {
                         val userMessage = "You: $userInput"
                         messages.add(userMessage)
 
-                        val botResponse = "Bot: ${chatbot.handleCommand(userInput)}"
+                        val botResponse = "Bot: ${chatbot.handleCommand(userInput, navigateToNextScreen)}"
                         messages.add(botResponse)
 
                         userInput = "" // Clear input field

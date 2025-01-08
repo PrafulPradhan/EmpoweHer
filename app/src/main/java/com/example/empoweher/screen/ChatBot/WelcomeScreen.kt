@@ -36,7 +36,7 @@ fun WelcomeScreen(navigateToNextScreen: (route: String) -> Unit) {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Hello\nI'm ACP",
+                text = "Hello\nI'm Bot",
                 color = Color.White,
                 fontSize = 36.sp,
                 textAlign = TextAlign.Center
