@@ -41,7 +41,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -84,10 +83,7 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
         Request.Method.GET, url, null,
         { response ->
             try {
-                // Extract the array "schemes" from the JSON response
                 schemesArray = response.getJSONArray("schemes")
-
-                // Iterate through the array
                 for (i in 0 until schemesArray.length()) {
                     val scheme = schemesArray.getJSONObject(i)
                     val name = scheme.getString("name")
@@ -200,7 +196,6 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
                 SchemeCard(schemeName = name, link)
                 Log.d("Schemes","n")
             }
-            FloatingActionButtonExample(navigateToNextScreen)
         }
         Column(
             modifier= Modifier
