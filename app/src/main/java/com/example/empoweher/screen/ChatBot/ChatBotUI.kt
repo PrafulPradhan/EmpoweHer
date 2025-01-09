@@ -36,7 +36,7 @@ fun ChatbotUI(navigateToNextScreen: (route: String) -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Please select your choice.",
+            text = "Please select your choice to navigate",
             fontSize = 18.sp,
             fontWeight = FontWeight.Medium,
             textAlign = TextAlign.Center,
