@@ -72,6 +72,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.zIndex
 
 
 var schemesArray=JSONArray()
@@ -203,6 +205,7 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
                 .clip(RoundedCornerShape(converterHeight(10, context).dp))
                 .background(colorResource(id = R.color.lightblue))
         ) {
+            FloatingActionButtonExample(navigateToNextScreen)
             Text(text = "Recommended Events",
                 fontSize = converterHeight(20,context).sp,
                 fontFamily = FontFamily(Font(R.font.font1)),
@@ -277,12 +280,21 @@ fun SchemeCard(schemeName:String,uriString:String){
 
 @Composable
 fun FloatingActionButtonExample(navigateToNextScreen: (route: String) -> Unit) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize()
+        .zIndex(1F)) {
         FloatingActionButton(
             onClick = {navigateToNextScreen(Screen.ChatBot.route)},
-            modifier = Modifier.align(Alignment.BottomEnd)
+            modifier = Modifier
+                .align(Alignment.BottomEnd),
         ) {
-            Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
+            Image(
+                painter = painterResource(id = R.drawable.chatbot),
+                contentDescription = "Login Pic",
+                modifier = Modifier
+                    .size(40.dp, 40.dp),
+                contentScale = ContentScale.Fit,
+
+            )
         }
     }
 }

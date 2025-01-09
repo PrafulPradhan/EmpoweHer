@@ -42,6 +42,7 @@ import com.example.empoweher.composables.getValue
 import com.example.empoweher.composables.onBoarding
 import com.example.empoweher.model.Screen
 import com.example.empoweher.screen.ChatBot.ChatScreen
+import com.example.empoweher.screen.ChatBot.ChatbotUI
 import com.example.empoweher.screen.ChatBot.NavigationBot
 import com.example.empoweher.screen.ChatBot.WelcomeScreen
 import com.example.empoweher.screen.Details.Details
@@ -499,7 +500,7 @@ fun App(
                             shouldShowScaffold = true
                         }
                     }
-                    NavigationBot(navigateToNextScreen = { route ->
+                    ChatScreen(navigateToNextScreen = { route ->
                         navController.navigate(route)
                     })
 

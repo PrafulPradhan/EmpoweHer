@@ -17,21 +17,21 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.empoweher.model.Screen
 
-//@Composable
-//fun ChatbotApp() {
-//    val navController = rememberNavController()
-//
-//    NavHost(navController = navController, startDestination = "home") {
-//        composable("home") { HomeScreen(navController) }
-//        composable("personal_productivity") { /* Add Screen Content Here */ }
-//        composable("health_wellness") { /* Add Screen Content Here */ }
-//        composable("finance_budgeting") { /* Add Screen Content Here */ }
-//        composable("education_learning") { /* Add Screen Content Here */ }
-//    }
-//}
-
 @Composable
 fun NavigationBot(navigateToNextScreen: (route: String) -> Unit) {
+     val safety_routes = mapOf(
+        "Fake Call" to Screen.FakeCall.route,
+        "Emergency Contacts" to Screen.ContactOption.route
+    )
+    val home_routes = mapOf(
+        "home" to Screen.Home.route
+    )
+    val event_routes = mapOf(
+        "event" to Screen.Events.route
+    )
+    val ask_routes = mapOf(
+        "ask" to Screen.Ask.route
+    )
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -53,30 +53,30 @@ fun NavigationBot(navigateToNextScreen: (route: String) -> Unit) {
         Spacer(modifier = Modifier.height(24.dp))
         CategorySection(
             title = "Home",
-            buttons = listOf("Time management", "Task prioritization"),
+            buttons = listOf("Home"),
             navigateToNextScreen,
-            route = Screen.Home.route
+            route = home_routes
         )
         Spacer(modifier = Modifier.height(16.dp))
         CategorySection(
-            title = "Health and Wellness",
-            buttons = listOf("Nutrition", "Fitness", "Mental health"),
+            title = "Safety",
+            buttons = listOf("Fake Call", "Emergency Contacts"),
             navigateToNextScreen,
-            route = Screen.Safety.route
+            route = safety_routes
         )
         Spacer(modifier = Modifier.height(16.dp))
         CategorySection(
-            title = "Finance and Budgeting",
+            title = "Events",
             buttons = listOf("Money management", "Budgeting", "Investing"),
             navigateToNextScreen,
-            route = Screen.Events.route
+            route = event_routes
         )
         Spacer(modifier = Modifier.height(16.dp))
         CategorySection(
-            title = "Education and Learning",
+            title = "Open Forum",
             buttons = listOf("Learning new skills", "Finding educational resources"),
             navigateToNextScreen,
-            route = Screen.Ask.route
+            route = ask_routes
         )
     }
 }
@@ -86,7 +86,7 @@ fun CategorySection(
     title: String,
     buttons: List<String>,
     navigateToNextScreen: (route: String) -> Unit,
-    route: String
+    route: Map<String,String>
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -102,7 +102,9 @@ fun CategorySection(
         ) {
             buttons.forEach { buttonText ->
                 Button(
-                    onClick = { navigateToNextScreen(route) },
+                    onClick = {
+                        val r=route[buttonText]
+                        navigateToNextScreen(r!!) },
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
                     modifier = Modifier.weight(1f)

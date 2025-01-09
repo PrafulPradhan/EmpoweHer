@@ -52,7 +52,7 @@ fun ChatScreen(navigateToNextScreen: (route: String) -> Unit) {
             title = { Text("Chatty") },
             modifier = Modifier.background(Color(0xFF6C63FF))
         )
-
+        ChatbotUI(navigateToNextScreen)
         // Chat Messages
         LazyColumn(
             modifier = Modifier.weight(1f),
@@ -97,7 +97,7 @@ fun ChatScreen(navigateToNextScreen: (route: String) -> Unit) {
                         val botResponse = "Bot: ${chatbot.handleCommand(userInput, navigateToNextScreen)}"
                         messages.add(botResponse)
 
-                        userInput = "" // Clear input field
+                        userInput = ""
                     }
                 },
                 colors = ButtonDefaults.buttonColors(Color(0xFF6C63FF)),
