@@ -205,7 +205,7 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
                 .clip(RoundedCornerShape(converterHeight(10, context).dp))
                 .background(colorResource(id = R.color.lightblue))
         ) {
-            FloatingActionButtonExample(navigateToNextScreen)
+//            FloatingActionButtonExample(navigateToNextScreen)
             Text(text = "Recommended Events",
                 fontSize = converterHeight(20,context).sp,
                 fontFamily = FontFamily(Font(R.font.font1)),

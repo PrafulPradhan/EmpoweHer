@@ -62,6 +62,7 @@ import com.example.empoweher.screen.Details.Registration
 import com.example.empoweher.screen.ask.AskQuestion
 import com.example.empoweher.screen.ask.GiveAnswer
 import com.example.empoweher.screen.events.BookedEvents
+import com.example.empoweher.screen.home.FloatingActionButtonExample
 import com.google.firebase.auth.EmailAuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -106,7 +107,15 @@ fun App(
                 /*composable(route = Screen.ScreenName.route) {
                     ScreenName()
                 }*/
-
+            },
+            floatingActionButton = {
+                if (shouldShowScaffold) {
+                    FloatingActionButtonExample(
+                        navigateToNextScreen = { route ->
+                            navController.navigate(route)
+                        }
+                    )
+                }
             }
         ) { paddingValues ->
             println(paddingValues)
