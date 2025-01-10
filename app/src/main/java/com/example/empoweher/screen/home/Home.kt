@@ -69,11 +69,15 @@ import kotlinx.coroutines.delay
 import org.json.JSONArray
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.zIndex
+import coil.compose.rememberAsyncImagePainter
+import com.example.empoweher.composables.getInfoUser
+import com.google.firebase.database.FirebaseDatabase
 
 
 var schemesArray=JSONArray()
@@ -108,6 +112,15 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
 @Composable
     fun Home(navigateToNextScreen: (route: String)->Unit) {
     val context = LocalContext.current
+    val user = FirebaseAuth.getInstance().currentUser
+    var userId = ""
+    if (user != null) {
+        userId = user.uid
+        // Use the userId
+    }
+    val dp = getInfoUser(thing = "Dp", userId = userId)
+    val image = rememberAsyncImagePainter(dp)
+
     val scrollState = rememberScrollState()
     var currentFirebaseUser ="PCAPS"
     var schemes=JSONObject()
@@ -142,14 +155,14 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
                 .size(converterHeight(70, context).dp)
                 .padding(converterHeight(5, context).dp)) {
                 Image(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.logo_svg),
+                    imageVector = ImageVector.vectorResource(id = R.drawable.agarbati),
                     contentDescription = "Logo",
                     modifier = Modifier
                         .size(120.dp),
                     contentScale = ContentScale.Crop
                 )
             }
-            TypewriterText(texts = listOf("Welcome to EmpowerHer"),Color.White)
+            TypewriterText(texts = listOf("Welcome to Agati"),Color.White)
             Spacer(modifier = Modifier.weight(1f))
             Box(modifier = Modifier
                 .size(converterHeight(70, context).dp)
@@ -158,10 +171,11 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
                     navigateToNextScreen(Screen.Profile.route + "/" + currentFirebaseUser)
                 }) {
                 Image(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.baseline_account_circle_24),
+                    painter= image,
                     contentDescription = "Profile",
                     modifier = Modifier
-                        .size(120.dp),
+                        .size(converterHeight(120,context).dp)
+                        .clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
             }

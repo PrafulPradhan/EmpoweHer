@@ -9,11 +9,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -49,9 +51,9 @@ fun ChatBubble(message: String) {
                 painter = painterResource(R.drawable.chatbot),
                 contentDescription = "Profile",
                 modifier = Modifier
-                    .size(30.dp)
-                    .padding(top = 10.dp, end = 5.dp),
-                contentScale = ContentScale.Crop
+                    .size(35.dp)
+                    .padding(top =10.dp, end = 5.dp),
+                contentScale = ContentScale.Fit
             )
         }
 
@@ -75,9 +77,11 @@ fun ChatBubble(message: String) {
                 painter = image,
                 contentDescription = "Profile",
                 modifier = Modifier
-                    .size(30.dp)
-                    .padding(top = 10.dp, start = 5.dp),
-                contentScale = ContentScale.Crop
+                    .size(40.dp)
+                    .padding(top = 10.dp, start = 5.dp)
+                    .clip(CircleShape),
+
+                contentScale = ContentScale.Fit
             )
         }
     }

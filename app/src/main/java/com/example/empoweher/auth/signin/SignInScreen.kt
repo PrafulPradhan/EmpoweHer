@@ -102,7 +102,7 @@ fun SignInScreen(
     ) {
         Spacer(Modifier.height(40.dp))
         Image(
-            imageVector = ImageVector.vectorResource(id = R.drawable.logo_sign),
+            imageVector = ImageVector.vectorResource(id = R.drawable.agarbati),
             contentDescription = "Logo",
             modifier = Modifier
                 .size(120.dp),
