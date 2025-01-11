@@ -176,6 +176,7 @@ fun App(
                     })
                     LaunchedEffect(key1 = shouldShowScaffold){
                         shouldShowScaffold = true
+
                     }
                 }
                 composable(route = Screen.Safety.route) {

@@ -72,6 +72,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.zIndex
@@ -80,7 +83,7 @@ import com.example.empoweher.composables.getInfoUser
 import com.google.firebase.database.FirebaseDatabase
 
 
-var schemesArray=JSONArray()
+var schemesArray by mutableStateOf<JSONArray?>(null)
 
 fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit, onError: (String) -> Unit) {
     val queue = Volley.newRequestQueue(context)
@@ -90,10 +93,10 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
         { response ->
             try {
                 schemesArray = response.getJSONArray("schemes")
-                for (i in 0 until schemesArray.length()) {
-                    val scheme = schemesArray.getJSONObject(i)
-                    val name = scheme.getString("name")
-                    val link = scheme.getString("link")
+                for (i in 0 until (schemesArray?.length()!!)) {
+                    val scheme = schemesArray?.getJSONObject(i)
+                    val name = scheme?.getString("name")
+                    val link = scheme?.getString("link")
                     // Log or process the data
                     Log.d("SCHEME_INFO", "Name: $name, Link: $link")
                 }
@@ -112,6 +115,20 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
 @Composable
     fun Home(navigateToNextScreen: (route: String)->Unit) {
     val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        fetchJsonData(
+            context = context,
+            url = "https://scrapeapi-aerf.onrender.com/get_schemes",
+            onSuccess = { jsonResponse ->
+//                schemes=jsonResponse
+                schemesArray = jsonResponse.getJSONArray("schemes")
+            },
+            onError = { error ->
+                Log.d("Schemes", "Error : $error")
+            }
+        )
+    }
+
     val user = FirebaseAuth.getInstance().currentUser
     var userId = ""
     if (user != null) {
@@ -126,19 +143,10 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
     var schemes=JSONObject()
     try {
         currentFirebaseUser = FirebaseAuth.getInstance().currentUser!!.uid
-        fetchJsonData(
-            context = context,
-            url = "https://scrapeapi-aerf.onrender.com/get_schemes",
-            onSuccess = { jsonResponse ->
-                schemes=jsonResponse
-            },
-            onError = { error ->
-                Log.d("Schemes", "Error : $error")
-            }
-        )
+
     }
     catch (e:Exception){
-
+        Log.d("API", "${e}")
     }
     Column(
         modifier = Modifier
@@ -193,7 +201,6 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
             .height(converterHeight(200, context).dp)
             .clip(RoundedCornerShape(converterHeight(10, context).dp))
             .background(colorResource(id = R.color.lightorange))
-            .verticalScroll(rememberScrollState())
             .border(width = 2.dp, color = colorResource(id = R.color.lightpurple))
         ) {
             Text(text = "Recent Schemes",
@@ -204,14 +211,33 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
                     .fillMaxWidth()
                     .padding(top = converterHeight(5, context).dp)
             )
-            for (i in 0 until schemesArray.length()) {
-                val scheme = schemesArray.getJSONObject(i)
-                val name = scheme.getString("name")
-                val link = scheme.getString("link")
-                Log.d("Schemes","s")
-                SchemeCard(schemeName = name, link)
-                Log.d("Schemes","n")
+//            for (i in 0 until (schemesArray?.length()!!)) {
+//                val scheme = schemesArray?.getJSONObject(i)
+//                val name = scheme?.getString("name")
+//                val link = scheme?.getString("link")
+//                Log.d("Schemes","s")
+//                if (name != null) {
+//                    if (link != null) {
+//                        SchemeCard(schemeName = name, link)
+//                    }
+//                }
+//                Log.d("Schemes","n")
+//            }
+            if (schemesArray == null) {
+                // Show loading indicator
+//                CircularProgressIndicator(modifier = Modifier.fillMaxSize())
+            } else {
+                LazyColumn {
+                    items(schemesArray!!.length()) { index ->
+                        val scheme = schemesArray!!.getJSONObject(index)
+                        val name = scheme.getString("name")
+                        val link = scheme.getString("link")
+
+                        SchemeCard(schemeName = name, link)
+                    }
+                }
             }
+
         }
         Column(
             modifier= Modifier
