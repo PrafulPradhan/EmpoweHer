@@ -1,5 +1,6 @@
 package com.example.empoweher.screen.ChatBot
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -93,10 +94,14 @@ fun ChatScreen(navigateToNextScreen: (route: String) -> Unit) {
                     if (userInput.isNotBlank()) {
                         val userMessage = "You: $userInput"
                         messages.add(userMessage)
-
-                        val botResponse = "Bot: ${chatbot.handleCommand(userInput, navigateToNextScreen)}"
-                        messages.add(botResponse)
-
+                        val keywords= listOf("home","welcome","events","safety","openforum")
+                        val words=userInput.split(" ")
+                        for (word in words){
+                            if(word in keywords){
+                                val botResponse = "Bot: ${chatbot.handleCommand(word, navigateToNextScreen)}"
+                                messages.add(botResponse)
+                            }
+                        }
                         userInput = ""
                     }
                 },

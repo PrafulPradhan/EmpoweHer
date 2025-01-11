@@ -79,7 +79,7 @@ fun DetailsDesignation(navigateToNextScreen: (route: String)->Unit){
 
     ) {
         Image(
-            imageVector = ImageVector.vectorResource(id = R.drawable.logo_sign),
+            imageVector = ImageVector.vectorResource(id = R.drawable.logo_svg),
             contentDescription = "Logo",
             modifier = Modifier
                 .size(converterHeight(80, LocalContext.current).dp),

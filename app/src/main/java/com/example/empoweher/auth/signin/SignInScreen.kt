@@ -102,7 +102,7 @@ fun SignInScreen(
     ) {
         Spacer(Modifier.height(40.dp))
         Image(
-            imageVector = ImageVector.vectorResource(id = R.drawable.agarbati),
+            imageVector = ImageVector.vectorResource(id = R.drawable.logo_svg),
             contentDescription = "Logo",
             modifier = Modifier
                 .size(120.dp),
@@ -205,7 +205,7 @@ fun TypewriterText(
     var textToDisplay by remember {
         mutableStateOf("")
     }
-
+    val context= LocalContext.current
     LaunchedEffect(
         key1 = texts,
     ) {
@@ -226,9 +226,9 @@ fun TypewriterText(
 
     Text(
         text = textToDisplay,
-        fontSize = 18.sp,
+        fontSize = converterHeight(24, context).sp,
         fontWeight = FontWeight.Bold,
-        modifier=Modifier.padding(20.dp),
+        modifier=Modifier.padding(start=converterHeight(48,context).dp,top=converterHeight(15,context).dp),
         fontFamily = FontFamily(Font(R.font.font1)),
         color=color
     )

@@ -127,7 +127,7 @@ fun DetailsInterests(navigateToNextScreen: (route: String)->Unit){
 
     ) {
         Image(
-            imageVector = ImageVector.vectorResource(id = R.drawable.logo_sign),
+            imageVector = ImageVector.vectorResource(id = R.drawable.logo_svg),
             contentDescription = "Logo",
             modifier = Modifier
                 .size(80.dp),

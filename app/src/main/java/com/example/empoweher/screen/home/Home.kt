@@ -9,6 +9,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -163,14 +164,20 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
                 .size(converterHeight(70, context).dp)
                 .padding(converterHeight(5, context).dp)) {
                 Image(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.agarbati),
+                    imageVector = ImageVector.vectorResource(id = R.drawable.logo_svg),
                     contentDescription = "Logo",
                     modifier = Modifier
-                        .size(120.dp),
+                        .size(converterHeight(120,context).dp)
+                        .clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
             }
-            TypewriterText(texts = listOf("Welcome to Agati"),Color.White)
+            Row(
+                modifier=Modifier.align(Alignment.CenterVertically),
+                horizontalArrangement = Arrangement.Absolute.Center
+            ) {
+                TypewriterText(texts = listOf("Welcome to Agati"), Color.White)
+            }
             Spacer(modifier = Modifier.weight(1f))
             Box(modifier = Modifier
                 .size(converterHeight(70, context).dp)
@@ -211,18 +218,6 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
                     .fillMaxWidth()
                     .padding(top = converterHeight(5, context).dp)
             )
-//            for (i in 0 until (schemesArray?.length()!!)) {
-//                val scheme = schemesArray?.getJSONObject(i)
-//                val name = scheme?.getString("name")
-//                val link = scheme?.getString("link")
-//                Log.d("Schemes","s")
-//                if (name != null) {
-//                    if (link != null) {
-//                        SchemeCard(schemeName = name, link)
-//                    }
-//                }
-//                Log.d("Schemes","n")
-//            }
             if (schemesArray == null) {
                 // Show loading indicator
 //                CircularProgressIndicator(modifier = Modifier.fillMaxSize())

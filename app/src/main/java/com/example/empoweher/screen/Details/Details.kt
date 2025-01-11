@@ -74,7 +74,7 @@ fun Details(navigateToNextScreen: (route: String)->Unit){
 
     ) {
         Image(
-            imageVector = ImageVector.vectorResource(id = R.drawable.agarbati),
+            imageVector = ImageVector.vectorResource(id = R.drawable.logo_svg),
             contentDescription = "Logo",
             modifier = Modifier
                 .fillMaxHeight(0.09F)
