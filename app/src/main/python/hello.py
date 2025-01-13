@@ -36,20 +36,3 @@ def a(event_name):
     # media_id = media.media_id
     # client_v2.create_tweet(text=event_name,media_ids=[media_id])
     client_v2.create_tweet(text=event_name)
-
-# def j2():
-#     url = 'https://wcd.gov.in/'
-#     response = requests.get(url)
-#     if response.status_code == 200:
-#         soup = BeautifulSoup(response.content, 'html.parser')
-#         schemes = soup.find_all('a')
-#         print(f"Found {len(schemes)} scheme links")
-#         for scheme in schemes:
-#             if scheme.has_attr('href'):
-#                 scheme_name = scheme.get_text().strip()
-#                 relative_link = scheme['href']
-#                 scheme_link = urljoin(url, relative_link)
-#                 print(f'Scheme Name: {scheme_name}')
-#                 print(f'Scheme Link: {scheme_link}\n')
-#     else:
-#         print(f'Failed to retrieve the page. Status code: {response.status_code}')

@@ -104,9 +104,6 @@ fun App(
                         }
                     )
                 }
-                /*composable(route = Screen.ScreenName.route) {
-                    ScreenName()
-                }*/
             },
             floatingActionButton = {
                 if (shouldShowScaffold) {
