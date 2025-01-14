@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.empoweher.R
+import com.example.empoweher.activities.FakeCallActivity
 import com.example.empoweher.activities.LocationActivity
 import com.example.empoweher.activities.Twitter
 import com.example.empoweher.composables.SafetyCard
@@ -92,7 +93,10 @@ fun Safety(navigateToNextScreen: (route: String)->Unit) {
                 title = "Fake Call",
                 description="You Can Do the fake call with this",
                 color= colorResource(id = R.color.yellow),
-                routed = {},
+                routed = {
+//                    val intentFake = Intent(context, FakeCallActivity::class.java)
+//                    context.startActivity(intentFake)
+                },
                 false,
             )
             SafetyCard(

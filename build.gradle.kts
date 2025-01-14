@@ -24,7 +24,7 @@ plugins {
     id("org.jetbrains.kotlin.android") version "1.8.10" apply false
     id("com.google.dagger.hilt.android") version "2.47" apply false
     //Chaquopy
-    id ("com.chaquo.python") version "15.0.1" apply false
+    id ("com.chaquo.python") version "16.0.0" apply false
 
 
 }

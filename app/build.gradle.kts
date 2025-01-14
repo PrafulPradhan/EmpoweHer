@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.empoweher"
-        minSdk = 21
+        minSdk = 24
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
@@ -38,9 +38,13 @@ android {
         chaquopy {
             defaultConfig {
                 version = "3.12"
-                buildPython("C:/Users/ruksa/AppData/Local/Programs/Python/Python312/python.exe")
+                buildPython("C:/Users/DELL/AppData/Local/Programs/Python/Python312/python.exe")
                 pip {
                     install("tweepy")
+                    install("SpeechRecognition")
+                    install("playsound")
+                    install("sounddevice")
+                    install("numpy")
                 }
             }
 //            sourceSets {
