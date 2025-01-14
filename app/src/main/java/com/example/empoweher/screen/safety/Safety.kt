@@ -94,10 +94,10 @@ fun Safety(navigateToNextScreen: (route: String)->Unit) {
                 description="You Can Do the fake call with this",
                 color= colorResource(id = R.color.yellow),
                 routed = {
-//                    val intentFake = Intent(context, FakeCallActivity::class.java)
-//                    context.startActivity(intentFake)
+                    val intentFake = Intent(context, FakeCallActivity::class.java)
+                    context.startActivity(intentFake)
                 },
-                false,
+                true,
             )
             SafetyCard(
                 navigateToNextScreen = navigateToNextScreen,

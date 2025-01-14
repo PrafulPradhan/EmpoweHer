@@ -38,7 +38,7 @@ android {
         chaquopy {
             defaultConfig {
                 version = "3.12"
-                buildPython("C:/Users/DELL/AppData/Local/Programs/Python/Python312/python.exe")
+                buildPython("C:/Users/ruksa/AppData/Local/Programs/Python/Python312/python.exe")
                 pip {
                     install("tweepy")
                     install("SpeechRecognition")
@@ -98,7 +98,7 @@ android {
 }
 
 dependencies {
-    implementation("androidx.compose.material:material-icons-extended:1.7.6")
+    implementation("androidx.compose.material:material-icons-extended:1.3.1")
     implementation("com.github.ZEGOCLOUD:zego_uikit_prebuilt_video_conference_android:+")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
