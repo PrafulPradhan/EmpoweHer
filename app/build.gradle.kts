@@ -94,6 +94,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.compose.material:material-icons-extended:1.7.6")
     implementation("com.github.ZEGOCLOUD:zego_uikit_prebuilt_video_conference_android:+")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
