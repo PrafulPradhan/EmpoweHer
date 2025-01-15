@@ -24,6 +24,14 @@ fun Response(input:String, context:Context): String {
                 val mediaPlayer = MediaPlayer.create(context,R.raw.hi)
                 mediaPlayer.start()
             }
+            else if(word == "khaana"){
+                val mediaPlayer = MediaPlayer.create(context,R.raw.khaana)
+                mediaPlayer.start()
+            }
+            else if(word=="bye"){
+                    val mediaPlayer = MediaPlayer.create(context,R.raw.bye)
+                    mediaPlayer.start()
+            }
         }
     }
     return "Juice Pilado"

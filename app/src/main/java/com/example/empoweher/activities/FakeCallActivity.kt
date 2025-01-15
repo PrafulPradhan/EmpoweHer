@@ -72,6 +72,7 @@ class FakeCallActivity : AppCompatActivity() {
     val voiceToTextParser by lazy {
         VoiceToTextParser(application)
     }
+    val context=this@FakeCallActivity
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
 
