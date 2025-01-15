@@ -41,10 +41,6 @@ android {
                 buildPython("C:/Users/DELL/AppData/Local/Programs/Python/Python312/python.exe")
                 pip {
                     install("tweepy")
-                    install("SpeechRecognition")
-                    install("playsound")
-                    install("sounddevice")
-                    install("numpy")
                 }
             }
 //            sourceSets {
