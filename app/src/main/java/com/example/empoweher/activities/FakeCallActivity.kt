@@ -3,6 +3,7 @@ package com.example.empoweher.activities
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.util.Log
@@ -23,6 +24,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Pause
+import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material.icons.rounded.Stop
 import androidx.compose.material3.Button
@@ -55,11 +58,14 @@ import androidx.core.view.WindowInsetsCompat
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
 import com.example.empoweher.R
+import com.example.empoweher.screen.voicebot.Response
 import com.example.empoweher.screen.voicebot.VoiceToTextParser
 import com.google.android.material.internal.ContextUtils.getActivity
 import im.zego.connection.internal.ZegoConnectionImpl.context
 import kotlinx.coroutines.CoroutineScope
 import java.util.Locale
+
+
 
 class FakeCallActivity : AppCompatActivity() {
 
@@ -70,8 +76,10 @@ class FakeCallActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge()
         setContentView(R.layout.activity_fake_call)
+        val mediaPlayer = MediaPlayer.create(this,R.raw.music)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -95,63 +103,79 @@ class FakeCallActivity : AppCompatActivity() {
         }
 
         setContent {
-//                var canRecord by remember {
-//                    mutableStateOf(false)
-//                }
-//
-//                val recordAudioLauncher = rememberLauncherForActivityResult(
-//                    contract = ActivityResultContracts.RequestPermission(),
-//                    onResult = { isGranted ->
-//                        canRecord = isGranted
-//                    }
-//                )
-//
-//                LaunchedEffect(key1 = recordAudioLauncher) {
-//                    recordAudioLauncher.launch(Manifest.permission.RECORD_AUDIO)
-//                }
-//            val state by voiceToTextParser.state.collectAsState()
-//            Scaffold(
-//            floatingActionButton = {
-//                FloatingActionButton(
-//                    onClick = {
-//                        if (state.isSpeaking) {
-//                            voiceToTextParser.stopListening()
-//                        } else {
-//                            voiceToTextParser.startListening()
-//                        }
-//                    }
-//                ){
-//                    AnimatedContent(targetState = state.isSpeaking) { isSpeaking->
-//                        if(isSpeaking){
+            var resp by remember {mutableStateOf(false)}
+                var canRecord by remember {
+                    mutableStateOf(false)
+                }
+
+                val recordAudioLauncher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.RequestPermission(),
+                    onResult = { isGranted ->
+                        canRecord = isGranted
+                    }
+                )
+
+                LaunchedEffect(key1 = recordAudioLauncher) {
+                    recordAudioLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                }
+            val state by voiceToTextParser.state.collectAsState()
+
+            LaunchedEffect(key1 = resp) {
+                if(resp){
+                    var output = Response(state.spokenText, context)
+                    Log.d("Dhruv", output)
+                }
+            }
+
+            Scaffold(
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = {
+                        if (state.isSpeaking) {
+                            voiceToTextParser.stopListening()
+                        } else {
+                            voiceToTextParser.startListening()
+                        }
+                    }
+                ){
+                    AnimatedContent(targetState = state.isSpeaking) { isSpeaking->
+                        if(isSpeaking){
+                            Icon(imageVector = Icons.Outlined.Pause, contentDescription = "pause")
+//                            var output = Response(state.spokenText)
 //                            Image(painter = painterResource(R.drawable.police), contentDescription = null)
-//                        }else{
-//                            Icon(painter= painterResource(R.drawable.back_text),contentDescription="play")
-//                        }
-//                    }
-//                }
-//            }
-//        ){ padding ->
-//            Column(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .padding(padding)
-//                    .padding(20.dp),
-//                verticalArrangement = Arrangement.Center,
-//                horizontalAlignment = Alignment.CenterHorizontally
-//            ) {
-//                Text(
-//                    text = state.spokenText,
-//                    modifier = Modifier.padding(8.dp)
-//                )
-//                Spacer(modifier = Modifier.size(24.dp))
-//                Text(
-//                    text = state.error ?: "",
-//                    color = Color.Red,
-//                    modifier = Modifier.padding(8.dp)
-//                )
-//            }
-//        }
-            TextToSpeechScreen()
+                        }else{
+//                            Icon(painter= painterResource(R.drawable.alert),contentDescription="play")
+                            Log.d("Test", ""+resp)
+                            Icon(imageVector = Icons.Outlined.PlayArrow, contentDescription = "play")
+                            Log.d("Before", ""+resp)
+                            if(state.spokenText != "") resp = true
+                            Log.d("After",""+resp)
+                        }
+                    }
+                }
+            }
+        ){ padding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = state.spokenText,
+                    modifier = Modifier.padding(8.dp)
+                )
+                Spacer(modifier = Modifier.size(24.dp))
+                Text(
+                    text = state.error ?: "",
+                    color = Color.Red,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+        }
+//            TextToSpeechScreen()
         }
 //        setContent {
 //            Log.d("Raja Mausa", "before")

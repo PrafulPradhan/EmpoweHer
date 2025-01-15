@@ -6,9 +6,11 @@ import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import com.example.empoweher.screen.voicebot.Response
 
 class VoiceToTextParser(
     private val app: Application
@@ -16,6 +18,7 @@ class VoiceToTextParser(
 
     private val _state = MutableStateFlow(VoiceToTextParserState())
     val state = _state.asStateFlow()
+    var txt = ""
 
     val recognizer = SpeechRecognizer.createSpeechRecognizer(app)
 
@@ -53,6 +56,7 @@ class VoiceToTextParser(
                 isSpeaking = false
             )
         }
+
         recognizer.stopListening()
     }
 
@@ -72,10 +76,13 @@ class VoiceToTextParser(
 
     override fun onEndOfSpeech() {
         _state.update { it: VoiceToTextParserState ->
+            txt = it.spokenText
             it.copy(
                 isSpeaking = false
             )
         }
+//        var output = Response(txt)
+//        Log.d("Mosambi", output)
     }
 
     override fun onError(error: Int) {
