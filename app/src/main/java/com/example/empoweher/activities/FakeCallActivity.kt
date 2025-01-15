@@ -61,7 +61,6 @@ import com.example.empoweher.R
 import com.example.empoweher.screen.voicebot.Response
 import com.example.empoweher.screen.voicebot.VoiceToTextParser
 import com.google.android.material.internal.ContextUtils.getActivity
-import im.zego.connection.internal.ZegoConnectionImpl.context
 import kotlinx.coroutines.CoroutineScope
 import java.util.Locale
 
@@ -72,7 +71,7 @@ class FakeCallActivity : AppCompatActivity() {
     val voiceToTextParser by lazy {
         VoiceToTextParser(application)
     }
-    val context=this@FakeCallActivity
+
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -104,6 +103,7 @@ class FakeCallActivity : AppCompatActivity() {
         }
 
         setContent {
+            val context = LocalContext.current
             var resp by remember {mutableStateOf(false)}
                 var canRecord by remember {
                     mutableStateOf(false)
@@ -142,15 +142,13 @@ class FakeCallActivity : AppCompatActivity() {
                     AnimatedContent(targetState = state.isSpeaking) { isSpeaking->
                         if(isSpeaking){
                             Icon(imageVector = Icons.Outlined.Pause, contentDescription = "pause")
+                            resp = false
 //                            var output = Response(state.spokenText)
 //                            Image(painter = painterResource(R.drawable.police), contentDescription = null)
                         }else{
 //                            Icon(painter= painterResource(R.drawable.alert),contentDescription="play")
-                            Log.d("Test", ""+resp)
                             Icon(imageVector = Icons.Outlined.PlayArrow, contentDescription = "play")
-                            Log.d("Before", ""+resp)
                             if(state.spokenText != "") resp = true
-                            Log.d("After",""+resp)
                         }
                     }
                 }
