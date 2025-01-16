@@ -41,6 +41,14 @@ fun Response(input: String, context: Context): String {
                     Log.d("PCAPS", "MediaPlayer released")
                 }
             }
+            else if(word == "khaana"){
+                val mediaPlayer = MediaPlayer.create(context,R.raw.khaana)
+                mediaPlayer.start()
+            }
+            else if(word=="bye"){
+                    val mediaPlayer = MediaPlayer.create(context,R.raw.bye)
+                    mediaPlayer.start()
+            }
         }
     }
 
