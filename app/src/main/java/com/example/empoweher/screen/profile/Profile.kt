@@ -1,6 +1,7 @@
 package com.example.empoweher.screen.profile
 
 import android.content.Intent
+import android.graphics.drawable.Icon
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -11,14 +12,18 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 
 import androidx.compose.runtime.Composable
@@ -31,6 +36,8 @@ import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
@@ -40,6 +47,7 @@ import com.example.empoweher.composables.SampleText
 import com.example.empoweher.composables.getChildCount
 import com.example.empoweher.composables.getInfoUser
 import com.example.empoweher.model.Screen
+import com.example.empoweher.screen.Details.converterHeight
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 
@@ -59,7 +67,7 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 20.dp)
+            .padding(top = converterHeight(20, context).dp)
     ) {
 //        Icon(imageVector = Icons.Rounded.Person, contentDescription = "Account",
 //            modifier = Modifier.size(50.dp))
@@ -74,31 +82,58 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
                 contentDescription = "ProfilePic",
                 modifier = Modifier
                     .clip(CircleShape)
-                    .size(100.dp)
+                    .size(converterHeight(100, context).dp)
                     .border(
-                        BorderStroke(3.dp, colorResource(id = R.color.lightblue)),
+                        BorderStroke(converterHeight(3, context).dp, colorResource(id = R.color.lightblue)),
                         CircleShape
                     )
             )
         }
-        Spacer(modifier = Modifier.height(10.dp))
-        Text(text = "User Details", fontSize = 24.sp, color = colorResource(id = R.color.black),
-            modifier = Modifier.padding(start = 30.dp))
+        Icon(imageVector = Icons.Outlined.Add, contentDescription = "Change",
+            modifier = Modifier.fillMaxWidth()
+                .offset(converterHeight(35, context).dp,-converterHeight(17, context).dp))
+
+        Text(text=name,
+            textAlign = TextAlign.Center,
+            fontSize = converterHeight(20, context).sp,
+            modifier = Modifier.fillMaxWidth(),
+            fontStyle = FontStyle(R.font.font1)
+        )
+
+        Spacer(modifier = Modifier.height(converterHeight(10, context).dp))
+
+        Row(modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly){
+            Column(modifier = Modifier.size(converterHeight(70, context).dp)){
+                Text(text="0", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                Text(text="Following", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+            }
+            Column(modifier = Modifier.size(converterHeight(70, context).dp)){
+                Text(text="0", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                Text(text="Followers", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+            }
+            Column(modifier = Modifier.size(converterHeight(70, context).dp)){
+                Text(text="0", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                Text(text="Events", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+            }
+        }
+
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .shadow(ambientColor = Color.Blue, elevation = 30.dp),
-            elevation = CardDefaults.cardElevation(20.dp),
+                .offset(y=-converterHeight(15, context).dp)
+                .padding(start = converterHeight(20, context).dp, end = converterHeight(20, context).dp, bottom = converterHeight(5, context).dp)
+                .clip(RoundedCornerShape(converterHeight(10, context).dp))
+                .shadow(ambientColor = Color.Blue, elevation = converterHeight(30, context).dp),
+            elevation = CardDefaults.cardElevation(converterHeight(20, context).dp),
             colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.lightblue))
         ) {
             Column(modifier = Modifier.padding()){
-                Spacer(modifier = Modifier.height(10.dp))
-                Spacer(modifier = Modifier.height(5.dp))
-                SampleText(text = name, fontSize = 24, textColor = colorResource(id = R.color.white))
-                SampleText(text = designation, fontSize = 24, textColor = colorResource(id = R.color.white))
-                SampleText(text = bio, fontSize = 24, textColor = colorResource(id = R.color.white))
+                Spacer(modifier = Modifier.height(converterHeight(10, context).dp))
+                Spacer(modifier = Modifier.height(converterHeight(5, context).dp))
+                SampleText(text = name, fontSize = converterHeight(24, context), textColor = colorResource(id = R.color.white))
+                SampleText(text = designation, fontSize = converterHeight(24, context), textColor = colorResource(id = R.color.white))
+                SampleText(text = bio, fontSize = converterHeight(24, context), textColor = colorResource(id = R.color.white))
             }
         }
 
