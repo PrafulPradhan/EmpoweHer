@@ -221,7 +221,7 @@ fun DetailsInterests(navigateToNextScreen: (route: String)->Unit){
                 }
 
                 dbref.child(currentFirebaseUser).child("interests").setValue(list)
-                dbref.child(currentFirebaseUser).child("userId").setValue(currentFirebaseUser)
+                dbref.child(currentFirebaseUser).child("userID").setValue(currentFirebaseUser)
                 navigateToNextScreen(Screen.DetailsDp.route)
 
             }) {

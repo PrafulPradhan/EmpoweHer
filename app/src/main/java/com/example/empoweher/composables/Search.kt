@@ -52,50 +52,9 @@ val dbref = FirebaseDatabase.getInstance()
 @Composable
 fun Search(navigateToNextScreen: (route: String)->Unit){
     val viewModel= viewModel{ ProfileViewModel() }
-
     val context = LocalContext.current
     var textState by remember { mutableStateOf("") }
-    val searchedText = textState
-//    var nameList = remember { mutableStateListOf<String>() }
     var userList = remember { mutableStateListOf<User>() }
-
-    when( val result= viewModel.response.value){
-        is DataState.Loading -> {
-
-        }
-        is DataState.SuccessUser->{
-            LazyColumn(
-
-            ){
-                items(result.data){each->
-                    ColumnItem(each.name!!,each.userID!!,context,navigateToNextScreen)
-                }
-            }
-        }
-        is DataState.Failure->{
-
-        }
-
-        DataState.Empty -> TODO()
-        is DataState.Success -> TODO()
-        is DataState.SuccessAnswer -> TODO()
-        is DataState.SuccessQuestion -> TODO()
-    }
-    dbref.addListenerForSingleValueEvent(object : ValueEventListener {
-        override fun onDataChange(dataSnapshot: DataSnapshot) {
-            for (snapshot in dataSnapshot.children) {
-                val user = snapshot.getValue(
-                    User::class.java
-                )
-                if (user != null) {
-                    userList.add(user)
-                }
-            }
-        }
-        override fun onCancelled(databaseError: DatabaseError) {
-        }
-    })
-
     Row(modifier = Modifier.fillMaxWidth()
     ){
         OutlinedTextField(
@@ -107,6 +66,34 @@ fun Search(navigateToNextScreen: (route: String)->Unit){
             },
             trailingIcon = {Icon(imageVector = Icons.Outlined.Search, contentDescription = "Search")}
         )
+    }
+    val filteredList = userList
+        .filter { it.name!!.contains(textState, ignoreCase = true) }
+        .distinct()
+    when( val result= viewModel.response.value){
+        is DataState.Loading -> {
+
+        }
+        is DataState.SuccessUser->{
+            LazyColumn(
+                modifier = Modifier.padding(10.dp)
+            ){
+                itemsIndexed(
+                    items=result.data.filter { it.name!!.contains(textState, ignoreCase = true)}.distinct(),
+                    key={index,item -> "$item-$index"}
+                ){index,item->
+                    ColumnItem(item.name!!,item.userID!!,context,navigateToNextScreen)
+                }
+            }
+        }
+        is DataState.Failure->{
+
+        }
+
+        DataState.Empty -> TODO()
+        is DataState.Success -> TODO()
+        is DataState.SuccessAnswer -> TODO()
+        is DataState.SuccessQuestion -> TODO()
     }
 }
 
