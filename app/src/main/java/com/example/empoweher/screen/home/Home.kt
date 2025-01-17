@@ -80,6 +80,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.zIndex
 import coil.compose.rememberAsyncImagePainter
+import com.example.empoweher.composables.Search
 import com.example.empoweher.composables.getInfoUser
 import com.google.firebase.database.FirebaseDatabase
 
@@ -179,6 +180,7 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
                 TypewriterText(texts = listOf("Welcome to Agati"), Color.White)
             }
             Spacer(modifier = Modifier.weight(1f))
+
             Box(modifier = Modifier
                 .size(converterHeight(70, context).dp)
                 .padding(converterHeight(5, context).dp)
@@ -195,13 +197,19 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
                 )
             }
         }
+
         Box(modifier= Modifier
             .fillMaxWidth()
             .height(converterHeight(400, context).dp)
             .padding(converterHeight(10, context).dp)
         )
         {
-            slider()
+
+            Column(modifier = Modifier.fillMaxWidth()){
+                Spacer(modifier = Modifier.height(10.dp))
+                slider()
+            }
+
         }
         Column(modifier= Modifier
             .padding(converterHeight(10, context).dp)
