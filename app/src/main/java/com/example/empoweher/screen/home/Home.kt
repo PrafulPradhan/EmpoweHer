@@ -207,6 +207,19 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
 
             Column(modifier = Modifier.fillMaxWidth()){
                 Spacer(modifier = Modifier.height(10.dp))
+                Search(navigateToNextScreen)
+            }
+
+        }
+        Box(modifier= Modifier
+            .fillMaxWidth()
+            .height(converterHeight(400, context).dp)
+            .padding(converterHeight(10, context).dp)
+        )
+        {
+
+            Column(modifier = Modifier.fillMaxWidth()){
+                Spacer(modifier = Modifier.height(10.dp))
                 slider()
             }
 
