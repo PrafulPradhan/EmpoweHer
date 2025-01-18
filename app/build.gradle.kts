@@ -38,7 +38,7 @@ android {
         chaquopy {
             defaultConfig {
                 version = "3.12"
-                buildPython("C:/Users/ruksa/AppData/Local/Programs/Python/Python312/python.exe")
+                buildPython("C:/Users/DELL/AppData/Local/Programs/Python/Python312/python.exe")
                 pip {
                     install("tweepy")
                 }

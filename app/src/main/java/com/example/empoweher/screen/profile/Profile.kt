@@ -40,6 +40,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.empoweher.R
 import com.example.empoweher.activities.VideoConferencing
@@ -48,6 +49,7 @@ import com.example.empoweher.composables.getChildCount
 import com.example.empoweher.composables.getInfoUser
 import com.example.empoweher.model.Screen
 import com.example.empoweher.screen.Details.converterHeight
+import com.example.empoweher.viewmodel.ProfileViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 
@@ -59,6 +61,7 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
     val bio = getInfoUser(thing = "bio", userId = userId)
     val dp = getInfoUser(thing = "Dp", userId = userId)
     val image = rememberAsyncImagePainter(model = dp)
+
     val followers=getChildCount(path = "/Users/$userId/followers")
     val following=getChildCount(path = "/Users/$userId/following")
     val context = LocalContext.current
@@ -105,11 +108,11 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
         Row(modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly){
             Column(modifier = Modifier.size(converterHeight(70, context).dp)){
-                Text(text="0", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                Text(text=following.toString(), textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                 Text(text="Following", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
             }
             Column(modifier = Modifier.size(converterHeight(70, context).dp)){
-                Text(text="0", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                Text(text=followers.toString(), textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                 Text(text="Followers", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
             }
             Column(modifier = Modifier.size(converterHeight(70, context).dp)){
@@ -117,6 +120,14 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
                 Text(text="Events", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
             }
         }
+
+        Row(modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly){
+            Button(onClick = {}) { Text("Follow") }
+            Button(onClick = {}) { Text("Message") }
+        }
+
+        Spacer(modifier = Modifier.height(converterHeight(20, context).dp))
 
         Card(
             modifier = Modifier

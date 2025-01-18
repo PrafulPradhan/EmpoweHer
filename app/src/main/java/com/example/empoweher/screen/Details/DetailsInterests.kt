@@ -111,6 +111,8 @@ fun DetailsInterests(navigateToNextScreen: (route: String)->Unit){
 
 
     val currentFirebaseUser = FirebaseAuth.getInstance().currentUser!!.uid
+    var followers: List<String> = listOf("PCAPS")
+    var following: List<String> = listOf("PCAPS")
 
     val dbref = FirebaseDatabase.getInstance()
         .getReference("Users");
@@ -222,6 +224,8 @@ fun DetailsInterests(navigateToNextScreen: (route: String)->Unit){
 
                 dbref.child(currentFirebaseUser).child("interests").setValue(list)
                 dbref.child(currentFirebaseUser).child("userID").setValue(currentFirebaseUser)
+                dbref.child(currentFirebaseUser).child("followers").setValue(followers)
+                dbref.child(currentFirebaseUser).child("following").setValue(following)
                 navigateToNextScreen(Screen.DetailsDp.route)
 
             }) {
