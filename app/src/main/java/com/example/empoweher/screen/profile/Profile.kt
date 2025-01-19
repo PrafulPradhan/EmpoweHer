@@ -2,6 +2,7 @@ package com.example.empoweher.screen.profile
 
 import android.content.Intent
 import android.graphics.drawable.Icon
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -27,6 +28,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,11 +50,17 @@ import com.example.empoweher.activities.VideoConferencing
 import com.example.empoweher.composables.SampleText
 import com.example.empoweher.composables.getChildCount
 import com.example.empoweher.composables.getInfoUser
+import com.example.empoweher.model.DataState
 import com.example.empoweher.model.Screen
+import com.example.empoweher.model.User
 import com.example.empoweher.screen.Details.converterHeight
 import com.example.empoweher.viewmodel.ProfileViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 
 @Composable
@@ -65,6 +74,7 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
     val followers=getChildCount(path = "/Users/$userId/followers")
     val following=getChildCount(path = "/Users/$userId/following")
     val context = LocalContext.current
+    val currentFirebaseUser = FirebaseAuth.getInstance().currentUser?.uid!!
 
 
     Column(
@@ -123,7 +133,15 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
 
         Row(modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly){
-            Button(onClick = {}) { Text("Follow") }
+            Button(onClick = {
+                if(userId != currentFirebaseUser){
+                    if (userId != null) {
+                        val dbref = FirebaseDatabase.getInstance().getReference("Users")
+                        dbref.child(userId).child("followers").child(currentFirebaseUser).setValue(currentFirebaseUser)
+                        dbref.child(currentFirebaseUser).child("following").child(userId).setValue(userId)
+                    }
+                }
+            }) { Text("Follow") }
             Button(onClick = {}) { Text("Message") }
         }
 
