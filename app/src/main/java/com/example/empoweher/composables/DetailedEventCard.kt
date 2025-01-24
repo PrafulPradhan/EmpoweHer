@@ -53,6 +53,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.empoweher.R
 import com.example.empoweher.activities.Payment
+import com.example.empoweher.activities.VideoConferencing
 import com.example.empoweher.model.Screen
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -79,7 +80,7 @@ fun DetailedEventCard(eventId:String?="",navigateToNextScreen: (route: String)->
     val list = remember { mutableStateListOf<String>()}
 
     LaunchedEffect(key1 = Unit) {
-        FirebaseDatabase.getInstance().getReference("Users/24Si2cNeD8Uq7vIbGCTDUSAHNOg1/bookedEvents").addListenerForSingleValueEvent(object:ValueEventListener{
+        FirebaseDatabase.getInstance().getReference("Users/$currentFirebaseUser/bookedEvents").addListenerForSingleValueEvent(object:ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (data in snapshot.children) {
                     val e = data.getValue(String::class.java)
@@ -170,6 +171,7 @@ fun DetailedEventCard(eventId:String?="",navigateToNextScreen: (route: String)->
     contact=getInfo("contact",eventId)
     vacancy=getInfo("vacancy",eventId)
     meetingId=getInfo("meetingId", eventId)
+    val name = getInfoUser("name", currentFirebaseUser)
     var painter= rememberAsyncImagePainter(model = eventImage)
     var scroll =rememberScrollState()
     Column(modifier=Modifier.fillMaxSize()) {
@@ -281,7 +283,18 @@ fun DetailedEventCard(eventId:String?="",navigateToNextScreen: (route: String)->
                     PrintText(text = "Duration in Hours : $duration")
                     PrintText(text = "Capacity : $capacity")
                     if(booked){
-                        PrintText(text = "MeetingId : $meetingId")
+                        Button(
+                            onClick = {
+                                val navigate = Intent(context, VideoConferencing::class.java)
+                                navigate.putExtra("meetId", meetingId)
+                                navigate.putExtra("name", name)
+                                context.startActivity(navigate)
+                            },
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                                .padding(bottom=10.dp)
+                        ){
+                            Text(text="Join Now")
+                        }
                     }
                 }
             }
