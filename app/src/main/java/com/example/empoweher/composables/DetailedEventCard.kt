@@ -152,6 +152,9 @@ fun DetailedEventCard(eventId:String?="",navigateToNextScreen: (route: String)->
     var vacancy by remember {
         mutableStateOf("")
     }
+    var meetingId by remember {
+        mutableStateOf("")
+    }
     eventTitle= getInfo("eventName", eventId)
     eventAddress= getInfo("address", eventId)
     eventDescription= getInfo("description", eventId)
@@ -166,6 +169,7 @@ fun DetailedEventCard(eventId:String?="",navigateToNextScreen: (route: String)->
     capacity= getInfo("capacity",eventId)
     contact=getInfo("contact",eventId)
     vacancy=getInfo("vacancy",eventId)
+    meetingId=getInfo("meetingId", eventId)
     var painter= rememberAsyncImagePainter(model = eventImage)
     var scroll =rememberScrollState()
     Column(modifier=Modifier.fillMaxSize()) {
@@ -276,6 +280,9 @@ fun DetailedEventCard(eventId:String?="",navigateToNextScreen: (route: String)->
                     PrintText(text = "Timing : $timing")
                     PrintText(text = "Duration in Hours : $duration")
                     PrintText(text = "Capacity : $capacity")
+                    if(booked){
+                        PrintText(text = "MeetingId : $meetingId")
+                    }
                 }
             }
         }
@@ -306,9 +313,6 @@ fun DetailedEventCard(eventId:String?="",navigateToNextScreen: (route: String)->
                         val intent = Intent(context, Payment::class.java)
                         intent.putExtra("eventId", eventId)
                         context.startActivity(intent)
-
-
-
                     }
 
 
