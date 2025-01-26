@@ -149,7 +149,7 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
 
         Card(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth()  
                 .offset(y=-converterHeight(15, context).dp)
                 .padding(start = converterHeight(20, context).dp, end = converterHeight(20, context).dp, bottom = converterHeight(5, context).dp)
                 .clip(RoundedCornerShape(converterHeight(10, context).dp))
