@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -86,8 +87,9 @@ fun Search(navigateToNextScreen: (route: String)->Unit){
                     items=result.data.filter { it.name!!.contains(textState, ignoreCase = true)}.distinct(),
                     key={index,item -> "$item-$index"}
                 ){index,item->
-
-                    ColumnItem(item.name!!,item.userID!!,context,navigateToNextScreen, item.isEntrepreneur?:"false")
+                    Log.d("ent",item.toString())
+                    val isEnt = getInfoUser(thing = "isEnt", userId = item.userID!!)
+                    ColumnItem(item.name!!,item.userID!!,context,navigateToNextScreen, isEnt)
                 }
             }
         }
@@ -111,12 +113,9 @@ fun ColumnItem(item:String,userid:String,context: Context,navigateToNextScreen: 
         Row(modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start){
             Text(text=item, fontSize= converterHeight(22,context).sp, modifier = Modifier.padding(vertical=20.dp))
-            Log.d("if ke pehle", isEntrepreneur)
             if(isEntrepreneur=="true"){
-                Log.d("icon", isEntrepreneur)
-                Icon(imageVector = Icons.Outlined.Verified, contentDescription = "verified", modifier = Modifier.fillMaxWidth())
+                Icon(imageVector = Icons.Outlined.Verified, contentDescription = "verified",modifier=Modifier.offset(y= 22.dp))
             }
-            Log.d("if ke baadme", isEntrepreneur)
         }
         Divider()
     }

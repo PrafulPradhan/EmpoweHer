@@ -75,10 +75,10 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
     val following=getChildCount(path = "/Users/$userId/following")
     val context = LocalContext.current
     val currentFirebaseUser = FirebaseAuth.getInstance().currentUser?.uid!!
-    val isEntrepreneur = getInfoUser(thing = "isEntrepreneur", userId = userId)
+    val isEnt = getInfoUser(thing = "isEnt", userId = userId)
     var color = colorResource(R.color.lightblue)
 
-    if(isEntrepreneur != null && isEntrepreneur == "true"){
+    if(isEnt != null && isEnt == "true"){
         color = colorResource(R.color.emeraldgreen)
     }
 

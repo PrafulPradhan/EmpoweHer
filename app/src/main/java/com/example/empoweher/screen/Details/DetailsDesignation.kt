@@ -261,7 +261,7 @@ fun DetailsDesignation(navigateToNextScreen: (route: String)->Unit){
             onClick = {
                 dbref.child(currentFirebaseUser).child("designation").setValue(designation)
                 dbref.child(currentFirebaseUser).child("bio").setValue(bio)
-                dbref.child(currentFirebaseUser).child("isEntrepreneur").setValue(checked)
+                dbref.child(currentFirebaseUser).child("isEnt").setValue(checked)
                 if(checked == "true"){
                     dbref.child(currentFirebaseUser).child("domain").setValue(expertise)
                     dbref.child(currentFirebaseUser).child("fees").setValue(fees)

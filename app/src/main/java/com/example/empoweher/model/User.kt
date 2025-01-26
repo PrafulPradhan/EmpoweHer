@@ -4,5 +4,5 @@ data class User(
     var name : String?=null,
     var userID : String?=null,
     var Dp:String?=null,
-    var isEntrepreneur:String?=null
+    var isEnt:String?=null
 )
