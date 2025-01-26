@@ -75,7 +75,12 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
     val following=getChildCount(path = "/Users/$userId/following")
     val context = LocalContext.current
     val currentFirebaseUser = FirebaseAuth.getInstance().currentUser?.uid!!
+    val isEntrepreneur = getInfoUser(thing = "isEntrepreneur", userId = userId)
+    var color = colorResource(R.color.lightblue)
 
+    if(isEntrepreneur != null && isEntrepreneur == "true"){
+        color = colorResource(R.color.emeraldgreen)
+    }
 
     Column(
         modifier = Modifier
@@ -84,6 +89,8 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
     ) {
 //        Icon(imageVector = Icons.Rounded.Person, contentDescription = "Account",
 //            modifier = Modifier.size(50.dp))
+
+
 
 
         Row(
@@ -97,7 +104,7 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
                     .clip(CircleShape)
                     .size(converterHeight(100, context).dp)
                     .border(
-                        BorderStroke(converterHeight(3, context).dp, colorResource(id = R.color.lightblue)),
+                        BorderStroke(converterHeight(3, context).dp, color),
                         CircleShape
                     )
             )
@@ -131,18 +138,20 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
             }
         }
 
-        Row(modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly){
-            Button(onClick = {
-                if(userId != currentFirebaseUser){
-                    if (userId != null) {
-                        val dbref = FirebaseDatabase.getInstance().getReference("Users")
-                        dbref.child(userId).child("followers").child(currentFirebaseUser).setValue(currentFirebaseUser)
-                        dbref.child(currentFirebaseUser).child("following").child(userId).setValue(userId)
+        if(userId != currentFirebaseUser){
+            Row(modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly){
+                Button(onClick = {
+                    if(userId != currentFirebaseUser){
+                        if (userId != null) {
+                            val dbref = FirebaseDatabase.getInstance().getReference("Users")
+                            dbref.child(userId).child("followers").child(currentFirebaseUser).setValue(currentFirebaseUser)
+                            dbref.child(currentFirebaseUser).child("following").child(userId).setValue(userId)
+                        }
                     }
-                }
-            }) { Text("Follow") }
-            Button(onClick = {}) { Text("Message") }
+                }) { Text("Follow") }
+                Button(onClick = {}) { Text("Message") }
+            }
         }
 
         Spacer(modifier = Modifier.height(converterHeight(20, context).dp))
@@ -168,14 +177,6 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
 
 //        var slide = listOf<>()
 
-        Button(onClick = {
-            val navigate = Intent(context, VideoConferencing::class.java)
-            context.startActivity(navigate)
-        },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) {
-            Text(text = "Create or Join a Meet",)
-        }
 //
 //        val videoConferencing = VideoConferencing()
 //        videoConferencing.Video(context)
