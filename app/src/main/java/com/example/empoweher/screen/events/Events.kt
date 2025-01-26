@@ -347,5 +347,4 @@ fun TagButtonEvent(tag:String,viewModel: mainviewmodel){
     ) {
         SampleText(text = tag,16, colorResource(id = R.color.white))
     }
-
 }

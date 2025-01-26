@@ -75,7 +75,12 @@ class VideoConferencing : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent{
-            Video(context = this@VideoConferencing)
+//            Video(context = this@VideoConferencing)
+            val meetId = intent.getStringExtra("meetId")
+            val name = intent.getStringExtra("name")
+            if (meetId != null && name != null) {
+                startMeeting(meetId, name, this)
+            }
         }
     }
 

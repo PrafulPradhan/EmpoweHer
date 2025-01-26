@@ -77,6 +77,11 @@ import com.google.firebase.storage.FirebaseStorage
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventForm(){
+
+    val min = 100000000
+    val max = 999999999
+    val meetingId = (min..max).random()
+
     val context= LocalContext.current
     var name by remember {
         mutableStateOf("")
@@ -837,7 +842,8 @@ fun EventForm(){
                             capacity,
                             vacancy,
                             contactNumber,
-                            "" + currentFirebaseUser!!.uid
+                            "" + currentFirebaseUser!!.uid,
+                            meetingId.toString()
                         )
                         dbref.child(id).setValue(e);
                         val storage = FirebaseStorage.getInstance()

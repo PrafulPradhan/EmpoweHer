@@ -4,6 +4,7 @@ package com.example.empoweher.composables
 import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Verified
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -37,6 +39,7 @@ import com.example.empoweher.model.User
 import com.example.empoweher.screen.Details.converterHeight
 import com.example.empoweher.viewmodel.ProfileViewModel
 import com.example.empoweher.viewmodel.mainviewmodel
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -48,6 +51,7 @@ import kotlinx.coroutines.flow.combine
 
 val dbref = FirebaseDatabase.getInstance()
     .getReference("Users");
+val currentFirebaseUser = FirebaseAuth.getInstance().currentUser!!.uid
 
 @Composable
 fun Search(navigateToNextScreen: (route: String)->Unit){
@@ -82,7 +86,8 @@ fun Search(navigateToNextScreen: (route: String)->Unit){
                     items=result.data.filter { it.name!!.contains(textState, ignoreCase = true)}.distinct(),
                     key={index,item -> "$item-$index"}
                 ){index,item->
-                    ColumnItem(item.name!!,item.userID!!,context,navigateToNextScreen)
+
+                    ColumnItem(item.name!!,item.userID!!,context,navigateToNextScreen, item.isEntrepreneur?:"false")
                 }
             }
         }
@@ -98,12 +103,21 @@ fun Search(navigateToNextScreen: (route: String)->Unit){
 }
 
 @Composable
-fun ColumnItem(item:String,userid:String,context: Context,navigateToNextScreen: (route: String)->Unit){
+fun ColumnItem(item:String,userid:String,context: Context,navigateToNextScreen: (route: String)->Unit, isEntrepreneur: String){
     Column(modifier = Modifier
         .padding(10.dp)
         .clickable{   navigateToNextScreen(Screen.Profile.route + "/" + userid) }
     ){
-        Text(text=item, fontSize= converterHeight(22,context).sp, modifier = Modifier.padding(vertical=20.dp))
+        Row(modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start){
+            Text(text=item, fontSize= converterHeight(22,context).sp, modifier = Modifier.padding(vertical=20.dp))
+            Log.d("if ke pehle", isEntrepreneur)
+            if(isEntrepreneur=="true"){
+                Log.d("icon", isEntrepreneur)
+                Icon(imageVector = Icons.Outlined.Verified, contentDescription = "verified", modifier = Modifier.fillMaxWidth())
+            }
+            Log.d("if ke baadme", isEntrepreneur)
+        }
         Divider()
     }
 }

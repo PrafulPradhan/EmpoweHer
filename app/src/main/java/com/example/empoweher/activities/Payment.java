@@ -15,6 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.empoweher.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 import com.razorpay.Checkout;
 import com.razorpay.PaymentResultListener;
 
@@ -84,15 +85,10 @@ public class Payment extends AppCompatActivity implements PaymentResultListener 
 
     @Override
     public void onPaymentSuccess(String s) {
-
         if(currentFirebaseUser!=null && currentFirebaseUser!=""){
-
-
-
+//            String eventId = getIntent().getStringExtra("eventId");
+//            FirebaseDatabase.getInstance().getReference("Users").child(currentFirebaseUser).child("bookedevents").child(eventId).setValue(eventId);
         }
-
-
-
     }
 
     @Override
