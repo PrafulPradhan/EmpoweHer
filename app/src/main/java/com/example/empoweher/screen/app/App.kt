@@ -87,7 +87,8 @@ fun App(
      * Checks if User is already logged in
      */
     val startDestination = if (googleAuthUiClient.getSignedInUser() != null) {
-        Screen.Home.route
+        Screen.DetailsScheduling.route
+//        Screen.Home.route
     } else {
         Screen.Login.route
 //        Screen.Home.route

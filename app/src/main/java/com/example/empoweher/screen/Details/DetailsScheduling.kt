@@ -1,11 +1,13 @@
 package com.example.empoweher.screen.Details
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -35,21 +37,25 @@ import com.example.empoweher.composables.SampleText
 @Composable
 fun DetailsScheduling(navigateToNextScreen: (route: String)->Unit){
     val list = mutableListOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
-
+    Column(modifier=Modifier
+        .fillMaxSize()
+        .background(colorResource(id = R.color.cream))
+    ) {
     Text(
-        text = "Availability",
+        text = "Provide Your Schedule",
         fontSize = converterHeight(25, LocalContext.current).sp,
         fontFamily = FontFamily(Font(R.font.font1)),
         fontWeight = FontWeight.Bold,
-        color = colorResource(R.color.black)
+        color = colorResource(R.color.black),
+        modifier = Modifier.padding(top=converterHeight(15, LocalContext.current).dp, start = converterHeight(15, LocalContext.current).dp)
     )
 
-    LazyColumn(modifier = Modifier.fillMaxSize(),
+    LazyColumn(modifier = Modifier,
         horizontalAlignment = Alignment.CenterHorizontally) {
         items(list){each->
             switchItem(each)
         }
-    }
+    }}
 }
 
 @Composable
@@ -57,19 +63,22 @@ fun switchItem(day:String){
     var checked by remember { mutableStateOf(false) }
     var addTime by remember { mutableStateOf(false) }
 
-    Row(modifier = Modifier.fillMaxSize()
-        .background(colorResource(id = R.color.cream))){
+    Row(modifier = Modifier.fillMaxSize()){
         Switch(
             checked = checked,
             onCheckedChange = {
                 checked = it
                 addTime = !addTime
-            }
+            },
+            modifier=Modifier.padding(converterHeight(10, LocalContext.current).dp)
         )
 
-        Spacer(modifier = Modifier.width(20.dp))
+        Spacer(modifier = Modifier.width(converterHeight(10, LocalContext.current).dp))
 
-        Text(text=day, modifier = Modifier.offset(y=10.dp))
+        Text(text=day,
+            modifier = Modifier.offset(y=converterHeight(22, LocalContext.current).dp),
+            fontSize = converterHeight(18, LocalContext.current).sp
+        )
     }
 
     if(addTime){
