@@ -33,4 +33,5 @@ sealed class Screen(val route:String)
     object BookedEvents:Screen(route = "bookedEvents")
     object ChatBot:Screen(route= "chatbot")
     object ChatScreen:Screen(route= "chatscreen")
+    object DetailsScheduling:Screen(route= "detailsScheduling")
 }

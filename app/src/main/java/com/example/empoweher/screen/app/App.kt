@@ -49,6 +49,7 @@ import com.example.empoweher.screen.Details.Details
 import com.example.empoweher.screen.Details.DetailsDesignation
 import com.example.empoweher.screen.Details.DetailsDp
 import com.example.empoweher.screen.Details.DetailsInterests
+import com.example.empoweher.screen.Details.DetailsScheduling
 import com.example.empoweher.screen.UpdateContactList
 import com.example.empoweher.screen.ask.Answer
 import com.example.empoweher.screen.ask.Ask
@@ -513,8 +514,11 @@ fun App(
 
                 }
 
-
-                
+                composable(route = Screen.DetailsScheduling.route) {
+                    DetailsScheduling(navigateToNextScreen = { route ->
+                        navController.navigate(route)
+                    })
+                }
             }
         }
     }

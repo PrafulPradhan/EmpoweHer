@@ -87,6 +87,51 @@ fun DetailsDesignation(navigateToNextScreen: (route: String)->Unit){
         mutableStateOf("")
     }
 
+    var linkedInId by remember{
+        mutableStateOf("")
+    }
+
+    var chwichar by remember{
+        mutableStateOf("")
+    }
+
+    var exp by remember{
+        mutableStateOf("")
+    }
+
+    var english by remember{
+        mutableStateOf(false)
+    }
+
+    var hindi by remember{
+        mutableStateOf(false)
+    }
+    var marathi by remember{
+        mutableStateOf(false)
+    }
+    var gujarati by remember{
+        mutableStateOf(false)
+    }
+    var sindhi by remember{
+        mutableStateOf(false)
+    }
+    var tamil by remember{
+        mutableStateOf(false)
+    }
+    var telugu by remember{
+        mutableStateOf(false)
+    }
+    var punjabi by remember{
+        mutableStateOf(false)
+    }
+    var french by remember{
+        mutableStateOf(false)
+    }
+    var german by remember{
+        mutableStateOf(false)
+    }
+
+
     val uri = Uri.parse("android.resource://com.example.empoweher/drawable/alert")
     var selectedImage by remember { mutableStateOf<Uri?>(uri) }
     val launcher =
@@ -189,6 +234,7 @@ fun DetailsDesignation(navigateToNextScreen: (route: String)->Unit){
 
 
         if(checked == "true"){
+            Text(text="Enter your details to get verified")
             OutlinedTextField(
                 value = expertise,
                 label = { Text(text = "Enter your domain") },
@@ -245,6 +291,58 @@ fun DetailsDesignation(navigateToNextScreen: (route: String)->Unit){
 
                 )
             }
+
+            OutlinedTextField(
+                value = exp,
+                label = { Text(text = "Enter number of years of experience") },
+                textStyle = LocalTextStyle.current.merge(TextStyle(fontSize = 20.sp)),
+                onValueChange = { str ->
+                    exp = str
+                },modifier= Modifier
+                    .padding(end = converterHeight(10, LocalContext.current).dp)
+                    .padding(top = converterHeight(10, LocalContext.current).dp)
+                    .fillMaxWidth()
+//                    .height(converterHeight(300, LocalContext.current).dp)
+            )
+
+            OutlinedTextField(
+                value = linkedInId,
+                label = { Text(text = "Enter your LinkedIn profile link") },
+                textStyle = LocalTextStyle.current.merge(TextStyle(fontSize = 20.sp)),
+                onValueChange = { str ->
+                    linkedInId = str
+                },modifier= Modifier
+                    .padding(end = converterHeight(10, LocalContext.current).dp)
+                    .padding(top = converterHeight(10, LocalContext.current).dp)
+                    .fillMaxWidth()
+//                    .height(converterHeight(300, LocalContext.current).dp)
+            )
+
+            OutlinedTextField(
+                value = chwichar,
+                label = { Text(text = "Enter your Twitter profile link") },
+                textStyle = LocalTextStyle.current.merge(TextStyle(fontSize = 20.sp)),
+                onValueChange = { str ->
+                    chwichar = str
+                },modifier= Modifier
+                    .padding(end = converterHeight(10, LocalContext.current).dp)
+                    .padding(top = converterHeight(10, LocalContext.current).dp)
+                    .fillMaxWidth()
+//                    .height(converterHeight(300, LocalContext.current).dp)
+            )
+
+            Text(text="Select Known Languages")
+
+            InterestCheckBox(title = "English", value = english, onValueChange = {english=it})
+            InterestCheckBox(title = "Hindi", value = hindi, onValueChange = {hindi=it})
+            InterestCheckBox(title = "Marathi", value = marathi, onValueChange = {marathi=it})
+            InterestCheckBox(title = "Gujarati", value = gujarati, onValueChange = {gujarati=it})
+            InterestCheckBox(title = "Sindhi", value = sindhi, onValueChange = {sindhi=it})
+            InterestCheckBox(title = "Tamil", value = tamil, onValueChange = {tamil=it})
+            InterestCheckBox(title = "Telugu", value = telugu, onValueChange = {telugu=it})
+            InterestCheckBox(title = "Punjabi", value = punjabi, onValueChange = {punjabi=it})
+            InterestCheckBox(title = "French", value = french, onValueChange = {french=it})
+            InterestCheckBox(title = "German", value = german, onValueChange = {german=it})
         }
 
         Spacer(modifier = Modifier.height(converterHeight(60, LocalContext.current).dp))
@@ -263,8 +361,53 @@ fun DetailsDesignation(navigateToNextScreen: (route: String)->Unit){
                 dbref.child(currentFirebaseUser).child("bio").setValue(bio)
                 dbref.child(currentFirebaseUser).child("isEnt").setValue(checked)
                 if(checked == "true"){
+                    val list = mutableListOf<String>()
+
+                    if(english){
+                        list.add("English")
+                    }
+
+                    if(hindi){
+                        list.add("Hindi")
+                    }
+
+                    if(marathi){
+                        list.add("Marathi")
+                    }
+
+                    if(sindhi){
+                        list.add("Sindhi")
+                    }
+
+                    if(gujarati){
+                        list.add("Gujarati")
+                    }
+
+                    if(tamil){
+                        list.add("Tamil")
+                    }
+
+                    if(telugu){
+                        list.add("Telugu")
+                    }
+
+                    if(punjabi){
+                        list.add("Punjabi")
+                    }
+
+                    if(french){
+                        list.add("French")
+                    }
+
+                    if(german){
+                        list.add("German")
+                    }
                     dbref.child(currentFirebaseUser).child("domain").setValue(expertise)
                     dbref.child(currentFirebaseUser).child("fees").setValue(fees)
+                    dbref.child(currentFirebaseUser).child("experience").setValue(exp)
+                    dbref.child(currentFirebaseUser).child("linkedinid").setValue(linkedInId)
+                    dbref.child(currentFirebaseUser).child("twitterid").setValue(chwichar)
+                    dbref.child(currentFirebaseUser).child("languages").setValue(list)
                     val storage= FirebaseStorage.getInstance()
                     val ref= storage.getReference()
                         .child(currentFirebaseUser +"/"+"certificate")
@@ -273,8 +416,14 @@ fun DetailsDesignation(navigateToNextScreen: (route: String)->Unit){
                             dbref.child(currentFirebaseUser).child("certificate").setValue(it.toString())
                         }
                     }
+
                 }
-                navigateToNextScreen(Screen.DetailsInterests.route)
+                if(checked.toBoolean()){
+                    navigateToNextScreen(Screen.DetailsScheduling.route)
+                }else{
+                    navigateToNextScreen(Screen.DetailsInterests.route)
+                }
+
             }) {
 
             Text(
