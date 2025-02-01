@@ -37,6 +37,7 @@ import com.example.empoweher.auth.signin.SignInScreen
 import com.example.empoweher.auth.signin.SignInViewModel
 import com.example.empoweher.composables.DetailedEventCard
 import com.example.empoweher.composables.EventCard
+import com.example.empoweher.composables.Scheduling
 import com.example.empoweher.composables.getInfo
 import com.example.empoweher.composables.getValue
 import com.example.empoweher.composables.onBoarding
@@ -87,7 +88,7 @@ fun App(
      * Checks if User is already logged in
      */
     val startDestination = if (googleAuthUiClient.getSignedInUser() != null) {
-        Screen.DetailsScheduling.route
+        Screen.Scheduling.route
 //        Screen.Home.route
     } else {
         Screen.Login.route
@@ -517,6 +518,12 @@ fun App(
 
                 composable(route = Screen.DetailsScheduling.route) {
                     DetailsScheduling(navigateToNextScreen = { route ->
+                        navController.navigate(route)
+                    })
+                }
+
+                composable(route = Screen.Scheduling.route) {
+                    Scheduling(navigateToNextScreen = { route ->
                         navController.navigate(route)
                     })
                 }
