@@ -101,6 +101,7 @@ fun Search(navigateToNextScreen: (route: String)->Unit){
         is DataState.Success -> TODO()
         is DataState.SuccessAnswer -> TODO()
         is DataState.SuccessQuestion -> TODO()
+        is DataState.SuccessSlot -> TODO()
     }
 }
 

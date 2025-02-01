@@ -1,6 +1,8 @@
 package com.example.empoweher.screen.Details
 
+import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +15,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -26,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -80,8 +85,43 @@ fun switchItem(day:String){
             fontSize = converterHeight(18, LocalContext.current).sp
         )
     }
-
+    var startTime by remember {
+        mutableStateOf("")
+    }
+    var endTime by remember {
+        mutableStateOf("")
+    }
+    val context= LocalContext.current
     if(addTime){
-        Text(text="Hi")
+        Row(modifier=Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+            ){
+            OutlinedTextField(
+                value = startTime,
+                textStyle = LocalTextStyle.current.merge(
+                    TextStyle(
+                        fontSize = converterHeight(
+                            20,
+                            context
+                        ).sp
+                    )
+                ),
+                onValueChange = { str ->
+                    startTime = str
+                })
+            OutlinedTextField(
+                value = endTime,
+                textStyle = LocalTextStyle.current.merge(
+                    TextStyle(
+                        fontSize = converterHeight(
+                            20,
+                            context
+                        ).sp
+                    )
+                ),
+                onValueChange = { str ->
+                    endTime = str
+                })
+        }
     }
 }
