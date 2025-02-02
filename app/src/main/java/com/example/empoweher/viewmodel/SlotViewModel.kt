@@ -19,7 +19,10 @@ class SlotViewModel : ViewModel(){
         fetch()
     }
     private fun fetch(){
-        val slots= mutableListOf<Slot>()
+        val slotMorning= mutableListOf<Slot>()
+        val slotEvening= mutableListOf<Slot>()
+        val morning= listOf("9:00","10:00","11:00","12:00","13:00","14:00")
+        val evening= listOf("16:00","17:00","18:00","19:00","20:00","21:00")
         response.value= DataState.Loading
         val currentFirebaseUser= FirebaseAuth.getInstance().currentUser!!.uid
         FirebaseDatabase.getInstance().getReference("Users/${currentFirebaseUser}/Schedule/0").addListenerForSingleValueEvent(object:
@@ -29,10 +32,15 @@ class SlotViewModel : ViewModel(){
                     val e=data.getValue(Slot::class.java)
                     if (e!=null) {
                         Log.d("slots",e.toString())
-                        slots.add(e)
+                        if(e.start in morning) {
+                            slotMorning.add(e)
+                        }
+                        else if(e.start in evening) {
+                            slotEvening.add(e)
+                        }
                     }
                 }
-                response.value= DataState.SuccessSlot(slots)
+                response.value= DataState.SuccessSlot(data=slotMorning, data2 = slotEvening)
             }
 
             override fun onCancelled(error: DatabaseError) {

@@ -2,6 +2,7 @@ package com.example.empoweher.composables
 
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -68,123 +69,131 @@ import com.google.firebase.database.FirebaseDatabase
 val weeks= mapOf("0" to "Sunday","1" to "Monday","2" to "Tuesday","3" to "Wednesday","4" to "Thursday","5" to "Friday","6" to "Saturday")
 @Composable
 fun Scheduling(navigateToNextScreen: (route: String)->Unit){
-    val dbref=FirebaseDatabase.getInstance().getReference()
+    val dbref = FirebaseDatabase.getInstance()
+        .getReference("Users");
     val currentFirebaseUser=FirebaseAuth.getInstance().currentUser!!.uid
     val isEnt= getInfoUser("isEnt",currentFirebaseUser)
     val slots= listOf("9:00-10:00","10:00-11:00","11:00-12:00","12:00-13:00","13:00-14:00","14:00-15:00","16:00-17:00","17:00-18:00","18:00-19:00","19:00-20:00","20:00-21:00","21:00-22:00")
-
     val day="Sunday"
+    val context=LocalContext.current
     val viewModel = viewModel { SlotViewModel() }
     when( val result= viewModel.response.value){
-        is DataState.SuccessSlot -> {
-            val slot=result.data
+        is DataState.Loading->{
 
-            Text(
+        }
+        is DataState.SuccessSlot -> {
+            val slotMorning=result.data
+            val slotEvening=result.data2
+
+            Column(modifier = Modifier.fillMaxSize()
+                .background(colorResource(R.color.cream))) {
+                Text(
                     text = day,
                     fontSize = converterHeight(25, LocalContext.current).sp,
                     fontFamily = FontFamily(Font(R.font.font1)),
                     fontWeight = FontWeight.Bold,
                     color = colorResource(R.color.black),
-                    modifier = Modifier.padding(top= converterHeight(15, LocalContext.current).dp).fillMaxWidth(),
+                    modifier = Modifier.padding(top = converterHeight(15, LocalContext.current).dp)
+                        .fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.padding(top=40.dp,start=10.dp,end=10.dp)
-            ) {
-                items(slot) { each->
-                    scheduleItem(each.start!!,each.end!!,each.status!!,each.key!!,each.day!!)
+                Card(modifier=Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .size(160.dp)
+                ) {
+                    Text(
+                        text = "Morning",
+                        fontSize = converterHeight(20, LocalContext.current).sp,
+                        fontFamily = FontFamily(Font(R.font.font1)),
+                        fontWeight = FontWeight.Bold,
+                        color = colorResource(R.color.black),
+                        modifier = Modifier.padding(top= converterHeight(15, LocalContext.current).dp,start= converterHeight(18, LocalContext.current).dp)
+                            .align(Alignment.Start)
+                    )
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier.padding(start = 10.dp, end = 10.dp)
+                    ) {
+                        items(slotMorning) { each ->
+                            scheduleItem(
+                                each.start!!,
+                                each.end!!,
+                                each.status!!,
+                                each.key!!,
+                                each.day!!
+                            )
+                        }
+                    }
+                }
+
+                Card(modifier=Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .size(160.dp)
+                ) {
+                    Text(
+                        text = "Evening",
+                        fontSize = converterHeight(20, LocalContext.current).sp,
+                        fontFamily = FontFamily(Font(R.font.font1)),
+                        fontWeight = FontWeight.Bold,
+                        color = colorResource(R.color.black),
+                        modifier = Modifier.padding(top= converterHeight(15, LocalContext.current).dp,start= converterHeight(18, LocalContext.current).dp)
+                            .align(Alignment.Start)
+                    )
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier.padding(start = 10.dp, end = 10.dp)
+                    ) {
+                        items(slotEvening) { each ->
+                            scheduleItem(
+                                each.start!!,
+                                each.end!!,
+                                each.status!!,
+                                each.key!!,
+                                each.day!!
+                            )
+                        }
+                    }
+                }
+                Row(modifier=Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly){
+                    Button(
+                        onClick = {
+                            dbref.child(currentFirebaseUser).child("Schedule").setValue(weeks)
+                            val slots= listOf("9:00-10:00","10:00-11:00","11:00-12:00","12:00-13:00","13:00-14:00","14:00-15:00","16:00-17:00","17:00-18:00","18:00-19:00","19:00-20:00","20:00-21:00","21:00-22:00")
+                            val slotStart= listOf("9:00","10:00","11:00","12:00","13:00","14:00","16:00","17:00","18:00","19:00","20:00","21:00")
+                            val slotEnd= listOf("10:00","11:00","12:00","13:00","14:00","15:00","17:00","18:00","19:00","20:00","21:00","22:00")
+                            for(j in weeks.keys){
+                                for(i in slots.indices){
+                                    val slot= Slot(currentFirebaseUser,null,status="undefined", start = slotStart[i],end=slotEnd[i],key=slots[i],day=weeks[j])
+                                    dbref.child(currentFirebaseUser).child("Schedule").child(j).child(slots[i]).setValue(slot)
+                                }
+                            }
+                        },
+                        modifier=Modifier.height(40.dp).width(100.dp)
+                    ) {
+                        Text("Reset",
+                            fontSize = converterHeight(15, LocalContext.current).sp,
+                            fontFamily = FontFamily(Font(R.font.font1)),
+                            )
+                    }
+                    Button(
+                        onClick = {
+                            Toast.makeText(context,"Your Schedule has been saved!!",Toast.LENGTH_SHORT).show()
+                        },
+                        modifier=Modifier.height(40.dp).width(100.dp)
+                    ) {
+                        Text("Save",
+                            fontSize = converterHeight(15, LocalContext.current).sp,
+                            fontFamily = FontFamily(Font(R.font.font1)),
+                            )
+                    }
                 }
             }
-
-
-//            Column(modifier = Modifier.fillMaxSize()
-//                .background(colorResource(R.color.cream))){
-//                Text(
-//                    text = day,
-//                    fontSize = converterHeight(25, LocalContext.current).sp,
-//                    fontFamily = FontFamily(Font(R.font.font1)),
-//                    fontWeight = FontWeight.Bold,
-//                    color = colorResource(R.color.black),
-//                    modifier = Modifier.padding(top= converterHeight(15, LocalContext.current).dp)
-//                        .align(Alignment.CenterHorizontally)
-//                )
-//
-//                Column(modifier = Modifier.fillMaxWidth()){
-//                    Text(
-//                        text = "Morning",
-//                        fontSize = converterHeight(20, LocalContext.current).sp,
-//                        fontFamily = FontFamily(Font(R.font.font1)),
-//                        fontWeight = FontWeight.Bold,
-//                        color = colorResource(R.color.black),
-//                        modifier = Modifier.padding(top= converterHeight(15, LocalContext.current).dp,start= converterHeight(18, LocalContext.current).dp)
-//                            .align(Alignment.Start)
-//                    )
-//                    Row(modifier = Modifier.fillMaxWidth(),
-//                        horizontalArrangement = Arrangement.SpaceEvenly){
-//                        scheduleItem("9:00", "10:00", "available",day=day,key=slots[0])
-//                        scheduleItem("10:00", "11:00", "available",day=day,key=slots[1])
-//                        scheduleItem("11:00", "12:00", "available",day=day,key=slots[2])
-//                    }
-//
-//                    Spacer(modifier = Modifier.height(10.dp))
-//
-//                    Row(modifier = Modifier.fillMaxWidth(),
-//                        horizontalArrangement = Arrangement.SpaceEvenly){
-//                        scheduleItem("12:00", "13:00", "available",day=day,key=slots[3])
-//                        scheduleItem("13:00", "14:00", "available",day=day,key=slots[4])
-//                        scheduleItem("14:00", "15:00", "available",day=day,key=slots[5])
-//                    }
-//                }
-//                Column(modifier = Modifier.fillMaxWidth()){
-//                    Text(
-//                        text = "Evening",
-//                        fontSize = converterHeight(20, LocalContext.current).sp,
-//                        fontFamily = FontFamily(Font(R.font.font1)),
-//                        fontWeight = FontWeight.Bold,
-//                        color = colorResource(R.color.black),
-//                        modifier = Modifier.padding(top= converterHeight(15, LocalContext.current).dp,start= converterHeight(18, LocalContext.current).dp)
-//                            .align(Alignment.Start)
-//                    )
-//                    Row(modifier = Modifier.fillMaxWidth(),
-//                        horizontalArrangement = Arrangement.SpaceEvenly){
-//                        scheduleItem("16:00", "17:00", "available",day=day,key=slots[6])
-//                        scheduleItem("17:00", "18:00", "occupied",day=day,key=slots[7])
-//                        scheduleItem("18:00", "19:00", "available",day=day,key=slots[8])
-//                    }
-//
-//                    Spacer(modifier = Modifier.height(10.dp))
-//
-//                    Row(modifier = Modifier.fillMaxWidth(),
-//                        horizontalArrangement = Arrangement.SpaceEvenly){
-//                        scheduleItem("19:00", "20:00", "available",day=day,key=slots[9])
-//                        scheduleItem("20:00", "21:00", "occupied",day=day,key=slots[10])
-//                        scheduleItem("21:00", "22:00", "available",day=day,key=slots[11])
-//                    }
-//                }
-//
-//                Row(){
-//                    Button(
-//                        onClick = {
-//
-//                        }
-//                    ) {
-//                        Text("Reset")
-//                    }
-//                    Button(
-//                        onClick = {
-//
-//                        }
-//                    ) {
-//                        Text("Save")
-//                    }
-//                }
-//            }
-
-
-
         }
         is DataState.Failure -> {
             Box(
@@ -213,11 +222,14 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
 
 @Composable
 fun scheduleItem(start:String, end:String, status:String,key:String,day:String){
-
+    val dbref = FirebaseDatabase.getInstance()
+        .getReference("Users");
+    val currentFirebaseUser = FirebaseAuth.getInstance().currentUser!!.uid
     var color by remember{
         mutableStateOf(R.color.white)
     }
     val context= LocalContext.current
+    val weekday = weeks.entries.find { it.value == day }?.key
     if(status == "available"){
         color = R.color.emeraldgreen
     }
@@ -232,10 +244,14 @@ fun scheduleItem(start:String, end:String, status:String,key:String,day:String){
         .clickable {
             if(color==R.color.white) {
                 color = R.color.emeraldgreen
+                dbref.child(currentFirebaseUser).child("Schedule").child(weekday!!).child(key).child("status").setValue("available")
+            }
+            else if(color==R.color.emeraldgreen){
+                color = R.color.white
+                dbref.child(currentFirebaseUser).child("Schedule").child(weekday!!).child(key).child("status").setValue("undefined")
             }
             else{
                 if (status!="occupied") {
-//                    dbref.child("")
                     color = R.color.white
                 }
             }

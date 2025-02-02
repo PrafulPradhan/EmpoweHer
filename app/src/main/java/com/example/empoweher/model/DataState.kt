@@ -5,7 +5,7 @@ sealed class DataState {
     class  SuccessQuestion(val data:MutableList<Question>):DataState()
     class  SuccessAnswer(val data:MutableList<Answer>):DataState()
     class  SuccessUser(val data:MutableList<User>):DataState()
-    class  SuccessSlot(val data:MutableList<Slot>):DataState()
+    class  SuccessSlot(val data:MutableList<Slot>,val data2:MutableList<Slot>):DataState()
     class  Failure(val message:String):DataState()
     object Loading:DataState()
     object Empty:DataState()
