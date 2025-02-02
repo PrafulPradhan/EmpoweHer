@@ -57,6 +57,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.empoweher.R
 import com.example.empoweher.composables.Exoplayer
 import com.example.empoweher.model.Screen
+import com.example.empoweher.model.Slot
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -131,6 +132,7 @@ fun DetailsDesignation(navigateToNextScreen: (route: String)->Unit){
         mutableStateOf(false)
     }
 
+    val weeks= mapOf("0" to "Sunday","1" to "Monday","2" to "Tuesday","3" to "Wednesday","4" to "Thursday","5" to "Friday","6" to "Saturday")
 
     val uri = Uri.parse("android.resource://com.example.empoweher/drawable/alert")
     var selectedImage by remember { mutableStateOf<Uri?>(uri) }
@@ -416,10 +418,22 @@ fun DetailsDesignation(navigateToNextScreen: (route: String)->Unit){
                             dbref.child(currentFirebaseUser).child("certificate").setValue(it.toString())
                         }
                     }
+                    dbref.child(currentFirebaseUser).child("Schedule").setValue(weeks)
+                    val slots= listOf("9:00-10:00","10:00-11:00","11:00-12:00","12:00-13:00","13:00-14:00","14:00-15:00","16:00-17:00","17:00-18:00","18:00-19:00","19:00-20:00","20:00-21:00","21:00-22:00")
+                    val slotStart= listOf("9:00","10:00","11:00","12:00","13:00","14:00","16:00","17:00","18:00","19:00","20:00","21:00")
+                    val slotEnd= listOf("10:00","11:00","12:00","13:00","14:00","15:00","17:00","18:00","19:00","20:00","21:00","22:00")
 
+                    var index = 0
+//                    val slot= Slot(currentFirebaseUser,null,status="undefined", start = start,end=end,key=key,day=day)
+                    for(j in weeks.keys){
+                        for(i in slots.indices){
+                            val slot= Slot(currentFirebaseUser,null,status="undefined", start = slotStart[i],end=slotEnd[i],key=slots[i],day=weeks[j])
+                            dbref.child(currentFirebaseUser).child("Schedule").child(j).child(slots[i]).setValue(slot)
+                        }
+                    }
                 }
                 if(checked.toBoolean()){
-                    navigateToNextScreen(Screen.DetailsScheduling.route)
+                    navigateToNextScreen(Screen.Scheduling.route)
                 }else{
                     navigateToNextScreen(Screen.DetailsInterests.route)
                 }

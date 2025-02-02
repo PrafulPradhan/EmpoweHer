@@ -72,9 +72,7 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
     val currentFirebaseUser=FirebaseAuth.getInstance().currentUser!!.uid
     val isEnt= getInfoUser("isEnt",currentFirebaseUser)
     val slots= listOf("9:00-10:00","10:00-11:00","11:00-12:00","12:00-13:00","13:00-14:00","14:00-15:00","16:00-17:00","17:00-18:00","18:00-19:00","19:00-20:00","20:00-21:00","21:00-22:00")
-    if (isEnt=="true") {
-//        dbref.child("Users").child(currentFirebaseUser).child("Schedule").setValue(weeks)
-    }
+
     val day="Sunday"
     val viewModel = viewModel { SlotViewModel() }
     when( val result= viewModel.response.value){
@@ -88,7 +86,7 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
                     fontWeight = FontWeight.Bold,
                     color = colorResource(R.color.black),
                     modifier = Modifier.padding(top= converterHeight(15, LocalContext.current).dp).fillMaxWidth(),
-                textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center
                 )
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
@@ -215,12 +213,7 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
 
 @Composable
 fun scheduleItem(start:String, end:String, status:String,key:String,day:String){
-    val dbref=FirebaseDatabase.getInstance().getReference()
-    val currentFirebaseUser=FirebaseAuth.getInstance().currentUser!!.uid
-    val slot=Slot(currentFirebaseUser,null,status="undefined", start = start,end=end,key=key,day=day)
-    val weekday = weeks.entries.find { it.value == day }?.key
-    dbref.child("Users").child(currentFirebaseUser).child("Schedule").child(weekday!!).child(key).setValue(slot)
-//    var color: Color = colorResource(R.color.white)
+
     var color by remember{
         mutableStateOf(R.color.white)
     }
