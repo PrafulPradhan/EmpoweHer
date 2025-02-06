@@ -61,7 +61,16 @@ import com.example.empoweher.model.Slot
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
+val calendar = Calendar.getInstance()
+val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+val dayFormat = SimpleDateFormat("EEEE", Locale.getDefault())
+
+val currentDate = dateFormat.format(calendar.time)
+val dayOfWeek = dayFormat.format(calendar.time)
 
 @Composable
 fun DetailsDesignation(navigateToNextScreen: (route: String)->Unit){
@@ -427,8 +436,9 @@ fun DetailsDesignation(navigateToNextScreen: (route: String)->Unit){
 //                    val slot= Slot(currentFirebaseUser,null,status="undefined", start = start,end=end,key=key,day=day)
                     for(j in weeks.keys){
                         for(i in slots.indices){
-                            val slot= Slot(currentFirebaseUser,null,status="undefined", start = slotStart[i],end=slotEnd[i],key=slots[i],day=weeks[j])
+                            val slot= Slot(currentFirebaseUser,null,status="undefined", start = slotStart[i],end=slotEnd[i],key=slots[i],day=weeks[j], index = index.toString())
                             dbref.child(currentFirebaseUser).child("Schedule").child(j).child(slots[i]).setValue(slot)
+                            index++
                         }
                     }
                 }

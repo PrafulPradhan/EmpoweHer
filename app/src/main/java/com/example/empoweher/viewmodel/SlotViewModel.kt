@@ -6,12 +6,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.empoweher.model.DataState
 import com.example.empoweher.model.Slot
-import com.example.empoweher.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class SlotViewModel : ViewModel(){
     val response: MutableState<DataState> = mutableStateOf(DataState.Empty)
@@ -19,12 +21,15 @@ class SlotViewModel : ViewModel(){
         fetch()
     }
     private fun fetch(){
+        val _selectedSlots = MutableStateFlow(List(0) { "" })  // 12 buttons
+        val selectedSlots: StateFlow<List<String>> = _selectedSlots.asStateFlow()
         val slotMorning= mutableListOf<Slot>()
         val slotEvening= mutableListOf<Slot>()
         val morning= listOf("9:00","10:00","11:00","12:00","13:00","14:00")
         val evening= listOf("16:00","17:00","18:00","19:00","20:00","21:00")
         response.value= DataState.Loading
         val currentFirebaseUser= FirebaseAuth.getInstance().currentUser!!.uid
+
         FirebaseDatabase.getInstance().getReference("Users/${currentFirebaseUser}/Schedule/0").addListenerForSingleValueEvent(object:
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -34,13 +39,19 @@ class SlotViewModel : ViewModel(){
                         Log.d("slots",e.toString())
                         if(e.start in morning) {
                             slotMorning.add(e)
+                            _selectedSlots.value = _selectedSlots.value.toMutableList().apply {
+                                this.add(e.status!!)
+                            }
                         }
                         else if(e.start in evening) {
                             slotEvening.add(e)
+                            _selectedSlots.value = _selectedSlots.value.toMutableList().apply {
+                                this.add(e.status!!)
+                            }
                         }
                     }
                 }
-                response.value= DataState.SuccessSlot(data=slotMorning, data2 = slotEvening)
+                response.value= DataState.SuccessSlot(data=slotMorning, data2 = slotEvening, data3 = _selectedSlots)
             }
 
             override fun onCancelled(error: DatabaseError) {

@@ -7,5 +7,6 @@ data class Slot(
     val end:String?=null,
     val status:String?="undefined",
     val key:String?=null,
-    val day:String?=null
+    val day:String?=null,
+    val index:String?=null
 )

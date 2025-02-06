@@ -1,8 +1,13 @@
 package com.example.empoweher.composables
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,11 +28,14 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.KeyboardArrowLeft
+import androidx.compose.material.icons.outlined.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -65,16 +73,47 @@ import com.example.empoweher.viewmodel.SlotViewModel
 import com.example.empoweher.viewmodel.mainviewmodel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.util.Calendar
+import java.util.Locale
 
 val weeks= mapOf("0" to "Sunday","1" to "Monday","2" to "Tuesday","3" to "Wednesday","4" to "Thursday","5" to "Friday","6" to "Saturday")
+val _selectedSlots = MutableStateFlow(List(12) { false })  // 12 buttons
+val selectedSlots: StateFlow<List<Boolean>> = _selectedSlots.asStateFlow()
+val calendar = Calendar.getInstance()
+
+@OptIn(ExperimentalFoundationApi::class)
+@RequiresApi(Build.VERSION_CODES.O)
+
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun Scheduling(navigateToNextScreen: (route: String)->Unit){
+
+    val calendar = Calendar.getInstance()
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val dayFormat = SimpleDateFormat("EEEE", Locale.getDefault())
+
+    val currentDate = dateFormat.format(calendar.time)
+    val dayOfWeek = dayFormat.format(calendar.time)
+
+    var date by remember {
+        mutableStateOf(currentDate)
+    }
+
+    var day by remember {
+        mutableStateOf(dayOfWeek)
+    }
+
     val dbref = FirebaseDatabase.getInstance()
         .getReference("Users");
     val currentFirebaseUser=FirebaseAuth.getInstance().currentUser!!.uid
     val isEnt= getInfoUser("isEnt",currentFirebaseUser)
     val slots= listOf("9:00-10:00","10:00-11:00","11:00-12:00","12:00-13:00","13:00-14:00","14:00-15:00","16:00-17:00","17:00-18:00","18:00-19:00","19:00-20:00","20:00-21:00","21:00-22:00")
-    val day="Sunday"
+
     val context=LocalContext.current
     val viewModel = viewModel { SlotViewModel() }
     when( val result= viewModel.response.value){
@@ -84,11 +123,15 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
         is DataState.SuccessSlot -> {
             val slotMorning=result.data
             val slotEvening=result.data2
+            val _slotStatus = result.data3
+//            val slotStatus = result.data3.value
+
+//            Log.d("check", slotStatus.toString())
 
             Column(modifier = Modifier.fillMaxSize()
                 .background(colorResource(R.color.cream))) {
                 Text(
-                    text = day,
+                    text = day!!,
                     fontSize = converterHeight(25, LocalContext.current).sp,
                     fontFamily = FontFamily(Font(R.font.font1)),
                     fontWeight = FontWeight.Bold,
@@ -123,7 +166,9 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
                                 each.end!!,
                                 each.status!!,
                                 each.key!!,
-                                each.day!!
+                                each.day!!,
+                                each.index!!,
+                                _slotStatus
                             )
                         }
                     }
@@ -155,43 +200,33 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
                                 each.end!!,
                                 each.status!!,
                                 each.key!!,
-                                each.day!!
+                                each.day!!,
+                                each.index!!,
+                                _slotStatus
                             )
                         }
                     }
                 }
-                Row(modifier=Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly){
-                    Button(
-                        onClick = {
-                            dbref.child(currentFirebaseUser).child("Schedule").setValue(weeks)
-                            val slots= listOf("9:00-10:00","10:00-11:00","11:00-12:00","12:00-13:00","13:00-14:00","14:00-15:00","16:00-17:00","17:00-18:00","18:00-19:00","19:00-20:00","20:00-21:00","21:00-22:00")
-                            val slotStart= listOf("9:00","10:00","11:00","12:00","13:00","14:00","16:00","17:00","18:00","19:00","20:00","21:00")
-                            val slotEnd= listOf("10:00","11:00","12:00","13:00","14:00","15:00","17:00","18:00","19:00","20:00","21:00","22:00")
-                            for(j in weeks.keys){
-                                for(i in slots.indices){
-                                    val slot= Slot(currentFirebaseUser,null,status="undefined", start = slotStart[i],end=slotEnd[i],key=slots[i],day=weeks[j])
-                                    dbref.child(currentFirebaseUser).child("Schedule").child(j).child(slots[i]).setValue(slot)
-                                }
-                            }
-                        },
-                        modifier=Modifier.height(40.dp).width(100.dp)
-                    ) {
-                        Text("Reset",
-                            fontSize = converterHeight(15, LocalContext.current).sp,
-                            fontFamily = FontFamily(Font(R.font.font1)),
-                            )
-                    }
-                    Button(
-                        onClick = {
-                            Toast.makeText(context,"Your Schedule has been saved!!",Toast.LENGTH_SHORT).show()
-                        },
-                        modifier=Modifier.height(40.dp).width(100.dp)
-                    ) {
-                        Text("Save",
-                            fontSize = converterHeight(15, LocalContext.current).sp,
-                            fontFamily = FontFamily(Font(R.font.font1)),
-                            )
-                    }
+
+                val pagerState = rememberPagerState(
+                    pageCount ={7}
+                )
+
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically){
+                    Icon(imageVector = Icons.Outlined.KeyboardArrowLeft, contentDescription = "prev",
+                        modifier = Modifier.clickable{
+                            date = getAdjacentDate(date, -1)
+                            day = getAdjacentDay(date, -1)
+
+                        })
+                    Text(text = date!!)
+                    Icon(imageVector = Icons.Outlined.KeyboardArrowRight, contentDescription = "next",
+                        modifier = Modifier.clickable{
+                            date = getAdjacentDate(date, 1)
+                            day = getAdjacentDay(date, 1)
+                        })
                 }
             }
         }
@@ -221,7 +256,7 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
 }
 
 @Composable
-fun scheduleItem(start:String, end:String, status:String,key:String,day:String){
+fun scheduleItem(start:String, end:String, status:String,key:String,day:String, index:String, _slotStatus:MutableStateFlow<List<String>>){
     val dbref = FirebaseDatabase.getInstance()
         .getReference("Users");
     val currentFirebaseUser = FirebaseAuth.getInstance().currentUser!!.uid
@@ -255,6 +290,16 @@ fun scheduleItem(start:String, end:String, status:String,key:String,day:String){
                     color = R.color.white
                 }
             }
+
+            _slotStatus.value = _slotStatus.value.toMutableList().apply {
+                if(this[index.toInt()] == "undefined"){
+                    this[index.toInt()] = "available"
+                }
+                if(this[index.toInt()] == "available"){
+                    this[index.toInt()] = "undefined"
+                }
+            }
+
         },
         ){
         Row(modifier = Modifier.fillMaxSize(),
@@ -279,4 +324,29 @@ fun scheduleItem(start:String, end:String, status:String,key:String,day:String){
             )
         }
     }
+}
+
+fun getAdjacentDate(inputDate: String, daysOffset: Int): String {
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+    val calendar = Calendar.getInstance()
+    calendar.time = dateFormat.parse(inputDate) ?: return "Invalid Date"
+
+    // Add or subtract days
+    calendar.add(Calendar.DAY_OF_MONTH, daysOffset)
+
+    return dateFormat.format(calendar.time)
+}
+
+fun getAdjacentDay(inputDate: String, daysOffset: Int): String {
+    val dayFormat = SimpleDateFormat("EEEE", Locale.getDefault())
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+    val calendar = Calendar.getInstance()
+    calendar.time = dateFormat.parse(inputDate) ?: return "Invalid Date"
+
+    // Adjust the date
+    calendar.add(Calendar.DAY_OF_MONTH, daysOffset)
+
+    return dayFormat.format(calendar.time)
 }

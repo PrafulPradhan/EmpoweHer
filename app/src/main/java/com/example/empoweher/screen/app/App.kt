@@ -2,6 +2,7 @@ package com.example.empoweher.screen.app
 
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
@@ -69,6 +70,16 @@ import com.google.firebase.auth.EmailAuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+
+val calendar = Calendar.getInstance()
+val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+val dayFormat = SimpleDateFormat("EEEE", Locale.getDefault())
+
+val currentDate = dateFormat.format(calendar.time)
+val dayOfWeek = dayFormat.format(calendar.time)
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -87,7 +98,9 @@ fun App(
     /**
      * Checks if User is already logged in
      */
+
     val startDestination = if (googleAuthUiClient.getSignedInUser() != null) {
+
         Screen.Scheduling.route
 //        Screen.Home.route
     } else {
