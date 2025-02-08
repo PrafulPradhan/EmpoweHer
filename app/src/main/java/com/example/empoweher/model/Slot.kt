@@ -10,3 +10,7 @@ data class Slot(
     val day:String?=null,
     val index:String?=null
 )
+
+data class Daylist(
+    val slots:MutableList<Slot>?=null
+)

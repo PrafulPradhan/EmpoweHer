@@ -8,9 +8,9 @@ sealed class DataState {
     class  SuccessAnswer(val data:MutableList<Answer>):DataState()
     class  SuccessUser(val data:MutableList<User>):DataState()
     class  SuccessSlot(
-        val data: MutableList<Slot>,
-        val data2: MutableList<Slot>,
-        val data3: MutableStateFlow<List<String>>,
+        val data: MutableList<MutableList<Slot>>,
+        val data2: MutableList<MutableList<Slot>>,
+        val data3: MutableList<String>,
     ):DataState()
     class  Failure(val message:String):DataState()
     object Loading:DataState()

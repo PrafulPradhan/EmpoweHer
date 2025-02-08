@@ -24,10 +24,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -84,7 +86,13 @@ import java.util.Locale
 val weeks= mapOf("0" to "Sunday","1" to "Monday","2" to "Tuesday","3" to "Wednesday","4" to "Thursday","5" to "Friday","6" to "Saturday")
 val _selectedSlots = MutableStateFlow(List(12) { false })  // 12 buttons
 val selectedSlots: StateFlow<List<Boolean>> = _selectedSlots.asStateFlow()
+
 val calendar = Calendar.getInstance()
+val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+val dayFormat = SimpleDateFormat("EEEE", Locale.getDefault())
+
+val currentDate = dateFormat.format(calendar.time)
+val dayOfWeek = dayFormat.format(calendar.time)
 
 @OptIn(ExperimentalFoundationApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
@@ -92,13 +100,6 @@ val calendar = Calendar.getInstance()
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun Scheduling(navigateToNextScreen: (route: String)->Unit){
-
-    val calendar = Calendar.getInstance()
-    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    val dayFormat = SimpleDateFormat("EEEE", Locale.getDefault())
-
-    val currentDate = dateFormat.format(calendar.time)
-    val dayOfWeek = dayFormat.format(calendar.time)
 
     var date by remember {
         mutableStateOf(currentDate)
@@ -123,7 +124,11 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
         is DataState.SuccessSlot -> {
             val slotMorning=result.data
             val slotEvening=result.data2
-            val _slotStatus = result.data3
+            val statusList = result.data3
+            Log.d("abe", slotMorning.toString())
+            Log.d("abe", slotEvening.toString())
+//            Log.d("abe", _slotStatus.value.toString())
+
 //            val slotStatus = result.data3.value
 
 //            Log.d("check", slotStatus.toString())
@@ -160,7 +165,16 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier.padding(start = 10.dp, end = 10.dp)
                     ) {
-                        items(slotMorning) { each ->
+                        val currentSlotsMorning=mutableListOf<Slot>()
+                        for(item in slotMorning){
+                            for(each in item){
+                                if(each.day == day){
+                                    currentSlotsMorning.add(each)
+                                }
+                            }
+                        }
+                        Log.d("cute", slotMorning.get(2).get(2).toString())
+                        items(currentSlotsMorning) { each ->
                             scheduleItem(
                                 each.start!!,
                                 each.end!!,
@@ -168,10 +182,27 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
                                 each.key!!,
                                 each.day!!,
                                 each.index!!,
-                                _slotStatus
+                                statusList
                             )
                         }
                     }
+//                    LazyColumn(modifier = Modifier.fillMaxWidth()){
+//                        items(slotMorning){each->
+//                            for(item in each){
+//                                if(item.day == day){
+//                                    scheduleItem(
+//                                        item.start!!,
+//                                        item.end!!,
+//                                        item.status!!,
+//                                        item.key!!,
+//                                        item.day!!,
+//                                        item.index!!,
+//                                        _slotStatus
+//                                    )
+//                                }
+//                            }
+//                        }
+//                    }
                 }
 
                 Card(modifier=Modifier
@@ -194,7 +225,18 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier.padding(start = 10.dp, end = 10.dp)
                     ) {
-                        items(slotEvening) { each ->
+                        val currentSlotsEvening=mutableListOf<Slot>()
+                        for(item in slotEvening){
+                            for(each in item){
+                                if(each.day == day){
+                                    currentSlotsEvening.add(each)
+                                }
+                            }
+                        }
+                        for(i in 0..5){
+//                            val item = slotsEvening.get(((6*6) + i + 6) % 42)
+                        }
+                        items(currentSlotsEvening) { each ->
                             scheduleItem(
                                 each.start!!,
                                 each.end!!,
@@ -202,7 +244,7 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
                                 each.key!!,
                                 each.day!!,
                                 each.index!!,
-                                _slotStatus
+                                statusList
                             )
                         }
                     }
@@ -256,7 +298,7 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
 }
 
 @Composable
-fun scheduleItem(start:String, end:String, status:String,key:String,day:String, index:String, _slotStatus:MutableStateFlow<List<String>>){
+fun scheduleItem(start:String, end:String, status:String,key:String,day:String, index:String, stateList:MutableList<String>){
     val dbref = FirebaseDatabase.getInstance()
         .getReference("Users");
     val currentFirebaseUser = FirebaseAuth.getInstance().currentUser!!.uid
@@ -291,14 +333,16 @@ fun scheduleItem(start:String, end:String, status:String,key:String,day:String, 
                 }
             }
 
-            _slotStatus.value = _slotStatus.value.toMutableList().apply {
-                if(this[index.toInt()] == "undefined"){
-                    this[index.toInt()] = "available"
-                }
-                if(this[index.toInt()] == "available"){
-                    this[index.toInt()] = "undefined"
-                }
-            }
+
+
+//            _slotStatus.value = _slotStatus.value.toMutableList().apply {
+//                if(this[index.toInt()] == "undefined"){
+//                    this[index.toInt()] = "available"
+//                }
+//                if(this[index.toInt()] == "available"){
+//                    this[index.toInt()] = "undefined"
+//                }
+//            }
 
         },
         ){
