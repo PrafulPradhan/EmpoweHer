@@ -31,6 +31,7 @@ class AnswerViewModel(questionId:String) :ViewModel(){
                     }
                 }
                 response.value=DataState.SuccessAnswer(answers)
+                Log.d("slots",response.value.toString())
             }
 
             override fun onCancelled(error: DatabaseError) {

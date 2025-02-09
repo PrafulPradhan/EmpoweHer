@@ -45,7 +45,9 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -93,11 +95,12 @@ val dayFormat = SimpleDateFormat("EEEE", Locale.getDefault())
 
 val currentDate = dateFormat.format(calendar.time)
 val dayOfWeek = dayFormat.format(calendar.time)
+val dayNumber = weeks.entries.find { it.value == dayOfWeek }?.key
 
 @OptIn(ExperimentalFoundationApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 
-@SuppressLint("StateFlowValueCalledInComposition")
+@SuppressLint("StateFlowValueCalledInComposition", "UnrememberedMutableState")
 @Composable
 fun Scheduling(navigateToNextScreen: (route: String)->Unit){
 
@@ -109,11 +112,10 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
         mutableStateOf(dayOfWeek)
     }
 
-    val dbref = FirebaseDatabase.getInstance()
-        .getReference("Users");
-    val currentFirebaseUser=FirebaseAuth.getInstance().currentUser!!.uid
-    val isEnt= getInfoUser("isEnt",currentFirebaseUser)
-    val slots= listOf("9:00-10:00","10:00-11:00","11:00-12:00","12:00-13:00","13:00-14:00","14:00-15:00","16:00-17:00","17:00-18:00","18:00-19:00","19:00-20:00","20:00-21:00","21:00-22:00")
+    var dayIndex by remember {
+        mutableStateOf(dayNumber)
+    }
+
 
     val context=LocalContext.current
     val viewModel = viewModel { SlotViewModel() }
@@ -124,34 +126,28 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
         is DataState.SuccessSlot -> {
             val slotMorning=result.data
             val slotEvening=result.data2
-            val statusList = result.data3
-            Log.d("abe", slotMorning.toString())
-            Log.d("abe", slotEvening.toString())
-//            Log.d("abe", _slotStatus.value.toString())
-
-//            val slotStatus = result.data3.value
-
-//            Log.d("check", slotStatus.toString())
 
             Column(modifier = Modifier.fillMaxSize()
                 .background(colorResource(R.color.cream))) {
-                Text(
-                    text = day!!,
-                    fontSize = converterHeight(25, LocalContext.current).sp,
-                    fontFamily = FontFamily(Font(R.font.font1)),
-                    fontWeight = FontWeight.Bold,
-                    color = colorResource(R.color.black),
-                    modifier = Modifier.padding(top = converterHeight(15, LocalContext.current).dp)
-                        .fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
+                weeks.entries.find { it.value == weeks[dayIndex]!!}?.let {
+                    Text(
+                        text = it.key,
+                        fontSize = converterHeight(25, LocalContext.current).sp,
+                        fontFamily = FontFamily(Font(R.font.font1)),
+                        fontWeight = FontWeight.Bold,
+                        color = colorResource(R.color.black),
+                        modifier = Modifier.padding(top = converterHeight(15, LocalContext.current).dp)
+                            .fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                }
                 Card(modifier=Modifier
                     .fillMaxWidth()
                     .padding(10.dp)
                     .size(160.dp)
                 ) {
                     Text(
-                        text = "Morning",
+                        text = "Morning" + dayIndex,
                         fontSize = converterHeight(20, LocalContext.current).sp,
                         fontFamily = FontFamily(Font(R.font.font1)),
                         fontWeight = FontWeight.Bold,
@@ -159,21 +155,24 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
                         modifier = Modifier.padding(top= converterHeight(15, LocalContext.current).dp,start= converterHeight(18, LocalContext.current).dp)
                             .align(Alignment.Start)
                     )
+//                    var currentSlotsMorning = remember {
+//                        mutableListOf<Slot>()
+//                    }
+                    var currentSlotsMorning = remember {
+                        mutableStateListOf<Slot>()
+                    }
+                    LaunchedEffect(key1=dayIndex) {
+                        for(i in 0..5){
+                            currentSlotsMorning.add(slotMorning[dayIndex!!.toInt()][i])
+                        }
+                    }
+
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(3),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier.padding(start = 10.dp, end = 10.dp)
                     ) {
-                        val currentSlotsMorning=mutableListOf<Slot>()
-                        for(item in slotMorning){
-                            for(each in item){
-                                if(each.day == day){
-                                    currentSlotsMorning.add(each)
-                                }
-                            }
-                        }
-                        Log.d("cute", slotMorning.get(2).get(2).toString())
                         items(currentSlotsMorning) { each ->
                             scheduleItem(
                                 each.start!!,
@@ -182,27 +181,10 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
                                 each.key!!,
                                 each.day!!,
                                 each.index!!,
-                                statusList
                             )
                         }
                     }
-//                    LazyColumn(modifier = Modifier.fillMaxWidth()){
-//                        items(slotMorning){each->
-//                            for(item in each){
-//                                if(item.day == day){
-//                                    scheduleItem(
-//                                        item.start!!,
-//                                        item.end!!,
-//                                        item.status!!,
-//                                        item.key!!,
-//                                        item.day!!,
-//                                        item.index!!,
-//                                        _slotStatus
-//                                    )
-//                                }
-//                            }
-//                        }
-//                    }
+
                 }
 
                 Card(modifier=Modifier
@@ -219,23 +201,18 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
                         modifier = Modifier.padding(top= converterHeight(15, LocalContext.current).dp,start= converterHeight(18, LocalContext.current).dp)
                             .align(Alignment.Start)
                     )
+                    val currentSlotsEvening=mutableListOf<Slot>()
+                    for(i in 0..5){
+                        val each= slotEvening[dayIndex!!.toInt()][i]
+                        currentSlotsEvening.add(each)
+                    }
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(3),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier.padding(start = 10.dp, end = 10.dp)
                     ) {
-                        val currentSlotsEvening=mutableListOf<Slot>()
-                        for(item in slotEvening){
-                            for(each in item){
-                                if(each.day == day){
-                                    currentSlotsEvening.add(each)
-                                }
-                            }
-                        }
-                        for(i in 0..5){
-//                            val item = slotsEvening.get(((6*6) + i + 6) % 42)
-                        }
+
                         items(currentSlotsEvening) { each ->
                             scheduleItem(
                                 each.start!!,
@@ -244,30 +221,42 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
                                 each.key!!,
                                 each.day!!,
                                 each.index!!,
-                                statusList
                             )
                         }
                     }
                 }
 
-                val pagerState = rememberPagerState(
-                    pageCount ={7}
-                )
 
                 Row(modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically){
                     Icon(imageVector = Icons.Outlined.KeyboardArrowLeft, contentDescription = "prev",
                         modifier = Modifier.clickable{
-                            date = getAdjacentDate(date, -1)
-                            day = getAdjacentDay(date, -1)
+                            if (dayIndex!!.toInt()==0){
+                                dayIndex="6"
+
+                            }
+                            else{
+                                dayIndex=((dayIndex!!.toInt()-1) % 7).toString()
+                            }
+                            slotEvening.clear()
+                            slotMorning.clear()
 
                         })
                     Text(text = date!!)
                     Icon(imageVector = Icons.Outlined.KeyboardArrowRight, contentDescription = "next",
                         modifier = Modifier.clickable{
-                            date = getAdjacentDate(date, 1)
-                            day = getAdjacentDay(date, 1)
+                            if (dayIndex!!.toInt()==6){
+                                dayIndex="0"
+
+                            }
+                            else{
+                                dayIndex=((dayIndex!!.toInt()+1) % 7).toString()
+                            }
+                            slotEvening.clear()
+                            slotMorning.clear()
+
+
                         })
                 }
             }
@@ -298,15 +287,22 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
 }
 
 @Composable
-fun scheduleItem(start:String, end:String, status:String,key:String,day:String, index:String, stateList:MutableList<String>){
+fun scheduleItem(start:String, end:String, status:String,key:String,day:String, index:String){
     val dbref = FirebaseDatabase.getInstance()
         .getReference("Users");
     val currentFirebaseUser = FirebaseAuth.getInstance().currentUser!!.uid
     var color by remember{
         mutableStateOf(R.color.white)
     }
-    val context= LocalContext.current
+
+    var status by remember{
+        mutableStateOf("")
+    }
     val weekday = weeks.entries.find { it.value == day }?.key
+    status= getInfoUser("/Schedule/$weekday/$key/status",currentFirebaseUser)
+
+    val context= LocalContext.current
+
     if(status == "available"){
         color = R.color.emeraldgreen
     }
@@ -319,30 +315,24 @@ fun scheduleItem(start:String, end:String, status:String,key:String,day:String, 
         .border(color= colorResource(R.color.darkgreen), width = 1.dp, shape =RoundedCornerShape(25))
         .background(color = colorResource(color))
         .clickable {
-            if(color==R.color.white) {
-                color = R.color.emeraldgreen
-                dbref.child(currentFirebaseUser).child("Schedule").child(weekday!!).child(key).child("status").setValue("available")
+            if(status=="undefined") {
+                dbref.child(currentFirebaseUser).child("Schedule").child(weekday!!).child(key).child("status").setValue("available").addOnSuccessListener {
+                    color = R.color.emeraldgreen
+                }
+
             }
-            else if(color==R.color.emeraldgreen){
-                color = R.color.white
-                dbref.child(currentFirebaseUser).child("Schedule").child(weekday!!).child(key).child("status").setValue("undefined")
-            }
-            else{
-                if (status!="occupied") {
+            else if(status=="available"){
+
+                dbref.child(currentFirebaseUser).child("Schedule").child(weekday!!).child(key).child("status").setValue("undefined").addOnSuccessListener {
                     color = R.color.white
                 }
             }
+            else{
+                if (status=="occupied") {
+                    color = R.color.light_gray
+                }
+            }
 
-
-
-//            _slotStatus.value = _slotStatus.value.toMutableList().apply {
-//                if(this[index.toInt()] == "undefined"){
-//                    this[index.toInt()] = "available"
-//                }
-//                if(this[index.toInt()] == "available"){
-//                    this[index.toInt()] = "undefined"
-//                }
-//            }
 
         },
         ){
