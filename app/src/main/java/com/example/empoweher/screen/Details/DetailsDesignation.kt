@@ -441,12 +441,9 @@ fun DetailsDesignation(navigateToNextScreen: (route: String)->Unit){
                             index++
                         }
                     }
-                }
-                if(checked.toBoolean()){
-                    navigateToNextScreen(Screen.Scheduling.route)
-                }else{
                     navigateToNextScreen(Screen.DetailsInterests.route)
                 }
+
 
             }) {
 
