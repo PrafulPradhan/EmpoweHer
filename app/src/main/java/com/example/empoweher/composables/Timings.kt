@@ -5,6 +5,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,11 +17,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.KeyboardArrowLeft
+import androidx.compose.material.icons.outlined.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -28,7 +35,9 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -57,10 +66,14 @@ import com.example.empoweher.viewmodel.SlotViewModel
 import com.example.empoweher.viewmodel.TimingViewModel
 import com.example.empoweher.viewmodel.mainviewmodel
 import com.google.firebase.auth.FirebaseAuth
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 @Composable
 fun Timings(navigateToNextScreen: (route: String)->Unit) {
     val context= LocalContext.current
+    val weeks= mapOf("0" to "Sunday","1" to "Monday","2" to "Tuesday","3" to "Wednesday","4" to "Thursday","5" to "Friday","6" to "Saturday")
 
     var currentUser by remember{
         mutableStateOf("24Si2cNeD8Uq7vIbGCTDUSAHNOg1")
@@ -80,6 +93,19 @@ fun Timings(navigateToNextScreen: (route: String)->Unit) {
     if (currentFirebaseUser!=null && currentFirebaseUser!=""){
         currentUser=currentFirebaseUser
     }
+
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val scrollState = rememberScrollState()
+    val calendar = Calendar.getInstance()
+    var timeMs by remember{
+        mutableStateOf(calendar.time)
+    }
+    val dayOfWeek = dayFormat.format(calendar.time)
+    val dayNumber = weeks.entries.find { it.value == dayOfWeek }?.key
+    var dayIndex by remember{
+        mutableStateOf(dayNumber!!.toInt())
+    }
+
 
     val viewModel = viewModel { TimingViewModel(currentFirebaseUser) }
     when( val result= viewModel.response.value){
@@ -112,7 +138,7 @@ fun Timings(navigateToNextScreen: (route: String)->Unit) {
                 }
             }
         }
-        is DataState.Success -> {
+        is DataState.SuccessSlots -> {
          val slots = result.data
             Box(
                 modifier = Modifier
@@ -120,11 +146,127 @@ fun Timings(navigateToNextScreen: (route: String)->Unit) {
                     .background(colorResource(id = R.color.cream)),
                 contentAlignment = Alignment.Center
             ) {
-                Column(modifier= Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally) {
-                    for (i in 0..slots.size){
-                        Text(text = slots[i].toString())
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    weeks[dayIndex.toString()]?.let { Text(
+                        text = it,
+                        fontSize = converterHeight(25, LocalContext.current).sp,
+                        fontFamily = FontFamily(Font(R.font.font1)),
+                        fontWeight = FontWeight.Bold,
+                        color = colorResource(R.color.black),
+                        modifier = Modifier.padding(top = converterHeight(15, LocalContext.current).dp)
+                            .fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    ) }
+                    Card(modifier=Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                        .size(160.dp)
+                    ) {
+                        Text(
+                            text = "Morning",
+                            fontSize = converterHeight(20, LocalContext.current).sp,
+                            fontFamily = FontFamily(Font(R.font.font1)),
+                            fontWeight = FontWeight.Bold,
+                            color = colorResource(R.color.black),
+                            modifier = Modifier.padding(
+                                top = converterHeight(
+                                    15,
+                                    LocalContext.current
+                                ).dp, start = converterHeight(18, LocalContext.current).dp
+                            )
+                                .align(Alignment.Start)
+                        )
+                        key(dayIndex) {
+                            LazyVerticalGrid(
+                                columns = GridCells.Fixed(3),
+                                verticalArrangement = Arrangement.spacedBy(16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                modifier = Modifier.padding(start = 10.dp, end = 10.dp)
+                            ) {
+                                items(slots.slice((dayIndex * 12)..((dayIndex * 12) + 5))) { each ->
+                                    scheduleItem(
+                                        each.start!!,
+                                        each.end!!,
+                                        each.status!!,
+                                        each.key!!,
+                                        each.day!!,
+                                        each.index!!,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    Card(modifier=Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                        .size(160.dp)
+                    ) {
+                        Text(
+                            text = "Evening",
+                            fontSize = converterHeight(20, LocalContext.current).sp,
+                            fontFamily = FontFamily(Font(R.font.font1)),
+                            fontWeight = FontWeight.Bold,
+                            color = colorResource(R.color.black),
+                            modifier = Modifier.padding(top= converterHeight(15, LocalContext.current).dp,start= converterHeight(18, LocalContext.current).dp)
+                                .align(Alignment.Start)
+                        )
+                        key(dayIndex){
+                            LazyVerticalGrid(
+                                columns = GridCells.Fixed(3),
+                                verticalArrangement = Arrangement.spacedBy(16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                modifier = Modifier.padding(start = 10.dp, end = 10.dp)
+                            ) {
+                                items(slots.slice((dayIndex*12+6)..((dayIndex*12)+11))) { each ->
+                                    scheduleItem(
+                                        each.start!!,
+                                        each.end!!,
+                                        each.status!!,
+                                        each.key!!,
+                                        each.day!!,
+                                        each.index!!,
+                                    )
+                                }
+                            }
+
+
+                            }
+
+                        }
+                    Row(modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically){
+                        Icon(imageVector = Icons.Outlined.KeyboardArrowLeft, contentDescription = "prev",
+                            modifier = Modifier.clickable{
+                                if (dayIndex.toInt()==0){
+                                    dayIndex=6
+
+                                }
+                                else{
+                                    dayIndex=((dayIndex.toInt()-1) % 7)
+                                }
+
+                            })
+                                Text(text = dateFormat.format(timeMs))
+                        Icon(imageVector = Icons.Outlined.KeyboardArrowRight, contentDescription = "next",
+                            modifier = Modifier.clickable{
+                                if (dayIndex!!.toInt()==6){
+                                    dayIndex=0
+
+                                }
+                                else{
+                                    dayIndex=((dayIndex!!.toInt()+1) % 7)
+                                }
+
+                            })
+
                     }
                 }
+
+
             }
 
         }

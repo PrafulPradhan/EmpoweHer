@@ -5,7 +5,9 @@ import android.graphics.drawable.Icon
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -35,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -85,13 +89,13 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = converterHeight(20, context).dp)
+            .background(colorResource(id = R.color.cream))
+
     ) {
 //        Icon(imageVector = Icons.Rounded.Person, contentDescription = "Account",
 //            modifier = Modifier.size(50.dp))
 
-
-
+        Spacer(modifier = Modifier.height(converterHeight(10, context).dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -164,7 +168,7 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
                 .clip(RoundedCornerShape(converterHeight(10, context).dp))
                 .shadow(ambientColor = Color.Blue, elevation = converterHeight(30, context).dp),
             elevation = CardDefaults.cardElevation(converterHeight(20, context).dp),
-            colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.lightblue))
+            colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.emeraldgreen))
         ) {
             Column(modifier = Modifier.padding()){
                 Spacer(modifier = Modifier.height(converterHeight(10, context).dp))
@@ -175,11 +179,42 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
             }
         }
 
-//        var slide = listOf<>()
+        Spacer(modifier = Modifier.height(converterHeight(20, context).dp))
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset(y=-converterHeight(15, context).dp)
+                .padding(start = converterHeight(20, context).dp, end = converterHeight(20, context).dp, bottom = converterHeight(5, context).dp)
+                .clip(RoundedCornerShape(converterHeight(10, context).dp))
+                .clickable{
+                    navigateToNextScreen(Screen.Timings.route)
+                }
+                .shadow(ambientColor = Color.Blue, elevation = converterHeight(30, context).dp),
+            elevation = CardDefaults.cardElevation(converterHeight(20, context).dp),
+            colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.lightorange))
 
-//
-//        val videoConferencing = VideoConferencing()
-//        videoConferencing.Video(context)
+        ) {
+           Row(modifier = Modifier
+               .fillMaxWidth()
+               .padding(converterHeight(20, context).dp),
+               horizontalArrangement = Arrangement.SpaceEvenly,
+               verticalAlignment = Alignment.CenterVertically
+           ) {
+
+               Image(
+                   painter = painterResource(id = R.drawable.schedule),
+                   contentDescription = "addContact",
+                   modifier= Modifier
+                       .padding(bottom=20.dp)
+                       .clip(RoundedCornerShape(converterHeight(20,context).dp))
+                       .size(converterHeight(100,context).dp),
+                   contentScale = ContentScale.FillBounds,
+               )
+               Spacer(modifier = Modifier.width(converterHeight(25, context).dp))
+
+               SampleText(text = "Maintain Your Schedule",fontSize = converterHeight(25, context))
+           }
+        }
 
         Button(
             onClick = {

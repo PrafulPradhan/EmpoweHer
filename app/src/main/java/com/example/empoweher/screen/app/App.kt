@@ -102,8 +102,8 @@ fun App(
 
     val startDestination = if (googleAuthUiClient.getSignedInUser() != null) {
 
-        Screen.Timings.route
-//        Screen.Home.route
+//        Screen.Timings.route
+        Screen.Home.route
     } else {
         Screen.Login.route
 //        Screen.Home.route
