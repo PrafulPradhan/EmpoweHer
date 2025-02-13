@@ -224,6 +224,7 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
             Text(text = "Logout")
+            //
         }
 }
 }
