@@ -2,6 +2,7 @@ package com.example.empoweher.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -66,7 +67,7 @@ public class Payment extends AppCompatActivity implements PaymentResultListener 
 
 
             options.put("currency", "INR");
-            options.put("amount", "100");
+            options.put("amount", "1000");
 
             JSONObject preFill=new JSONObject();
             preFill.put("prefill.email", "2021.rajveer.tolani@ves.ac.in");
@@ -88,6 +89,15 @@ public class Payment extends AppCompatActivity implements PaymentResultListener 
         if(currentFirebaseUser!=null && currentFirebaseUser!=""){
 //            String eventId = getIntent().getStringExtra("eventId");
 //            FirebaseDatabase.getInstance().getReference("Users").child(currentFirebaseUser).child("bookedevents").child(eventId).setValue(eventId);
+
+            String slotPath = getIntent().getStringExtra("slotPath");
+            String userPath = getIntent().getStringExtra("userPath");
+            String userId = getIntent().getStringExtra("userId");
+            Log.d("slotPath",slotPath);
+            Log.d("userPath",userPath);
+            assert slotPath != null;
+            FirebaseDatabase.getInstance().getReference("Users").child(slotPath).setValue("occupied");
+            FirebaseDatabase.getInstance().getReference("Users").child(userPath).setValue(userId);
         }
     }
 

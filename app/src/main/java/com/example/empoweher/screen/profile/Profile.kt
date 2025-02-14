@@ -136,7 +136,7 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
                         .clip(CircleShape)
                         .size(converterHeight(100, context).dp)
                         .clickable {
-
+                            if (userId==currentFirebaseUser){
                             launcher.launch("image/*")
                             ref.putFile(selectedImage!!).addOnSuccessListener {
                                 ref.getDownloadUrl().addOnSuccessListener {
@@ -145,6 +145,7 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
                                         .setValue(it.toString()).addOnSuccessListener {
 
                                         }
+                                    }
                                 }
                             }
                         }
@@ -269,7 +270,7 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
 
         Spacer(modifier = Modifier.height(converterHeight(20, context).dp))
 
-        if (isEnt == "true") {
+        if (isEnt == "true" && userId == currentFirebaseUser) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -281,7 +282,7 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
                     )
                     .clip(RoundedCornerShape(converterHeight(10, context).dp))
                     .clickable {
-                        navigateToNextScreen(Screen.Timings.route)
+                        navigateToNextScreen(Screen.Timings.route+"/"+currentFirebaseUser)
                     }
                     .shadow(ambientColor = Color.Blue, elevation = converterHeight(30, context).dp),
                 elevation = CardDefaults.cardElevation(converterHeight(20, context).dp),
@@ -314,73 +315,121 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
                 }
             }
             Spacer(modifier = Modifier.height(converterHeight(20, context).dp))
-
-        }
-
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .offset(y = -converterHeight(15, context).dp)
-                .padding(
-                    start = converterHeight(20, context).dp,
-                    end = converterHeight(20, context).dp,
-                    bottom = converterHeight(5, context).dp
-                )
-                .clip(RoundedCornerShape(converterHeight(10, context).dp))
-                .clickable {
-                    navigateToNextScreen(Screen.Details.route)
-                }
-                .shadow(ambientColor = Color.Blue, elevation = converterHeight(30, context).dp),
-            elevation = CardDefaults.cardElevation(converterHeight(20, context).dp),
-            colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.teal_700))
-
-        ) {
-            Row(
+        } else {
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(converterHeight(20, context).dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
+                    .offset(y = -converterHeight(15, context).dp)
+                    .padding(
+                        start = converterHeight(20, context).dp,
+                        end = converterHeight(20, context).dp,
+                        bottom = converterHeight(5, context).dp
+                    )
+                    .clip(RoundedCornerShape(converterHeight(10, context).dp))
+                    .clickable {
+                        navigateToNextScreen(Screen.Timings.route+"/"+userId)
+                    }
+                    .shadow(ambientColor = Color.Blue, elevation = converterHeight(30, context).dp),
+                elevation = CardDefaults.cardElevation(converterHeight(20, context).dp),
+                colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.lightorange))
+
             ) {
-
-                Image(
-                    painter = painterResource(id = R.drawable.edit_profile),
-                    contentDescription = "Edit Profile",
+                Row(
                     modifier = Modifier
-                        .padding(bottom = 20.dp)
-                        .clip(RoundedCornerShape(converterHeight(20, context).dp))
-                        .size(converterHeight(100, context).dp),
-                    contentScale = ContentScale.FillBounds,
-                )
-                Spacer(modifier = Modifier.width(converterHeight(20, context).dp))
-                SampleText(text = "Edit Your Profile", fontSize = converterHeight(25, context))
+                        .fillMaxWidth()
+                        .padding(converterHeight(20, context).dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Image(
+                        painter = painterResource(id = R.drawable.schedule),
+                        contentDescription = "addContact",
+                        modifier = Modifier
+                            .padding(bottom = 20.dp)
+                            .clip(RoundedCornerShape(converterHeight(20, context).dp))
+                            .size(converterHeight(100, context).dp),
+                        contentScale = ContentScale.FillBounds,
+                    )
+                    Spacer(modifier = Modifier.width(converterHeight(25, context).dp))
+
+                    SampleText(
+                        text = "Book An Appointment",
+                        fontSize = converterHeight(25, context)
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(converterHeight(20, context).dp))
+        }
+
+        if (userId == currentFirebaseUser) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .offset(y = -converterHeight(15, context).dp)
+                    .padding(
+                        start = converterHeight(20, context).dp,
+                        end = converterHeight(20, context).dp,
+                        bottom = converterHeight(5, context).dp
+                    )
+                    .clip(RoundedCornerShape(converterHeight(10, context).dp))
+                    .clickable {
+                        navigateToNextScreen(Screen.Details.route)
+                    }
+                    .shadow(ambientColor = Color.Blue, elevation = converterHeight(30, context).dp),
+                elevation = CardDefaults.cardElevation(converterHeight(20, context).dp),
+                colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.teal_700))
+
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(converterHeight(20, context).dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Image(
+                        painter = painterResource(id = R.drawable.edit_profile),
+                        contentDescription = "Edit Profile",
+                        modifier = Modifier
+                            .padding(bottom = 20.dp)
+                            .clip(RoundedCornerShape(converterHeight(20, context).dp))
+                            .size(converterHeight(100, context).dp),
+                        contentScale = ContentScale.FillBounds,
+                    )
+                    Spacer(modifier = Modifier.width(converterHeight(20, context).dp))
+                    SampleText(text = "Edit Your Profile", fontSize = converterHeight(25, context))
+                }
             }
         }
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(converterHeight(400, context).dp)
-                .padding(converterHeight(10, context).dp)
-        )
-        {
+        if (userId == currentFirebaseUser) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(converterHeight(400, context).dp)
+                    .padding(converterHeight(10, context).dp)
+            )
+            {
 
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Spacer(modifier = Modifier.height(10.dp))
-                Search(navigateToNextScreen)
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Search(navigateToNextScreen)
+                }
+
             }
 
+            Button(
+                onClick = {
+                    FirebaseAuth.getInstance().signOut()
+                    navigateToNextScreen(Screen.Login.route)
+                },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text(text = "Logout")
+            }
+            Spacer(modifier = Modifier.height(converterHeight(150, context).dp))
         }
-
-        Button(
-            onClick = {
-                FirebaseAuth.getInstance().signOut()
-                navigateToNextScreen(Screen.Login.route)
-            },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) {
-            Text(text = "Logout")
-        }
-        Spacer(modifier = Modifier.height(converterHeight(150, context).dp))
     }
 }

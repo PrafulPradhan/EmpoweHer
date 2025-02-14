@@ -3,8 +3,10 @@ package com.example.empoweher.composables
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -26,8 +29,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Square
 import androidx.compose.material.icons.outlined.KeyboardArrowLeft
 import androidx.compose.material.icons.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.Square
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -44,6 +50,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -55,6 +64,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.empoweher.R
+import com.example.empoweher.activities.Payment
 import com.example.empoweher.model.DataState
 import com.example.empoweher.model.Screen
 import com.example.empoweher.model.Slot
@@ -66,22 +76,20 @@ import com.example.empoweher.viewmodel.SlotViewModel
 import com.example.empoweher.viewmodel.TimingViewModel
 import com.example.empoweher.viewmodel.mainviewmodel
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
 @Composable
-fun Timings(navigateToNextScreen: (route: String)->Unit) {
+fun Timings(navigateToNextScreen: (route: String)->Unit,userId:String) {
     val context= LocalContext.current
     val weeks= mapOf("0" to "Sunday","1" to "Monday","2" to "Tuesday","3" to "Wednesday","4" to "Thursday","5" to "Friday","6" to "Saturday")
-
-    var currentUser by remember{
-        mutableStateOf("24Si2cNeD8Uq7vIbGCTDUSAHNOg1")
-    }
 
     var currentFirebaseUser by remember{
         mutableStateOf("")
     }
+    Log.d("UserId",userId)
     try {
         currentFirebaseUser = FirebaseAuth.getInstance().currentUser!!.uid
 
@@ -89,11 +97,12 @@ fun Timings(navigateToNextScreen: (route: String)->Unit) {
     catch (e:Exception){
 
     }
-
-    if (currentFirebaseUser!=null && currentFirebaseUser!=""){
-        currentUser=currentFirebaseUser
+    var currentUser by remember{
+        mutableStateOf(currentFirebaseUser)
     }
-
+    if (userId!=null && userId!=""){
+        currentUser=userId
+    }
     val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     val scrollState = rememberScrollState()
     val calendar = Calendar.getInstance()
@@ -107,7 +116,7 @@ fun Timings(navigateToNextScreen: (route: String)->Unit) {
     }
 
 
-    val viewModel = viewModel { TimingViewModel(currentFirebaseUser) }
+    val viewModel = viewModel { TimingViewModel(currentUser) }
     when( val result= viewModel.response.value){
         is DataState.Loading -> {
             Log.d("slots","inside loading")
@@ -187,14 +196,28 @@ fun Timings(navigateToNextScreen: (route: String)->Unit) {
                                 modifier = Modifier.padding(start = 10.dp, end = 10.dp)
                             ) {
                                 items(slots.slice((dayIndex * 12)..((dayIndex * 12) + 5))) { each ->
-                                    scheduleItem(
-                                        each.start!!,
-                                        each.end!!,
-                                        each.status!!,
-                                        each.key!!,
-                                        each.day!!,
-                                        each.index!!,
-                                    )
+                                    if (currentFirebaseUser==each.e_id) {
+                                        scheduleItem(
+                                            each.start!!,
+                                            each.end!!,
+                                            each.status!!,
+                                            each.key!!,
+                                            each.day!!,
+                                            each.index!!,
+                                            each.e_id!!
+                                        )
+                                    }
+                                    else{
+                                        scheduleItemUser(
+                                            each.start!!,
+                                            each.end!!,
+                                            each.status!!,
+                                            each.key!!,
+                                            each.day!!,
+                                            each.index!!,
+                                            each.e_id!!
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -221,14 +244,29 @@ fun Timings(navigateToNextScreen: (route: String)->Unit) {
                                 modifier = Modifier.padding(start = 10.dp, end = 10.dp)
                             ) {
                                 items(slots.slice((dayIndex*12+6)..((dayIndex*12)+11))) { each ->
-                                    scheduleItem(
-                                        each.start!!,
-                                        each.end!!,
-                                        each.status!!,
-                                        each.key!!,
-                                        each.day!!,
-                                        each.index!!,
-                                    )
+
+                                    if(currentFirebaseUser==each.e_id) {
+                                        scheduleItem(
+                                            each.start!!,
+                                            each.end!!,
+                                            each.status!!,
+                                            each.key!!,
+                                            each.day!!,
+                                            each.index!!,
+                                            each.e_id!!
+                                        )
+                                    }
+                                    else{
+                                        scheduleItemUser(
+                                            each.start!!,
+                                            each.end!!,
+                                            each.status!!,
+                                            each.key!!,
+                                            each.day!!,
+                                            each.index!!,
+                                            each.e_id!!
+                                        )
+                                    }
                                 }
                             }
 
@@ -264,11 +302,49 @@ fun Timings(navigateToNextScreen: (route: String)->Unit) {
                             })
 
                     }
+                    if(userId==currentFirebaseUser) {
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Filled.Square,
+                                    contentDescription = "cd",
+                                    tint = colorResource(R.color.white),
+                                    modifier = Modifier.border(
+                                        0.5.dp,
+                                        color = colorResource(R.color.darkgreen)
+                                    )
+                                )
+                                Spacer(modifier = Modifier.width(3.dp))
+                                Text("Vacant")
+                            }
+
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Filled.Square,
+                                    contentDescription = "cd",
+                                    tint = colorResource(R.color.emeraldgreen)
+                                )
+                                Spacer(modifier = Modifier.width(3.dp))
+                                Text("Available")
+                            }
+
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Filled.Square,
+                                    contentDescription = "cd",
+                                    tint = colorResource(R.color.light_gray)
+                                )
+                                Spacer(modifier = Modifier.width(3.dp))
+                                Text("Booked")
+                            }
+                        }
+                    }
                 }
-
-
             }
-
         }
         is DataState.Failure -> {
 
@@ -296,4 +372,84 @@ fun Timings(navigateToNextScreen: (route: String)->Unit) {
         }
     }
 
+}
+
+
+@Composable
+fun scheduleItemUser(start:String, end:String, status:String,key:String,day:String, index:String,userId:String){
+    val dbref = FirebaseDatabase.getInstance()
+        .getReference("Users");
+    val currentFirebaseUser=FirebaseAuth.getInstance().currentUser!!.uid
+    var color by remember{
+        mutableStateOf(R.color.white)
+    }
+    var status by remember{
+        mutableStateOf("")
+    }
+    val weekday = weeks.entries.find { it.value == day }?.key
+    status= getInfoUser("/Schedule/$weekday/$key/status",userId)
+
+    val context= LocalContext.current
+        if(status == "available"){
+//            color = R.color.emeraldgreen
+        }
+        if(status == "occupied"){
+            color = R.color.light_gray
+        }
+        Box(modifier = Modifier.height(40.dp)
+            .width(converterHeight(130,context).dp)
+            .clip(shape = RoundedCornerShape(25))
+            .border(color= colorResource(R.color.darkgreen), width = 1.dp, shape =RoundedCornerShape(25))
+            .background(color = colorResource(color))
+            .clickable {
+                if (status=="available") {
+                    val intent = Intent(context, Payment::class.java)
+                    intent.putExtra("slotPath", "$userId/Schedule/$weekday/$key/status")
+                    intent.putExtra("userPath", "$userId/Schedule/$weekday/$key/u_id")
+                    intent.putExtra("userId", currentFirebaseUser)
+                    context.startActivity(intent)
+                }
+                else if(status=="occupied"){
+                    Toast.makeText(context, "This Slot is Already Booked",Toast.LENGTH_SHORT).show()
+                }
+            }
+        ) {
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = start,
+                    fontSize = converterHeight(20, LocalContext.current).sp,
+                    fontFamily = FontFamily(Font(R.font.font1)),
+                )
+
+                Text(
+                    text = "-",
+                    fontSize = converterHeight(20, LocalContext.current).sp,
+                    fontFamily = FontFamily(Font(R.font.font1)),
+                )
+
+                Text(
+                    text = end,
+                    fontSize = converterHeight(20, LocalContext.current).sp,
+                    fontFamily = FontFamily(Font(R.font.font1)),
+                )
+            }
+            if(status=="available") {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .background(Color.Green)
+                        .padding(end=3.dp)
+                ) {
+                    Text(
+                        text = "Available",
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        }
 }

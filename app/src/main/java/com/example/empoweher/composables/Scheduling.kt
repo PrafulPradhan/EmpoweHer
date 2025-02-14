@@ -181,6 +181,7 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
                                 each.key!!,
                                 each.day!!,
                                 each.index!!,
+                                each.e_id!!
                             )
                         }
                     }
@@ -221,6 +222,7 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
                                 each.key!!,
                                 each.day!!,
                                 each.index!!,
+                                each.e_id!!
                             )
                         }
                     }
@@ -287,10 +289,10 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
 }
 
 @Composable
-fun scheduleItem(start:String, end:String, status:String,key:String,day:String, index:String){
+fun scheduleItem(start:String, end:String, status:String,key:String,day:String, index:String,userId:String){
     val dbref = FirebaseDatabase.getInstance()
         .getReference("Users");
-    val currentFirebaseUser = FirebaseAuth.getInstance().currentUser!!.uid
+    val currentFirebaseUser=FirebaseAuth.getInstance().currentUser!!.uid
     var color by remember{
         mutableStateOf(R.color.white)
     }
@@ -299,10 +301,11 @@ fun scheduleItem(start:String, end:String, status:String,key:String,day:String, 
         mutableStateOf("")
     }
     val weekday = weeks.entries.find { it.value == day }?.key
-    status= getInfoUser("/Schedule/$weekday/$key/status",currentFirebaseUser)
+    status= getInfoUser("/Schedule/$weekday/$key/status",userId)
 
     val context= LocalContext.current
 
+    if(currentFirebaseUser==userId){
     if(status == "available"){
         color = R.color.emeraldgreen
     }
@@ -316,14 +319,14 @@ fun scheduleItem(start:String, end:String, status:String,key:String,day:String, 
         .background(color = colorResource(color))
         .clickable {
             if(status=="undefined") {
-                dbref.child(currentFirebaseUser).child("Schedule").child(weekday!!).child(key).child("status").setValue("available").addOnSuccessListener {
+                dbref.child(userId).child("Schedule").child(weekday!!).child(key).child("status").setValue("available").addOnSuccessListener {
                     color = R.color.emeraldgreen
                 }
 
             }
             else if(status=="available"){
 
-                dbref.child(currentFirebaseUser).child("Schedule").child(weekday!!).child(key).child("status").setValue("undefined").addOnSuccessListener {
+                dbref.child(userId).child("Schedule").child(weekday!!).child(key).child("status").setValue("undefined").addOnSuccessListener {
                     color = R.color.white
                 }
             }
@@ -335,10 +338,12 @@ fun scheduleItem(start:String, end:String, status:String,key:String,day:String, 
 
 
         },
-        ){
-        Row(modifier = Modifier.fillMaxSize(),
+        ) {
+        Row(
+            modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically){
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
                 text = start,
                 fontSize = converterHeight(20, LocalContext.current).sp,
@@ -357,6 +362,7 @@ fun scheduleItem(start:String, end:String, status:String,key:String,day:String, 
                 fontFamily = FontFamily(Font(R.font.font1)),
             )
         }
+     }
     }
 }
 

@@ -541,10 +541,24 @@ fun App(
                         navController.navigate(route)
                     })
                 }
-                composable(route = Screen.Timings.route) {
-                    Timings(navigateToNextScreen = { route ->
-                        navController.navigate(route)
-                    })
+//                composable(route = Screen.Timings.route) {
+//                    Timings(navigateToNextScreen = { route ->
+//                        navController.navigate(route)
+//                    })
+//                }
+
+                composable(route = Screen.Timings.route+"/{userId}",arguments = listOf(
+                    navArgument("userId"){
+                        type = NavType.StringType
+                    }
+                )) {
+                    val userId = it.arguments!!.getString("userId")
+                    if (userId!= null) {
+                        Timings(userId = userId,
+                            navigateToNextScreen = { route ->
+                                navController.navigate(route)
+                            })
+                    }
                 }
             }
         }

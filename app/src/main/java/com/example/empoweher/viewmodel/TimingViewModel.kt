@@ -34,7 +34,7 @@ class TimingViewModel(userId:String) : ViewModel() {
                             }
                     }
                 }
-                Log.d("slots",slots.size.toString())
+                Log.d("slots",slots.toString())
                 response.value= DataState.SuccessSlots(data=slots)
                 Log.d("slots",response.value.toString())
 
