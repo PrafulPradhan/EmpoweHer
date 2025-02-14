@@ -7,8 +7,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -69,6 +71,7 @@ fun Search(navigateToNextScreen: (route: String)->Unit){
             onValueChange = {
                 textState = it
             },
+            placeholder = { Text("Search For Any Profile")},
             trailingIcon = {Icon(imageVector = Icons.Outlined.Search, contentDescription = "Search")}
         )
     }
@@ -80,6 +83,8 @@ fun Search(navigateToNextScreen: (route: String)->Unit){
 
         }
         is DataState.SuccessUser->{
+            Spacer(Modifier.height(converterHeight(5,context).dp))
+            SampleText(text="Top Entrepreneurs")
             LazyColumn(
                 modifier = Modifier.padding(10.dp)
             ){
@@ -102,6 +107,7 @@ fun Search(navigateToNextScreen: (route: String)->Unit){
         is DataState.SuccessAnswer -> TODO()
         is DataState.SuccessQuestion -> TODO()
         is DataState.SuccessSlot -> TODO()
+        is DataState.SuccessSlots -> TODO()
     }
 }
 

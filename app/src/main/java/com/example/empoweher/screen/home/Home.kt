@@ -198,19 +198,20 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
             }
         }
 
-        Box(modifier= Modifier
-            .fillMaxWidth()
-            .height(converterHeight(400, context).dp)
-            .padding(converterHeight(10, context).dp)
-        )
-        {
+//        Box(modifier= Modifier
+//            .fillMaxWidth()
+//            .height(converterHeight(400, context).dp)
+//            .padding(converterHeight(10, context).dp)
+//        )
+//        {
+//
+//            Column(modifier = Modifier.fillMaxWidth()){
+//                Spacer(modifier = Modifier.height(10.dp))
+//                Search(navigateToNextScreen)
+//            }
+//
+//        }
 
-            Column(modifier = Modifier.fillMaxWidth()){
-                Spacer(modifier = Modifier.height(10.dp))
-                Search(navigateToNextScreen)
-            }
-
-        }
         Box(modifier= Modifier
             .fillMaxWidth()
             .height(converterHeight(400, context).dp)
