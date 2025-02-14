@@ -37,6 +37,7 @@ import com.example.empoweher.auth.signin.GoogleAuthUiClient
 import com.example.empoweher.auth.signin.SignInScreen
 import com.example.empoweher.auth.signin.SignInViewModel
 import com.example.empoweher.composables.DetailedEventCard
+import com.example.empoweher.composables.DetailedSlot
 import com.example.empoweher.composables.EventCard
 import com.example.empoweher.composables.Scheduling
 import com.example.empoweher.composables.Timings
@@ -555,6 +556,20 @@ fun App(
                     val userId = it.arguments!!.getString("userId")
                     if (userId!= null) {
                         Timings(userId = userId,
+                            navigateToNextScreen = { route ->
+                                navController.navigate(route)
+                            })
+                    }
+                }
+
+                composable(route = Screen.DetailSlot.route+"/{userId}",arguments = listOf(
+                    navArgument("userId"){
+                        type = NavType.StringType
+                    }
+                )) {
+                    val userId = it.arguments!!.getString("userId")
+                    if (userId!= null) {
+                      DetailedSlot(userId = userId,
                             navigateToNextScreen = { route ->
                                 navController.navigate(route)
                             })

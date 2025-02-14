@@ -1,5 +1,6 @@
 package com.example.empoweher.composables
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
@@ -215,7 +216,8 @@ fun Timings(navigateToNextScreen: (route: String)->Unit,userId:String) {
                                             each.key!!,
                                             each.day!!,
                                             each.index!!,
-                                            each.e_id!!
+                                            each.e_id!!,
+                                            navigateToNextScreen
                                         )
                                     }
                                 }
@@ -264,7 +266,8 @@ fun Timings(navigateToNextScreen: (route: String)->Unit,userId:String) {
                                             each.key!!,
                                             each.day!!,
                                             each.index!!,
-                                            each.e_id!!
+                                            each.e_id!!,
+                                            navigateToNextScreen
                                         )
                                     }
                                 }
@@ -375,8 +378,9 @@ fun Timings(navigateToNextScreen: (route: String)->Unit,userId:String) {
 }
 
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
-fun scheduleItemUser(start:String, end:String, status:String,key:String,day:String, index:String,userId:String){
+fun scheduleItemUser(start:String, end:String, status:String,key:String,day:String, index:String,userId:String,navigateToNextScreen: (route: String)->Unit){
     val dbref = FirebaseDatabase.getInstance()
         .getReference("Users");
     val currentFirebaseUser=FirebaseAuth.getInstance().currentUser!!.uid
@@ -386,8 +390,12 @@ fun scheduleItemUser(start:String, end:String, status:String,key:String,day:Stri
     var status by remember{
         mutableStateOf("")
     }
+    var bookedBy by remember {
+        mutableStateOf("")
+    }
     val weekday = weeks.entries.find { it.value == day }?.key
     status= getInfoUser("/Schedule/$weekday/$key/status",userId)
+    bookedBy= getInfoUser("/Schedule/$weekday/$key/u_id",userId)
 
     val context= LocalContext.current
         if(status == "available"){
@@ -403,14 +411,17 @@ fun scheduleItemUser(start:String, end:String, status:String,key:String,day:Stri
             .background(color = colorResource(color))
             .clickable {
                 if (status=="available") {
-                    val intent = Intent(context, Payment::class.java)
-                    intent.putExtra("slotPath", "$userId/Schedule/$weekday/$key/status")
-                    intent.putExtra("userPath", "$userId/Schedule/$weekday/$key/u_id")
-                    intent.putExtra("userId", currentFirebaseUser)
-                    context.startActivity(intent)
+                    navigateToNextScreen(Screen.DetailSlot.route+"/"+userId)
                 }
                 else if(status=="occupied"){
-                    Toast.makeText(context, "This Slot is Already Booked",Toast.LENGTH_SHORT).show()
+                    if (bookedBy!="" && bookedBy==currentFirebaseUser) {
+                        Toast.makeText(context, "This Slot is Already Booked by You", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    else{
+                        Toast.makeText(context, "This Slot is Already Booked", Toast.LENGTH_SHORT)
+                            .show()
+                    }
                 }
             }
         ) {
