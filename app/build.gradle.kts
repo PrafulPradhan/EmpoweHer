@@ -5,6 +5,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
     id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
     id("com.chaquo.python")
 }
 
@@ -38,7 +39,7 @@ android {
         chaquopy {
             defaultConfig {
                 version = "3.12"
-                buildPython("C:/Users/pradh/AppData/Local/Programs/Python/Python312/python.exe")
+                buildPython("C:/Users/ruksa/AppData/Local/Programs/Python/Python312/python.exe")
                 pip {
                     install("tweepy")
                 }
@@ -176,4 +177,12 @@ dependencies {
 
     //Volley
     implementation("com.android.volley:volley:1.2.1")
+
+    //Dagger Hilt
+    implementation("com.google.dagger:hilt-android:2.50")
+    kapt("com.google.dagger:hilt-android-compiler:2.49")
+    kapt("androidx.hilt:hilt-compiler:1.1.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    implementation("androidx.navigation:navigation-compose:2.7.6")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 }

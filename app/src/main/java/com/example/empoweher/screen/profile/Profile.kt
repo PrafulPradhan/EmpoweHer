@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.drawable.Icon
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -37,6 +38,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateListOf
@@ -57,6 +59,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.empoweher.R
@@ -69,6 +72,8 @@ import com.example.empoweher.model.DataState
 import com.example.empoweher.model.Screen
 import com.example.empoweher.model.User
 import com.example.empoweher.screen.Details.converterHeight
+import com.example.empoweher.screen.message.ChatViewModel
+import com.example.empoweher.screen.message.data.CHATS
 import com.example.empoweher.viewmodel.ProfileViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -77,10 +82,14 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 @Composable
-fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
+fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm:ChatViewModel) {
     val name = getInfoUser(thing = "name", userId = userId)
     val designation = getInfoUser(thing = "designation", userId = userId)
     val bio = getInfoUser(thing = "bio", userId = userId)
@@ -227,7 +236,13 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit) {
                         }
                     }
                 }) { Text("Follow") }
-                Button(onClick = {}) { Text("Message") }
+                Button(onClick = {
+                    vm.viewModelScope.launch {
+                        val chatId = vm.onAddChat(userId!!)
+                        Toast.makeText(context, chatId, Toast.LENGTH_SHORT).show()
+                        navigateToNextScreen(Screen.ChatScreen.route+"/"+chatId)
+                    }
+                }) { Text("Message") }
             }
         }
 

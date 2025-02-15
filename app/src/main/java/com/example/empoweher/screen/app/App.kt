@@ -68,6 +68,8 @@ import com.example.empoweher.screen.ask.AskQuestion
 import com.example.empoweher.screen.ask.GiveAnswer
 import com.example.empoweher.screen.events.BookedEvents
 import com.example.empoweher.screen.home.FloatingActionButtonExample
+import com.example.empoweher.screen.message.ChatViewModel
+import com.example.empoweher.screen.message.SingleChatScreen
 import com.google.firebase.auth.EmailAuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -89,6 +91,7 @@ val dayOfWeek = dayFormat.format(calendar.time)
 fun App(
     googleAuthUiClient: GoogleAuthUiClient,
     lifecycleScope: LifecycleCoroutineScope,
+    vm:ChatViewModel,
 ) {
 
     val navController = rememberNavController()
@@ -96,6 +99,7 @@ fun App(
     var shouldShowScaffold by remember {
         mutableStateOf(true)
     }
+    val viewModel = viewModel<ChatViewModel>()
 
     /**
      * Checks if User is already logged in
@@ -456,10 +460,8 @@ fun App(
                 )) {
                     val userId = it.arguments?.getString("userId")
                     Profile(userId, navigateToNextScreen = { route ->
-                        navController.navigate(route){
-                            popUpTo(0)
-                        }
-                    })
+                        navController.navigate(route)
+                    }, vm = vm)
                 }
 
                 composable(route = Screen.Onboarding.route) {
@@ -516,7 +518,13 @@ fun App(
 
                 }
 
-                composable(route = Screen.ChatScreen.route) {
+
+                composable(route = Screen.ChatScreen.route+"/{chatId}", arguments = listOf(
+                    navArgument("chatId"){
+                        type = NavType.StringType
+                        nullable=true
+                    }
+                )) {
                     LaunchedEffect(shouldShowScaffold){
                         shouldShowScaffold = false
                     }
@@ -525,10 +533,12 @@ fun App(
                             shouldShowScaffold = true
                         }
                     }
-                    ChatScreen(navigateToNextScreen = { route ->
-                        navController.navigate(route)
-                    })
-
+                    val chatId = it.arguments?.getString("chatId")
+                    if (chatId!=null) {
+                        SingleChatScreen(chatId = chatId, vm = vm, navigateToNextScreen = { route ->
+                            navController.navigate(route)
+                        })
+                    }
                 }
 
                 composable(route = Screen.DetailsScheduling.route) {
