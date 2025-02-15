@@ -411,15 +411,14 @@ fun scheduleItemUser(start:String, end:String, status:String,key:String,day:Stri
             .border(color= colorResource(R.color.darkgreen), width = 1.dp, shape =RoundedCornerShape(25))
             .background(color = colorResource(color))
             .clickable {
-                val slot = Slot(e_id=userId, u_id=currentFirebaseUser, start=start, end=end, status=status, key=key, day=day, index=index)
+                val slot = Slot(e_id=userId, u_id=currentFirebaseUser, start=start, end=end, status=status, key=key, day=weekday, index=index)
                 val jsonSlot = Gson().toJson(slot)
                 if (status=="available") {
                     navigateToNextScreen(Screen.DetailSlot.route+"/"+jsonSlot)
                 }
                 else if(status=="occupied"){
                     if (bookedBy!="" && bookedBy==currentFirebaseUser) {
-                        Toast.makeText(context, "This Slot is Already Booked by You", Toast.LENGTH_SHORT)
-                            .show()
+                        navigateToNextScreen(Screen.DetailSlot.route+"/"+jsonSlot)
                     }
                     else{
                         Toast.makeText(context, "This Slot is Already Booked", Toast.LENGTH_SHORT)

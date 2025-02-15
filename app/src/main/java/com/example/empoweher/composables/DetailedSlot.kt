@@ -2,6 +2,7 @@ package com.example.empoweher.composables
 
 import android.content.Intent
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -36,6 +37,10 @@ fun DetailedSlot(navigateToNextScreen: (route: String)->Unit, jsonSlot:String){
 
     val slotObject = Gson().fromJson(jsonSlot, Slot::class.java)
     Log.d("aman", slotObject.toString())
+    var meetingNo by remember {
+        mutableStateOf("")
+    }
+    meetingNo= getInfoUser("Schedule/${slotObject.day}/${slotObject.key}/meetingId",slotObject.e_id)
 
     var booked by remember{
         mutableStateOf(false)
@@ -78,7 +83,7 @@ fun DetailedSlot(navigateToNextScreen: (route: String)->Unit, jsonSlot:String){
             elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
         ) {
             Text(
-                "9:00-10:00", modifier = Modifier
+                slotObject.key!!, modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 15.dp),
                 textAlign = TextAlign.Center,
@@ -90,28 +95,42 @@ fun DetailedSlot(navigateToNextScreen: (route: String)->Unit, jsonSlot:String){
         }
 
         val context = LocalContext.current
+        val meetingId = (111111111..999999999).random().toString()
 
-        ElevatedButton(onClick = {
-            val intent = Intent(context, Payment::class.java)
-            intent.putExtra("slotPath", "/Schedule/$jsonSlot.day/$jsonSlot.key/status")
-            intent.putExtra("userPath", "")
-            intent.putExtra("userId", "")
-            context.startActivity(intent)
-            booked = true
-        }) {
-            Text("Book")
+        if(meetingNo=="null") {
+            ElevatedButton(onClick = {
+                val intent = Intent(context, Payment::class.java)
+                intent.putExtra(
+                    "slotPath",
+                    "${slotObject.e_id}/Schedule/${slotObject.day}/${slotObject.key}/status"
+                )
+                intent.putExtra(
+                    "userPath",
+                    "${slotObject.e_id}/Schedule/${slotObject.day}/${slotObject.key}/u_id"
+                )
+                intent.putExtra(
+                    "meetingPath",
+                    "${slotObject.e_id}/Schedule/${slotObject.day}/${slotObject.key}/meetingId"
+                )
+                intent.putExtra("userId", slotObject.u_id)
+                intent.putExtra("meetingId", meetingId)
+                context.startActivity(intent)
+                booked = true
+            }) {
+                Text("Book")
+            }
         }
 
         val name = getInfoUser("name", currentFirebaseUser)
-        val meetingId = (111111111..999999999).random()
 
-        if (booked == true && currentFirebaseUser != slotObject.e_id) {
+        if (meetingNo!="null" && (currentFirebaseUser == slotObject.e_id || currentFirebaseUser==slotObject.u_id)) {
             ElevatedButton(onClick = {
-//            dbref.child(userId).child("schedule")
-                val navigate = Intent(context, VideoConferencing::class.java)
-                navigate.putExtra("meetId", meetingId)
-                navigate.putExtra("name", name)
-                context.startActivity(navigate)
+                if(meetingNo!="") {
+                    val navigate = Intent(context, VideoConferencing::class.java)
+                    navigate.putExtra("meetId", meetingNo)
+                    navigate.putExtra("name", name)
+                    context.startActivity(navigate)
+                }
             }) {
                 Text("Join Now")
             }

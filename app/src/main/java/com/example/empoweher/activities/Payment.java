@@ -92,13 +92,16 @@ public class Payment extends AppCompatActivity implements PaymentResultListener 
 
             String slotPath = getIntent().getStringExtra("slotPath");
             String userPath = getIntent().getStringExtra("userPath");
+            String meetingPath = getIntent().getStringExtra("meetingPath");
             String userId = getIntent().getStringExtra("userId");
+            String meetingId = getIntent().getStringExtra("meetingId");
             Log.d("slotPath",slotPath);
             Log.d("userPath",userPath);
+            Log.d("meetingPath",meetingPath);
             assert slotPath != null;
             FirebaseDatabase.getInstance().getReference("Users").child(slotPath).setValue("occupied");
             FirebaseDatabase.getInstance().getReference("Users").child(userPath).setValue(userId);
-
+            FirebaseDatabase.getInstance().getReference("Users").child(meetingPath).setValue(meetingId);
         }
     }
 
