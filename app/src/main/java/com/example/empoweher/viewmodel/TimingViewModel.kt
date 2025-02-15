@@ -34,8 +34,12 @@ class TimingViewModel(userId:String) : ViewModel() {
                             }
                     }
                 }
+
                 Log.d("slots",slots.toString())
-                response.value= DataState.SuccessSlots(data=slots)
+
+                val orderedSlots=slots.sortedBy { slots-> slots.index?.toInt() }
+
+                response.value= DataState.SuccessSlots(data=orderedSlots.toMutableList())
                 Log.d("slots",response.value.toString())
 
             }
