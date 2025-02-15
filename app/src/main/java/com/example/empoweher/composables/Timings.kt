@@ -206,7 +206,8 @@ fun Timings(navigateToNextScreen: (route: String)->Unit,userId:String) {
                                             each.key!!,
                                             each.day!!,
                                             each.index!!,
-                                            each.e_id!!
+                                            each.e_id!!,
+                                            navigateToNextScreen
                                         )
                                     }
                                     else{
@@ -256,7 +257,8 @@ fun Timings(navigateToNextScreen: (route: String)->Unit,userId:String) {
                                             each.key!!,
                                             each.day!!,
                                             each.index!!,
-                                            each.e_id!!
+                                            each.e_id!!,
+                                            navigateToNextScreen
                                         )
                                     }
                                     else{

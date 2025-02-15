@@ -77,6 +77,7 @@ import com.example.empoweher.viewmodel.SlotViewModel
 import com.example.empoweher.viewmodel.mainviewmodel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -181,7 +182,8 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
                                 each.key!!,
                                 each.day!!,
                                 each.index!!,
-                                each.e_id!!
+                                each.e_id!!,
+                                navigateToNextScreen
                             )
                         }
                     }
@@ -222,7 +224,8 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
                                 each.key!!,
                                 each.day!!,
                                 each.index!!,
-                                each.e_id!!
+                                each.e_id!!,
+                                navigateToNextScreen
                             )
                         }
                     }
@@ -289,7 +292,7 @@ fun Scheduling(navigateToNextScreen: (route: String)->Unit){
 }
 
 @Composable
-fun scheduleItem(start:String, end:String, status:String,key:String,day:String, index:String,userId:String){
+fun scheduleItem(start:String, end:String, status:String,key:String,day:String, index:String,userId:String,navigateToNextScreen: (route: String) -> Unit){
     val dbref = FirebaseDatabase.getInstance()
         .getReference("Users");
     val currentFirebaseUser=FirebaseAuth.getInstance().currentUser!!.uid
@@ -318,6 +321,8 @@ fun scheduleItem(start:String, end:String, status:String,key:String,day:String, 
         .border(color= colorResource(R.color.darkgreen), width = 1.dp, shape =RoundedCornerShape(25))
         .background(color = colorResource(color))
         .clickable {
+            val slot = Slot(e_id=userId, u_id=currentFirebaseUser, start=start, end=end, status=status, key=key, day=weekday, index=index)
+            val jsonSlot = Gson().toJson(slot)
             if(status=="undefined") {
                 dbref.child(userId).child("Schedule").child(weekday!!).child(key).child("status").setValue("available").addOnSuccessListener {
                     color = R.color.emeraldgreen
@@ -333,6 +338,8 @@ fun scheduleItem(start:String, end:String, status:String,key:String,day:String, 
             else{
                 if (status=="occupied") {
                     color = R.color.light_gray
+                    navigateToNextScreen(Screen.DetailSlot.route+"/"+jsonSlot)
+
                 }
             }
 
