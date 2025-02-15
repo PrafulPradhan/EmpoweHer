@@ -98,6 +98,7 @@ public class Payment extends AppCompatActivity implements PaymentResultListener 
             assert slotPath != null;
             FirebaseDatabase.getInstance().getReference("Users").child(slotPath).setValue("occupied");
             FirebaseDatabase.getInstance().getReference("Users").child(userPath).setValue(userId);
+
         }
     }
 

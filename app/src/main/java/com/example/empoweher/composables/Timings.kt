@@ -78,6 +78,7 @@ import com.example.empoweher.viewmodel.TimingViewModel
 import com.example.empoweher.viewmodel.mainviewmodel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -410,8 +411,10 @@ fun scheduleItemUser(start:String, end:String, status:String,key:String,day:Stri
             .border(color= colorResource(R.color.darkgreen), width = 1.dp, shape =RoundedCornerShape(25))
             .background(color = colorResource(color))
             .clickable {
+                val slot = Slot(e_id=userId, u_id=currentFirebaseUser, start=start, end=end, status=status, key=key, day=day, index=index)
+                val jsonSlot = Gson().toJson(slot)
                 if (status=="available") {
-                    navigateToNextScreen(Screen.DetailSlot.route+"/"+userId)
+                    navigateToNextScreen(Screen.DetailSlot.route+"/"+jsonSlot)
                 }
                 else if(status=="occupied"){
                     if (bookedBy!="" && bookedBy==currentFirebaseUser) {
@@ -422,6 +425,9 @@ fun scheduleItemUser(start:String, end:String, status:String,key:String,day:Stri
                         Toast.makeText(context, "This Slot is Already Booked", Toast.LENGTH_SHORT)
                             .show()
                     }
+                }
+                else{
+                    Toast.makeText(context, "This slot is not available", Toast.LENGTH_SHORT).show()
                 }
             }
         ) {

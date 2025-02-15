@@ -562,14 +562,14 @@ fun App(
                     }
                 }
 
-                composable(route = Screen.DetailSlot.route+"/{userId}",arguments = listOf(
-                    navArgument("userId"){
+                composable(route = Screen.DetailSlot.route+"/{jsonSlot}",arguments = listOf(
+                    navArgument("jsonSlot"){
                         type = NavType.StringType
                     }
                 )) {
-                    val userId = it.arguments!!.getString("userId")
-                    if (userId!= null) {
-                      DetailedSlot(userId = userId,
+                    val jsonSlot = it.arguments!!.getString("jsonSlot")
+                    if (jsonSlot!= null) {
+                      DetailedSlot(jsonSlot = jsonSlot,
                             navigateToNextScreen = { route ->
                                 navController.navigate(route)
                             })
