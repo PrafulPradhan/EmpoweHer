@@ -1,5 +1,6 @@
 package com.example.empoweher.screen.message
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,7 +23,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.currentCompositionErrors
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -49,7 +52,8 @@ fun SingleChatScreen( vm: ChatViewModel, chatId: String,navigateToNextScreen: (r
         reply = ""
     }
     val myUser = vm.userData.value
-    val currentChat = vm.chats.value.find { it.chatId == chatId }
+    val currentChat = vm.chats.value.find {it.chatId == chatId }
+    Log.d("chatId", currentChat.toString())
     var chatUser:ChatUser=ChatUser("24Si2cNeD8Uq7vIbGCTDUSAHNOg1","Aman Sande","https://firebasestorage.googleapis.com/v0/b/empowerher-39d60.appspot.com/o/24Si2cNeD8Uq7vIbGCTDUSAHNOg1%2FProfile%20Picture?alt=media&token=96ffc0e4-90c4-44a3-b2df-203c47694319")
     if (currentChat!=null) {
         chatUser =
@@ -61,21 +65,26 @@ fun SingleChatScreen( vm: ChatViewModel, chatId: String,navigateToNextScreen: (r
     BackHandler {
         vm.depopulateMessage()
     }
-    Column {
-        if (myUser != null) {
-            ChatHeader(name = chatUser.name ?: "", imageUrl = chatUser.imageUrl ?: "", navigateToNextScreen =navigateToNextScreen , userId = myUser.userID!!){
-                vm.depopulateMessage()
+        Column {
+            if (myUser != null) {
+                ChatHeader(
+                    name = chatUser.name ?: "",
+                    imageUrl = chatUser.imageUrl ?: "",
+                    navigateToNextScreen = navigateToNextScreen,
+                    userId = myUser.userID!!
+                ) {
+                    vm.depopulateMessage()
+                }
             }
+            MessageBox(
+                modifier = Modifier.weight(1f),
+                chatMessage = vm.chatMessages.value,
+                currentUserId = myUser?.userID ?: ""
+            )
+            ReplyBox(reply = reply, onReplyChange = {
+                reply = it
+            }, onSendReply)
         }
-        MessageBox(
-            modifier = Modifier.weight(1f),
-            chatMessage = vm.chatMessages.value,
-            currentUserId = myUser?.userID ?: ""
-        )
-        ReplyBox(reply = reply, onReplyChange = {
-            reply = it
-        }, onSendReply)
-    }
 }
 
 @Composable
@@ -134,7 +143,8 @@ fun ChatHeader(name: String, imageUrl: String,navigateToNextScreen: (route: Stri
     ) {
         Icon(Icons.Rounded.ArrowBack, contentDescription = null, modifier = Modifier
             .clickable {
-                navigateToNextScreen(Screen.Profile.route+"/"+userId)
+                onBackClicked.invoke()
+                navigateToNextScreen(Screen.Profile.route + "/" + userId)
             }
             .padding(8.dp))
         CommonImage(
