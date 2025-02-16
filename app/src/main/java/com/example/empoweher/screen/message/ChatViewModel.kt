@@ -24,9 +24,13 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.Calendar
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
@@ -40,9 +44,10 @@ class ChatViewModel @Inject constructor(
     var signUp = mutableStateOf(false)
     val userData = mutableStateOf<UserData?>(null)
     var chats = mutableStateOf<List<ChatData>>(listOf())
-    val chatMessages= mutableStateOf<List<Message>>(listOf())
-    val inProcessChatMessage= mutableStateOf(false)
-    val inProgressStatus= mutableStateOf(false)
+    val chatMessages = mutableStateOf<List<Message>>(listOf())
+    val inProcessChatMessage = mutableStateOf(false)
+    val inProgressStatus = mutableStateOf(false)
+
     init {
         val currentUser = auth.currentUser
         signIn.value = currentUser != null
@@ -51,43 +56,46 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun populateMessages(chatId: String){
-        inProcessChatMessage.value=true
-        database.getReference(CHATS).child(chatId).child("message").addValueEventListener(object:ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for(data in snapshot.children){
-                    val msg=data.getValue(Message::class.java)
-                    if(msg !in chatMessages.value) {
-                        chatMessages.value += msg!!
-                    }
-                    chatMessages.value=chatMessages.value.sortedBy { it.timestamp }
-                    inProcessChatMessage.value=false
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-
-        })
-    }
-    fun depopulateMessage(){
-        chatMessages.value= listOf()
-    }
-    fun populateChats(){
-        inProcessChats.value=true
-        database.getReference().child(CHATS).addValueEventListener(object :ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for(data in snapshot.children){
-                    val user1Id=data.child("user1").child("userId").getValue(String::class.java)
-                    val user2Id=data.child("user2").child("userId").getValue(String::class.java)
-                    if (user1Id==userData.value?.userID || user2Id==userData.value?.userID){
-                        val chat=data.getValue(ChatData::class.java)!!
-                        if(chat !in chats.value){
-                            chats.value+=chat
+    fun populateMessages(chatId: String) {
+        inProcessChatMessage.value = true
+        database.getReference(CHATS).child(chatId).child("message")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for (data in snapshot.children) {
+                        val msg = data.getValue(Message::class.java)
+                        if (msg !in chatMessages.value) {
+                            chatMessages.value += msg!!
                         }
-                        Log.d("ChatsValue",chats.value.toString())
-                        inProcessChats.value=false
+                        chatMessages.value = chatMessages.value.sortedBy { it.timestamp }
+                        inProcessChatMessage.value = false
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+
+            })
+    }
+
+    fun depopulateMessage() {
+        chatMessages.value = listOf()
+    }
+
+    fun populateChats() {
+        inProcessChats.value = true
+        database.getReference().child(CHATS).addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (data in snapshot.children) {
+                    val user1Id = data.child("user1").child("userId").getValue(String::class.java)
+                    val user2Id = data.child("user2").child("userId").getValue(String::class.java)
+                    if (user1Id == userData.value?.userID || user2Id == userData.value?.userID) {
+                        val chat = data.getValue(ChatData::class.java)!!
+                        if (chat !in chats.value) {
+                            chats.value += chat
+                        }
+                        Log.d("ChatsValue", chats.value.toString())
+                        inProcessChats.value = false
                     }
                 }
             }
@@ -97,13 +105,13 @@ class ChatViewModel @Inject constructor(
             }
 
         })
-        inProcessChats.value=false
+        inProcessChats.value = false
     }
 
-    fun onSendReply(chatId:String,message:String){
-        val time=Calendar.getInstance().time.toString()
-        val msg= Message(userData.value?.userID,message,time)
-        val id=database.getReference().push().key!!
+    fun onSendReply(chatId: String, message: String) {
+        val time = Calendar.getInstance().time.toString()
+        val msg = Message(userData.value?.userID, message, time)
+        val id = database.getReference().push().key!!
         database.getReference().child(CHATS).child(chatId).child("message").child(id).setValue(msg)
     }
 
@@ -139,57 +147,58 @@ class ChatViewModel @Inject constructor(
         inProcess.value = false
     }
 
-    fun onAddChat(userId:String):String{
-        var id=database.getReference().push().key!!
-        var shouldAdd=true
-        database.getReference().child(USER_NODE).addValueEventListener(object :ValueEventListener{
+    suspend fun onAddChat(userId: String): String = suspendCancellableCoroutine { continuation ->
+        var id = database.getReference().push().key!!
+        database.getReference().child(CHATS)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    for(data in snapshot.children){
-                        val chatPartner=data.getValue(UserData::class.java)!!
-                         Log.d("chatPartnerOutside",chatPartner.toString())
-                        if(chatPartner.userID==userId) {
-                            Log.d("chatPartner", chatPartner.toString())
-                            database.getReference().child(CHATS)
-                                .addValueEventListener(object : ValueEventListener {
-                                    override fun onDataChange(snapshot: DataSnapshot) {
-                                        for (data in snapshot.children) {
-                                            val chatData = data.getValue(ChatData::class.java)
-                                            Log.d("chatDataOutsideif",chatData.toString())
-                                            if (chatData != null && chatData.user1.userId == userData.value?.userID && chatData.user2.userId == userData.value?.userID) {
-                                                Log.d("chatDataInsideif",chatData.toString())
-                                                shouldAdd = false
-//                                                id = chatData.chatId!!
-                                            }
-                                        }
-                                    }
-
-                                    override fun onCancelled(error: DatabaseError) {
-                                        TODO("Not yet implemented")
-                                    }
-                                })
-                            if (shouldAdd) {
-                                val chat = ChatData(
-                                    chatId = id,
-                                    ChatUser(
-                                        userData.value?.userID,
-                                        userData.value?.name,
-                                        userData.value?.Dp,
-                                    ), ChatUser(
-                                        chatPartner.userID,
-                                        chatPartner.name,
-                                        chatPartner.Dp,
+                    for (data in snapshot.children) {
+                        val chatData = data.getValue(ChatData::class.java)
+                        if (chatData != null && (
+                                    (chatData.user1.userId == userData.value?.userID && chatData.user2.userId == userId) ||
+                                            (chatData.user1.userId == userId && chatData.user2.userId == userData.value?.userID)
                                     )
-                                )
-                                database.getReference().child(CHATS).child(id).setValue(chat)
-                            }
+                        ) {
+                            id=chatData.chatId!!
+                            continuation.resume(id)
+                            return
                         }
                     }
-                }
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
+
+                    database.getReference().child(USER_NODE).child(userId)
+                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                val chatPartner = snapshot.getValue(UserData::class.java)
+
+                                if (chatPartner != null) {
+                                    val chat = ChatData(
+                                        chatId = id,
+                                        ChatUser(userData.value?.userID, userData.value?.name, userData.value?.Dp),
+                                        ChatUser(chatPartner.userID, chatPartner.name, chatPartner.Dp)
+                                    )
+
+                                    database.getReference().child(CHATS).child(id).setValue(chat)
+                                        .addOnSuccessListener {
+                                            continuation.resume(id)
+                                        }
+                                        .addOnFailureListener { e ->
+                                            continuation.resumeWithException(e)
+                                        }
+                                } else {
+                                    continuation.resumeWithException(Exception("User not found"))
+                                }
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+                                continuation.resumeWithException(Exception(error.message))
+                            }
+                        })
                 }
 
+                override fun onCancelled(error: DatabaseError) {
+                    continuation.resumeWithException(Exception(error.message))
+                }
             })
-        return id
     }
 }
+

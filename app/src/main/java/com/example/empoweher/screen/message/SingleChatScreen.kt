@@ -63,7 +63,9 @@ fun SingleChatScreen( vm: ChatViewModel, chatId: String,navigateToNextScreen: (r
     }
     Column {
         if (myUser != null) {
-            ChatHeader(name = chatUser.name ?: "", imageUrl = chatUser.imageUrl ?: "", navigateToNextScreen =navigateToNextScreen , userId = myUser.userID!!)
+            ChatHeader(name = chatUser.name ?: "", imageUrl = chatUser.imageUrl ?: "", navigateToNextScreen =navigateToNextScreen , userId = myUser.userID!!){
+                vm.depopulateMessage()
+            }
         }
         MessageBox(
             modifier = Modifier.weight(1f),
@@ -123,7 +125,7 @@ fun ReplyBox(reply: String, onReplyChange: (String) -> Unit, onSendReply: () -> 
 }
 
 @Composable
-fun ChatHeader(name: String, imageUrl: String,navigateToNextScreen: (route: String) -> Unit,userId:String) {
+fun ChatHeader(name: String, imageUrl: String,navigateToNextScreen: (route: String) -> Unit,userId:String,onBackClicked: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
