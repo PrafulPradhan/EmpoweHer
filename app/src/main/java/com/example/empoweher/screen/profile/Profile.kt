@@ -239,7 +239,6 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                 Button(onClick = {
                     vm.viewModelScope.launch {
                         val chatId = vm.onAddChat(userId!!)
-                        Toast.makeText(context, chatId, Toast.LENGTH_SHORT).show()
                         navigateToNextScreen(Screen.ChatScreen.route+"/"+chatId)
                     }
                 }) { Text("Message") }

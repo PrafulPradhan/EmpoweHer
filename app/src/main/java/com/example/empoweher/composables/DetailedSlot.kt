@@ -1,8 +1,10 @@
 package com.example.empoweher.composables
 
 import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -28,6 +30,7 @@ import com.example.empoweher.R
 import com.example.empoweher.activities.Payment
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import com.example.empoweher.activities.VideoConferencing
 import com.example.empoweher.model.Slot
 import com.google.gson.Gson
@@ -41,12 +44,26 @@ fun DetailedSlot(navigateToNextScreen: (route: String)->Unit, jsonSlot:String){
         mutableStateOf("")
     }
     meetingNo= getInfoUser("Schedule/${slotObject.day}/${slotObject.key}/meetingId",slotObject.e_id)
-
+    var linkedinid by remember {
+        mutableStateOf("")
+    }
+    var twitterid by remember {
+        mutableStateOf("")
+    }
+    var fees by remember {
+        mutableStateOf("")
+    }
+    linkedinid= getInfoUser("linkedinid",slotObject.e_id)
+    twitterid= getInfoUser("twitterid",slotObject.e_id)
+    fees= getInfoUser("fees",slotObject.e_id)
     var booked by remember{
         mutableStateOf(false)
     }
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
         Card(
             modifier = Modifier
@@ -97,6 +114,35 @@ fun DetailedSlot(navigateToNextScreen: (route: String)->Unit, jsonSlot:String){
         val context = LocalContext.current
         val meetingId = (111111111..999999999).random().toString()
 
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp, start = 20.dp, end = 20.dp, bottom = 10.dp),
+            shape = RoundedCornerShape(15.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = colorResource(id = R.color.emeraldgreen)
+            ),
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Entrepreneur Details", modifier = Modifier
+                        .padding(5.dp, 5.dp)
+                        .fillMaxWidth(),
+                    fontFamily = FontFamily(
+                        Font(R.font.font1)
+                    ),
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    fontSize = 20.sp
+                )
+                PrintTextClickable(text = "LinkedIn Id", uriString = linkedinid)
+                PrintTextClickable(text = "TwitterId", uriString = twitterid)
+                PrintText(text = "Fees : $fees")
+            }
+        }
+
+
         if(meetingNo=="null") {
             ElevatedButton(onClick = {
                 val intent = Intent(context, Payment::class.java)
@@ -114,9 +160,12 @@ fun DetailedSlot(navigateToNextScreen: (route: String)->Unit, jsonSlot:String){
                 )
                 intent.putExtra("userId", slotObject.u_id)
                 intent.putExtra("meetingId", meetingId)
+                intent.putExtra("fees", fees)
                 context.startActivity(intent)
                 booked = true
-            }) {
+            },
+                modifier = Modifier.padding(5.dp)
+                ) {
                 Text("Book")
             }
         }
@@ -131,9 +180,30 @@ fun DetailedSlot(navigateToNextScreen: (route: String)->Unit, jsonSlot:String){
                     navigate.putExtra("name", name)
                     context.startActivity(navigate)
                 }
-            }) {
+            },
+                modifier = Modifier.padding(5.dp)
+            ) {
                 Text("Join Now")
             }
         }
     }
+}
+
+
+@Composable
+fun PrintTextClickable(text:String,uriString: String){
+    val context= LocalContext.current
+    Text(text = text,
+        modifier=Modifier.padding(5.dp,5.dp).clickable {
+            val urlIntent = Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse(uriString)
+            )
+            context.startActivity(urlIntent)
+        },
+        fontFamily = FontFamily(
+            Font(R.font.font1)
+        ),
+        fontSize = 16.sp
+        )
 }

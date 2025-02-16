@@ -58,6 +58,7 @@ public class Payment extends AppCompatActivity implements PaymentResultListener 
 
         try {
             JSONObject options = new JSONObject();
+            String fees = getIntent().getStringExtra("fees");
 
             options.put("name", "EmpowerHer");
             options.put("description", "Payment For An Event");
@@ -67,11 +68,13 @@ public class Payment extends AppCompatActivity implements PaymentResultListener 
 
 
             options.put("currency", "INR");
-            options.put("amount", "1000");
+            int feesInt=Integer.parseInt(fees);
+            feesInt=feesInt*100;
+            options.put("amount", Integer.toString(feesInt));
 
             JSONObject preFill=new JSONObject();
             preFill.put("prefill.email", "2021.rajveer.tolani@ves.ac.in");
-            preFill.put("prefill.contact","9324569397");
+            preFill.put("prefill.contact","1234567890");
 
             options.put("prefill",preFill);
 

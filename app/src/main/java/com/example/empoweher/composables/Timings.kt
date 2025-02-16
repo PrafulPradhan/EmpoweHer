@@ -458,14 +458,14 @@ fun scheduleItemUser(start:String, end:String, status:String,key:String,day:Stri
             if(status=="available") {
                 Box(
                     modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .background(Color.Green)
-                        .padding(end=3.dp)
+                        .align(Alignment.BottomCenter)
+                        .padding(end=converterHeight(5,context).dp)
                 ) {
                     Text(
                         text = "Available",
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Bold
+                        fontSize = converterHeight(15,context).sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colorResource(R.color.emeraldgreen)
                     )
                 }
             }
