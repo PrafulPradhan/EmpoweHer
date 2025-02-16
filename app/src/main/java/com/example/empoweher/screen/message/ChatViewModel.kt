@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.empoweher.screen.message.data.CHATS
@@ -138,36 +139,49 @@ class ChatViewModel @Inject constructor(
         inProcess.value = false
     }
 
-    fun logout() {
-        auth.signOut()
-        signIn.value = false
-        userData.value = null
-        depopulateMessage()
-        eventMutableState.value = Event("Logged Out")
-    }
-
     fun onAddChat(userId:String):String{
-        val id=database.getReference().push().key!!
+        var id=database.getReference().push().key!!
+        var shouldAdd=true
         database.getReference().child(USER_NODE).addValueEventListener(object :ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
                     for(data in snapshot.children){
                         val chatPartner=data.getValue(UserData::class.java)!!
-                        Log.d("chatPartnerOutside",chatPartner.toString())
+                         Log.d("chatPartnerOutside",chatPartner.toString())
                         if(chatPartner.userID==userId) {
-                            Log.d("chatPartner",chatPartner.toString())
-                            val chat = ChatData(
-                                chatId = id,
-                                ChatUser(
-                                    userData.value?.userID,
-                                    userData.value?.name,
-                                    userData.value?.Dp,
-                                ), ChatUser(
-                                    chatPartner.userID,
-                                    chatPartner.name,
-                                    chatPartner.Dp,
+                            Log.d("chatPartner", chatPartner.toString())
+                            database.getReference().child(CHATS)
+                                .addValueEventListener(object : ValueEventListener {
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        for (data in snapshot.children) {
+                                            val chatData = data.getValue(ChatData::class.java)
+                                            Log.d("chatDataOutsideif",chatData.toString())
+                                            if (chatData != null && chatData.user1.userId == userData.value?.userID && chatData.user2.userId == userData.value?.userID) {
+                                                Log.d("chatDataInsideif",chatData.toString())
+                                                shouldAdd = false
+//                                                id = chatData.chatId!!
+                                            }
+                                        }
+                                    }
+
+                                    override fun onCancelled(error: DatabaseError) {
+                                        TODO("Not yet implemented")
+                                    }
+                                })
+                            if (shouldAdd) {
+                                val chat = ChatData(
+                                    chatId = id,
+                                    ChatUser(
+                                        userData.value?.userID,
+                                        userData.value?.name,
+                                        userData.value?.Dp,
+                                    ), ChatUser(
+                                        chatPartner.userID,
+                                        chatPartner.name,
+                                        chatPartner.Dp,
+                                    )
                                 )
-                            )
-                            database.getReference().child(CHATS).child(id).setValue(chat)
+                                database.getReference().child(CHATS).child(id).setValue(chat)
+                            }
                         }
                     }
                 }
