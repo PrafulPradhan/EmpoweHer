@@ -1,7 +1,5 @@
 import tweepy
-import requests
-from bs4 import BeautifulSoup
-from urllib.parse import urljoin
+
 access_token = '1765406326190956544-zwGEUqCwjfjbX9xNHDobWwnEDT3V0c'
 access_secret = 'k30q2ojCi03gyVnQg6RELYIC9S7Pq51dp9spv3rGZWrVr'
 consumer_key = '8eFaLRqzb98OHeTBzW7e67sT8'

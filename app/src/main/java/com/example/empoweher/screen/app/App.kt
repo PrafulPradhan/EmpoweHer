@@ -518,6 +518,22 @@ fun App(
 
                 }
 
+                composable(route = Screen.ChatBotScreen.route) {
+
+                    LaunchedEffect(shouldShowScaffold){
+                        shouldShowScaffold = false
+                    }
+                    DisposableEffect(shouldShowScaffold) {
+                        onDispose {
+                            shouldShowScaffold = true
+                        }
+                    }
+                    ChatScreen(navigateToNextScreen = { route ->
+                        navController.navigate(route)
+                    })
+
+                }
+
 
                 composable(route = Screen.ChatScreen.route+"/{chatId}", arguments = listOf(
                     navArgument("chatId"){

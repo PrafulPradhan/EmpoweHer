@@ -1,5 +1,6 @@
 package com.example.empoweher.activities;
 
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,7 +23,7 @@ import com.razorpay.PaymentResultListener;
 
 import org.json.JSONObject;
 
-public class Payment extends AppCompatActivity implements PaymentResultListener {
+public class PaymentEvent extends AppCompatActivity implements PaymentResultListener {
 
     String currentFirebaseUser="";
 
@@ -53,7 +54,8 @@ public class Payment extends AppCompatActivity implements PaymentResultListener 
 
         try {
             JSONObject options = new JSONObject();
-            String fees = getIntent().getStringExtra("fees");
+            String fees = getIntent().getStringExtra("feesEvent");
+            Log.d("fees",fees);
 
             options.put("name", "EmpowerHer");
             options.put("description", "Payment For An Event");
@@ -85,21 +87,8 @@ public class Payment extends AppCompatActivity implements PaymentResultListener 
     @Override
     public void onPaymentSuccess(String s) {
         if(currentFirebaseUser!=null && currentFirebaseUser!=""){
-//            String eventId = getIntent().getStringExtra("eventId");
-//            FirebaseDatabase.getInstance().getReference("Users").child(currentFirebaseUser).child("bookedevents").child(eventId).setValue(eventId);
-
-            String slotPath = getIntent().getStringExtra("slotPath");
-            String userPath = getIntent().getStringExtra("userPath");
-            String meetingPath = getIntent().getStringExtra("meetingPath");
-            String userId = getIntent().getStringExtra("userId");
-            String meetingId = getIntent().getStringExtra("meetingId");
-            Log.d("slotPath",slotPath);
-            Log.d("userPath",userPath);
-            Log.d("meetingPath",meetingPath);
-            assert slotPath != null;
-            FirebaseDatabase.getInstance().getReference("Users").child(slotPath).setValue("occupied");
-            FirebaseDatabase.getInstance().getReference("Users").child(userPath).setValue(userId);
-            FirebaseDatabase.getInstance().getReference("Users").child(meetingPath).setValue(meetingId);
+            String eventId = getIntent().getStringExtra("eventId");
+            FirebaseDatabase.getInstance().getReference("Users").child(currentFirebaseUser).child("bookedevents").child(eventId).setValue(eventId);
         }
     }
 

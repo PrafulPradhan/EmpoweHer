@@ -48,7 +48,7 @@ fun WelcomeScreen(navigateToNextScreen: (route: String) -> Unit) {
             )
             Spacer(modifier = Modifier.height(32.dp))
             Button(
-                onClick = {navigateToNextScreen(Screen.ChatScreen.route)},
+                onClick = {navigateToNextScreen(Screen.ChatBotScreen.route)},
                 shape = RoundedCornerShape(50)
             ) {
                 Text(

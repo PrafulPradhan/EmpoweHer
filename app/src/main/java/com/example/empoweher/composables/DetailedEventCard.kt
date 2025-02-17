@@ -53,6 +53,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.empoweher.R
 import com.example.empoweher.activities.Payment
+import com.example.empoweher.activities.PaymentEvent
 import com.example.empoweher.activities.VideoConferencing
 import com.example.empoweher.model.Screen
 import com.google.firebase.auth.FirebaseAuth
@@ -69,14 +70,23 @@ fun DetailedEventCard(eventId:String?="",navigateToNextScreen: (route: String)->
 
     var currentUser="24Si2cNeD8Uq7vIbGCTDUSAHNOg1"
     var currentFirebaseUser:String?=""
+    var feesEvent by remember {
+        mutableStateOf("")
+    }
     try {
         currentFirebaseUser = FirebaseAuth.getInstance().currentUser!!.uid
-
     }
     catch (e:Exception){
 
     }
+    FirebaseDatabase.getInstance().getReference().child("Event").child(eventId!!).addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            feesEvent=snapshot.child("eventCost").getValue(String::class.java).toString();
+        }
+        override fun onCancelled(error: DatabaseError) {
 
+        }
+    })
     val list = remember { mutableStateListOf<String>()}
 
     LaunchedEffect(key1 = Unit) {
@@ -323,8 +333,9 @@ fun DetailedEventCard(eventId:String?="",navigateToNextScreen: (route: String)->
 
                     Users.child(currentUser).child("bookedEvents").child(eventId).setValue(eventId).addOnSuccessListener {
                         booked=true
-                        val intent = Intent(context, Payment::class.java)
+                        val intent = Intent(context, PaymentEvent::class.java)
                         intent.putExtra("eventId", eventId)
+                        intent.putExtra("feesEvent",feesEvent)
                         context.startActivity(intent)
                     }
 

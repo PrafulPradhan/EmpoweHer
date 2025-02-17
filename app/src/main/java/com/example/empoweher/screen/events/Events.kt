@@ -92,7 +92,7 @@ fun Events(navigateToNextScreen: (route: String)->Unit){
     }
 
     var flag by remember{
-        mutableStateOf(false)
+        mutableStateOf(true)
     }
 
     if (getInfoUser(thing = "flag", userId =currentUser )=="1"){

@@ -441,10 +441,8 @@ fun DetailsDesignation(navigateToNextScreen: (route: String)->Unit){
                             index++
                         }
                     }
-                    navigateToNextScreen(Screen.DetailsInterests.route)
                 }
-
-
+                navigateToNextScreen(Screen.DetailsInterests.route)
             }) {
 
             Text(
