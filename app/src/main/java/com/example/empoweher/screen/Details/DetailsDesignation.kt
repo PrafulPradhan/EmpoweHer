@@ -1,11 +1,13 @@
 package com.example.empoweher.screen.Details
 
+import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -24,7 +27,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Divider
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -37,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -56,6 +63,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.empoweher.R
 import com.example.empoweher.composables.Exoplayer
+import com.example.empoweher.composables.SampleText
 import com.example.empoweher.model.Screen
 import com.example.empoweher.model.Slot
 import com.google.firebase.auth.FirebaseAuth
@@ -142,7 +150,6 @@ fun DetailsDesignation(navigateToNextScreen: (route: String)->Unit){
     }
 
     val weeks= mapOf("0" to "Sunday","1" to "Monday","2" to "Tuesday","3" to "Wednesday","4" to "Thursday","5" to "Friday","6" to "Saturday")
-
     val uri = Uri.parse("android.resource://com.example.empoweher/drawable/alert")
     var selectedImage by remember { mutableStateOf<Uri?>(uri) }
     val launcher =
@@ -229,10 +236,40 @@ fun DetailsDesignation(navigateToNextScreen: (route: String)->Unit){
                 .height(converterHeight(300, LocalContext.current).dp)
         )
 
+        Spacer(modifier = Modifier.height(converterHeight(40, LocalContext.current).dp))
+
+        Text(
+            text = "Select Known Languages",
+            fontSize = converterHeight(25, LocalContext.current).sp,
+            fontFamily = FontFamily(Font(R.font.font1)),
+            fontWeight = FontWeight.Bold,
+            color = colorResource(R.color.black)
+
+        )
+        InterestCheckBox(title = "English", value = english, onValueChange = {english=it})
+        InterestCheckBox(title = "Hindi", value = hindi, onValueChange = {hindi=it})
+        InterestCheckBox(title = "Marathi", value = marathi, onValueChange = {marathi=it})
+        InterestCheckBox(title = "Gujarati", value = gujarati, onValueChange = {gujarati=it})
+        InterestCheckBox(title = "Sindhi", value = sindhi, onValueChange = {sindhi=it})
+        InterestCheckBox(title = "Tamil", value = tamil, onValueChange = {tamil=it})
+        InterestCheckBox(title = "Telugu", value = telugu, onValueChange = {telugu=it})
+        InterestCheckBox(title = "Punjabi", value = punjabi, onValueChange = {punjabi=it})
+        InterestCheckBox(title = "French", value = french, onValueChange = {french=it})
+        InterestCheckBox(title = "German", value = german, onValueChange = {german=it})
+
+        Spacer(modifier = Modifier.height(converterHeight(25, LocalContext.current).dp))
+        Divider(
+            modifier=Modifier.fillMaxWidth(),
+            thickness = 2.dp
+
+        )
         Row(modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically){
             Text(
-                "Are you an entrepreneur ?"
+                "Are you an entrepreneur ?",
+                fontSize = converterHeight(25, LocalContext.current).sp,
+                fontFamily = FontFamily(Font(R.font.font1)),
+                fontWeight = FontWeight.Bold,
             )
             Checkbox(
                 checked = checked.toBoolean(),
@@ -245,7 +282,7 @@ fun DetailsDesignation(navigateToNextScreen: (route: String)->Unit){
 
 
         if(checked == "true"){
-            Text(text="Enter your details to get verified")
+            Text(text="Enter below details and Fill the google form: ")
             OutlinedTextField(
                 value = expertise,
                 label = { Text(text = "Enter your domain") },
@@ -271,38 +308,6 @@ fun DetailsDesignation(navigateToNextScreen: (route: String)->Unit){
                     .fillMaxWidth()
 //                    .height(converterHeight(300, LocalContext.current).dp)
             )
-            val painter = rememberAsyncImagePainter(selectedImage)
-            Image(
-                painter = painter,
-                contentDescription = "Hello",
-                modifier = Modifier
-                    .height(400.dp)
-                    .width(400.dp)
-                    .clip(RoundedCornerShape(10.dp)),
-                contentScale = ContentScale.Crop,
-            )
-
-            Button(
-                onClick = {
-                    launcher.launch("image/*")
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(id = R.color.pale_brown
-                    )
-                ),
-                modifier = Modifier.padding(top=10.dp)
-                    .align(Alignment.CenterHorizontally)
-            ) {
-                Text(
-                    text = "Upload Certificate",
-                    fontSize = 20.sp,
-                    fontFamily = FontFamily(Font(R.font.font1)),
-                    fontWeight = FontWeight.Bold,
-                    color = colorResource(R.color.white)
-
-                )
-            }
-
             OutlinedTextField(
                 value = exp,
                 label = { Text(text = "Enter number of years of experience") },
@@ -342,21 +347,72 @@ fun DetailsDesignation(navigateToNextScreen: (route: String)->Unit){
 //                    .height(converterHeight(300, LocalContext.current).dp)
             )
 
-            Text(text="Select Known Languages")
 
-            InterestCheckBox(title = "English", value = english, onValueChange = {english=it})
-            InterestCheckBox(title = "Hindi", value = hindi, onValueChange = {hindi=it})
-            InterestCheckBox(title = "Marathi", value = marathi, onValueChange = {marathi=it})
-            InterestCheckBox(title = "Gujarati", value = gujarati, onValueChange = {gujarati=it})
-            InterestCheckBox(title = "Sindhi", value = sindhi, onValueChange = {sindhi=it})
-            InterestCheckBox(title = "Tamil", value = tamil, onValueChange = {tamil=it})
-            InterestCheckBox(title = "Telugu", value = telugu, onValueChange = {telugu=it})
-            InterestCheckBox(title = "Punjabi", value = punjabi, onValueChange = {punjabi=it})
-            InterestCheckBox(title = "French", value = french, onValueChange = {french=it})
-            InterestCheckBox(title = "German", value = german, onValueChange = {german=it})
         }
+        Spacer(modifier = Modifier.height(converterHeight(25, LocalContext.current).dp))
+        Divider(
+            modifier=Modifier.fillMaxWidth(),
+            thickness = 2.dp
 
-        Spacer(modifier = Modifier.height(converterHeight(60, LocalContext.current).dp))
+        )
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset(y = -converterHeight(15, context).dp)
+                .padding(
+                    start = converterHeight(20, context).dp,
+                    end = converterHeight(20, context).dp,
+                    bottom = converterHeight(5, context).dp
+                )
+                .clip(RoundedCornerShape(converterHeight(10, context).dp))
+                .clickable {
+                    val intent = Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://docs.google.com/forms/d/e/1FAIpQLSeBf0Ld60zVD0a4t3g36kFiYs232XCD8HfoI7z8Yt1mjMjhfg/viewform")
+                    ).setPackage("com.android.chrome")
+                    context.startActivity(intent)
+                }
+                .shadow(ambientColor = Color.Blue, elevation = converterHeight(30, context).dp),
+            elevation = CardDefaults.cardElevation(converterHeight(20, context).dp),
+            colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.pale_brown))
+
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(converterHeight(20, context).dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Image(
+                    painter = painterResource(id = R.drawable.google_forms),
+                    contentDescription = "Google Forms",
+                    modifier = Modifier
+                        .padding(bottom = 20.dp)
+                        .clip(RoundedCornerShape(converterHeight(20, context).dp))
+                        .size(converterHeight(100, context).dp),
+                    contentScale = ContentScale.FillBounds,
+                )
+                Spacer(modifier = Modifier.width(converterHeight(20, context).dp))
+                Text(
+                    text = "Click Here To Fill The Google-Form",
+                    fontSize = converterHeight(25, LocalContext.current).sp,
+                    fontFamily = FontFamily(Font(R.font.font1)),
+                    fontWeight = FontWeight.Bold,
+                    color = colorResource(R.color.white),
+
+
+                )
+            }
+        }
+        Divider(
+            modifier=Modifier.fillMaxWidth(),
+            thickness = 2.dp
+
+        )
+
+        Spacer(modifier = Modifier.height(converterHeight(40, LocalContext.current).dp))
 
         Button(
             modifier = Modifier
@@ -370,8 +426,13 @@ fun DetailsDesignation(navigateToNextScreen: (route: String)->Unit){
             onClick = {
                 dbref.child(currentFirebaseUser).child("designation").setValue(designation)
                 dbref.child(currentFirebaseUser).child("bio").setValue(bio)
-                dbref.child(currentFirebaseUser).child("isEnt").setValue(checked)
-                if(checked == "true"){
+                dbref.child(currentFirebaseUser).child("isEnt").setValue("false")
+                if (checked=="true"){
+                    dbref.child(currentFirebaseUser).child("flag").setValue("1")
+                }
+                else{
+                    dbref.child(currentFirebaseUser).child("flag").setValue("0")
+                }
                     val list = mutableListOf<String>()
 
                     if(english){
@@ -419,14 +480,6 @@ fun DetailsDesignation(navigateToNextScreen: (route: String)->Unit){
                     dbref.child(currentFirebaseUser).child("linkedinid").setValue(linkedInId)
                     dbref.child(currentFirebaseUser).child("twitterid").setValue(chwichar)
                     dbref.child(currentFirebaseUser).child("languages").setValue(list)
-                    val storage= FirebaseStorage.getInstance()
-                    val ref= storage.getReference()
-                        .child(currentFirebaseUser +"/"+"certificate")
-                    ref.putFile(selectedImage!!).addOnSuccessListener {
-                        ref.getDownloadUrl().addOnSuccessListener { it
-                            dbref.child(currentFirebaseUser).child("certificate").setValue(it.toString())
-                        }
-                    }
                     dbref.child(currentFirebaseUser).child("Schedule").setValue(weeks)
                     val slots= listOf("9:00-10:00","10:00-11:00","11:00-12:00","12:00-13:00","13:00-14:00","14:00-15:00","16:00-17:00","17:00-18:00","18:00-19:00","19:00-20:00","20:00-21:00","21:00-22:00")
                     val slotStart= listOf("9:00","10:00","11:00","12:00","13:00","14:00","16:00","17:00","18:00","19:00","20:00","21:00")
@@ -441,7 +494,6 @@ fun DetailsDesignation(navigateToNextScreen: (route: String)->Unit){
                             index++
                         }
                     }
-                }
                 navigateToNextScreen(Screen.DetailsInterests.route)
             }) {
 

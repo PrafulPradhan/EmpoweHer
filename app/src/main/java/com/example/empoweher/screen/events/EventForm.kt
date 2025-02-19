@@ -597,8 +597,13 @@ fun EventForm(){
                     var mExpanded by remember { mutableStateOf(false) }
 
                     // Create a list of cities
-                    val tags = listOf("Educational", "Defence", "Exploratory", "Discussion","Empowerment", "Others")
-
+                    var tags = listOf(
+                        "Education", "Safety", "Empowerment", "Daily Guidance", "Arts", "Technical",
+                        "Social Affairs", "Child Problems", "Astrology", "Healthcare", "Spiritual",
+                        "History", "Career Guidance", "Sports", "Politics", "Exploratory",
+                        "Real Estate", "Business", "Entertainment"
+                    )
+                    tags=tags.sorted()
 
                     var mTextFieldSize by remember { mutableStateOf(Size.Zero)}
 

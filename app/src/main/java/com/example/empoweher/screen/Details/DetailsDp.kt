@@ -50,7 +50,7 @@ import com.google.firebase.storage.FirebaseStorage
 @Composable
 fun DetailsDp(navigateToNextScreen: (route: String)->Unit){
 
-    val uri = Uri.parse("android.resource://com.example.empoweher/drawable/alert")
+    val uri = Uri.parse("android.resource://com.example.empoweher/drawable/user_default")
 
     var selectedImage by remember { mutableStateOf<Uri?>(uri) }
 

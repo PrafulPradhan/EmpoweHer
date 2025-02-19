@@ -109,6 +109,25 @@ fun DetailsInterests(navigateToNextScreen: (route: String)->Unit){
         mutableStateOf(false)
     }
 
+    var sports by remember {
+        mutableStateOf(false)
+    }
+    var politics by remember {
+        mutableStateOf(false)
+    }
+    var exploratory by remember {
+        mutableStateOf(false)
+    }
+    var entertainment by remember {
+        mutableStateOf(false)
+    }
+    var realEstate by remember {
+        mutableStateOf(false)
+    }
+    var business by remember {
+        mutableStateOf(false)
+    }
+
 
     val currentFirebaseUser = FirebaseAuth.getInstance().currentUser!!.uid
     var followers: List<String> = listOf("PCAPS")
@@ -125,7 +144,6 @@ fun DetailsInterests(navigateToNextScreen: (route: String)->Unit){
             .fillMaxSize()
             .background(colorResource(id = R.color.cream))
             .padding(20.dp)
-            .verticalScroll(rememberScrollState())
 
     ) {
         Image(
@@ -152,6 +170,7 @@ fun DetailsInterests(navigateToNextScreen: (route: String)->Unit){
                 .fillMaxWidth()
                 .height(630.dp)
                 .border(BorderStroke(2.dp, Color.Black))
+                .verticalScroll(rememberScrollState())
         ) {
             InterestCheckBox(title = "Education", value = education, onValueChange = {education=it})
             InterestCheckBox(title = "Safety", value = safety, onValueChange = {safety=it})
@@ -166,7 +185,14 @@ fun DetailsInterests(navigateToNextScreen: (route: String)->Unit){
             InterestCheckBox(title = "Spiritual", value = spiritual, onValueChange = {spiritual=it})
             InterestCheckBox(title = "History", value = history, onValueChange = {history=it})
             InterestCheckBox(title = "Career Guidance", value = careerGuidance, onValueChange = {careerGuidance=it})
+            InterestCheckBox(title = "Sports", value = sports, onValueChange = {sports=it})
+            InterestCheckBox(title = "Politics", value = politics, onValueChange = {politics=it})
+            InterestCheckBox(title = "Exploratory", value = exploratory, onValueChange = {exploratory=it})
+            InterestCheckBox(title = "Entertainment", value = entertainment, onValueChange = {entertainment=it})
+            InterestCheckBox(title = "Real Estate", value = realEstate, onValueChange = {realEstate=it})
+            InterestCheckBox(title = "Business", value = business, onValueChange = {business=it})
         }
+
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -220,6 +246,24 @@ fun DetailsInterests(navigateToNextScreen: (route: String)->Unit){
                 }
                 if (careerGuidance){
                     list.add("Career Guidance")
+                }
+                if (sports){
+                    list.add("Sports")
+                }
+                if (politics){
+                    list.add("Politics")
+                }
+                if (exploratory){
+                    list.add("Exploratory")
+                }
+                if (entertainment){
+                    list.add("Entertainment")
+                }
+                if (realEstate){
+                    list.add("Real Estate")
+                }
+                if (business){
+                    list.add("Business")
                 }
 
                 dbref.child(currentFirebaseUser).child("interests").setValue(list)
