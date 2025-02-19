@@ -131,13 +131,25 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
 
         ) {
 
-        Spacer(modifier = Modifier.height(converterHeight(10, context).dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(converterHeight(4,context).dp)
+        )
+        {
+
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Spacer(modifier = Modifier.height(10.dp))
+                Search(navigateToNextScreen)
+            }
+
+        }
+        Spacer(modifier = Modifier.height(converterHeight(25, context).dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-            key(dp) {
                 Image(
                     painter = image,
                     contentDescription = "ProfilePic",
@@ -152,6 +164,7 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                                     it
                                     dbref.child(currentFirebaseUser).child("Dp")
                                         .setValue(it.toString()).addOnSuccessListener {
+                                            Log.d("dp","3")
 
                                         }
                                     }
@@ -164,7 +177,6 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                         )
 
                 )
-            }
         }
         Icon(
             imageVector = Icons.Outlined.Add, contentDescription = "Change",
@@ -259,16 +271,11 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                 .clip(RoundedCornerShape(converterHeight(10, context).dp))
                 .shadow(ambientColor = Color.Blue, elevation = converterHeight(30, context).dp),
             elevation = CardDefaults.cardElevation(converterHeight(20, context).dp),
-            colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.emeraldgreen))
+            colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.pale_brown))
         ) {
             Column(modifier = Modifier.padding()) {
                 Spacer(modifier = Modifier.height(converterHeight(10, context).dp))
                 Spacer(modifier = Modifier.height(converterHeight(5, context).dp))
-                SampleText(
-                    text = name,
-                    fontSize = converterHeight(24, context),
-                    textColor = colorResource(id = R.color.white)
-                )
                 SampleText(
                     text = designation,
                     fontSize = converterHeight(24, context),
@@ -276,7 +283,7 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                 )
                 SampleText(
                     text = bio,
-                    fontSize = converterHeight(24, context),
+                    fontSize = converterHeight(18, context),
                     textColor = colorResource(id = R.color.white)
                 )
             }
@@ -392,7 +399,7 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                     }
                     .shadow(ambientColor = Color.Blue, elevation = converterHeight(30, context).dp),
                 elevation = CardDefaults.cardElevation(converterHeight(20, context).dp),
-                colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.teal_700))
+                colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.pale_brown))
 
             ) {
                 Row(
@@ -402,7 +409,6 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
                     Image(
                         painter = painterResource(id = R.drawable.edit_profile),
                         contentDescription = "Edit Profile",
@@ -413,27 +419,12 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                         contentScale = ContentScale.FillBounds,
                     )
                     Spacer(modifier = Modifier.width(converterHeight(20, context).dp))
-                    SampleText(text = "Edit Your Profile", fontSize = converterHeight(25, context))
+                    SampleText(text = "Edit Your Profile", fontSize = converterHeight(25, context), textColor = colorResource(R.color.white))
                 }
             }
         }
 
         if (userId == currentFirebaseUser) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(converterHeight(400, context).dp)
-                    .padding(converterHeight(10, context).dp)
-            )
-            {
-
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Search(navigateToNextScreen)
-                }
-
-            }
-
             Button(
                 onClick = {
                     FirebaseAuth.getInstance().signOut()

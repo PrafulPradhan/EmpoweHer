@@ -83,18 +83,25 @@ fun Search(navigateToNextScreen: (route: String)->Unit){
 
         }
         is DataState.SuccessUser->{
-            Spacer(Modifier.height(converterHeight(5,context).dp))
-            SampleText(text="Top Entrepreneurs")
-            LazyColumn(
-                modifier = Modifier.padding(10.dp)
-            ){
-                itemsIndexed(
-                    items=result.data.filter { it.name!!.contains(textState, ignoreCase = true)}.distinct(),
-                    key={index,item -> "$item-$index"}
-                ){index,item->
-                    Log.d("ent",item.toString())
-                    val isEnt = getInfoUser(thing = "isEnt", userId = item.userID!!)
-                    ColumnItem(item.name!!,item.userID!!,context,navigateToNextScreen, isEnt)
+            if(textState!="") {
+                Spacer(Modifier.height(converterHeight(5, context).dp))
+                SampleText(text = "Top Entrepreneurs")
+                LazyColumn(
+                    modifier = Modifier.padding(10.dp)
+                        .height(converterHeight(150 , context).dp)
+                ) {
+                    itemsIndexed(
+                        items = result.data.filter {
+                            it.name!!.contains(
+                                textState,
+                                ignoreCase = true
+                            )
+                        }.distinct(),
+                        key = { index, item -> "$item-$index" }
+                    ) { index, item ->
+                        val isEnt = getInfoUser(thing = "isEnt", userId = item.userID!!)
+                        ColumnItem(item.name!!, item.userID!!, context, navigateToNextScreen, isEnt)
+                    }
                 }
             }
         }

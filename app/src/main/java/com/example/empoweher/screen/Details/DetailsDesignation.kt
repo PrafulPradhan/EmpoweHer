@@ -221,7 +221,7 @@ fun DetailsDesignation(navigateToNextScreen: (route: String)->Unit){
             label = { Text(text = "Short Description About Yourself") },
             textStyle = LocalTextStyle.current.merge(TextStyle(fontSize = 20.sp)),
             onValueChange = { str ->
-                if(str.length<=100){
+                if(str.length<=1000){
                     bio = str
                 }
                 else{

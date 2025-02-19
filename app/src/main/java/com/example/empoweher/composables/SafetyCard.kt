@@ -65,7 +65,7 @@ fun SafetyCard(navigateToNextScreen: (route: String)->Unit, route: String, urist
 
             ) {
                 Spacer(modifier = Modifier.width(converterWidth(10, LocalContext.current).dp))
-                Column(modifier=Modifier.fillMaxWidth(.67f)
+                Column(modifier=Modifier.fillMaxWidth(.63f)
                     .wrapContentSize())
                 {
                     SampleText(text = title, 24, textColor = colorResource(id = R.color.white))
