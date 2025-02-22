@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
-import androidx.compose.foundation.BorderStroke
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,18 +20,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,32 +43,21 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.privacysandbox.tools.core.model.Method
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.example.empoweher.R
 import com.example.empoweher.auth.signin.TypewriterText
 import com.example.empoweher.composables.EventCard
-import com.example.empoweher.composables.HeartAnimation
 import com.example.empoweher.composables.QuestionCard
-import com.example.empoweher.composables.getInfo
-import com.example.empoweher.composables.getValue
-import com.example.empoweher.composables.onBoarding
 import com.example.empoweher.composables.slider
 import com.example.empoweher.model.Screen
 import com.example.empoweher.screen.Details.converterHeight
-import com.example.empoweher.viewmodel.mainviewmodel
 import com.google.firebase.auth.FirebaseAuth
 import org.json.JSONObject
 import com.android.volley.Request
-import kotlinx.coroutines.delay
 import org.json.JSONArray
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -82,13 +66,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
-import com.example.empoweher.composables.ColumnItem
-import com.example.empoweher.composables.SampleText
-import com.example.empoweher.composables.Search
+import com.android.volley.RequestQueue
+import com.android.volley.Response
 import com.example.empoweher.composables.getInfoUser
 import com.example.empoweher.model.DataState
+import com.example.empoweher.model.JsonUser
 import com.example.empoweher.viewmodel.ProfileViewModel
-import com.google.firebase.database.FirebaseDatabase
+import com.google.gson.Gson
+import kotlinx.coroutines.flow.merge
 
 
 var schemesArray by mutableStateOf<JSONArray?>(null)
@@ -119,6 +104,50 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
     // Add the request to the queue
     queue.add(jsonObjectRequest)
 }
+
+fun sendJsonData(context: Context, url: String, mergedJson: JSONObject, onSuccess: (JSONObject) -> Unit, onError: (String) -> Unit) {
+    val queue: RequestQueue = Volley.newRequestQueue(context)
+    Log.d("Final", mergedJson.toString())
+    // Creating the request body
+    val jsonData = mergedJson.getJSONArray("jsonData")
+    Log.d("Final", jsonData.toString())
+    val jsonTarget = mergedJson.getJSONObject("jsonTarget")
+    Log.d("Final", jsonTarget.toString())
+
+    val requestBody = JSONObject()
+    requestBody.put("jsonData", jsonData)
+    requestBody.put("jsonTarget", jsonTarget)
+
+    Log.d("Request Body", requestBody.toString())
+
+    val jsonObjectRequest = object : JsonObjectRequest(
+        Request.Method.POST, url, requestBody,
+        Response.Listener { response ->
+            try {
+                Log.d("RESPONSE_SUCCESS", "Response: $response")
+                onSuccess(response)
+            } catch (e: Exception) {
+                Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+                Log.e("JSON_ERROR", "Error parsing JSON: ${e.message}")
+                onError("Error parsing response")
+            }
+        },
+        Response.ErrorListener { error ->
+            Log.e("VOLLEY_ERROR", "Request failed: ${error.message}")
+            onError("Request failed: ${error.message}")
+        }
+    ) {
+        override fun getHeaders(): MutableMap<String, String> {
+            val headers = HashMap<String, String>()
+            headers["Content-Type"] = "application/json"
+            return headers
+        }
+    }
+    // Add the request to the queue
+    queue.add(jsonObjectRequest)
+}
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
     fun Home(navigateToNextScreen: (route: String)->Unit) {
@@ -163,7 +192,109 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
 
         }
         is DataState.SuccessUser->{
+            var userData = mutableListOf<JsonUser>()
+            var targetUser: JsonUser? = null
+            for(data in result.data){
 
+                var education=0
+                var safety=0
+                var empowerment=0
+                var dailyGuidance=0
+                var arts=0
+                var technical=0
+                var socialAffairs=0
+                var childProblems=0
+                var astrology=0
+                var health=0
+                var spiritual=0
+                var history=0
+                var sports=0
+                var politics=0
+                var exploratory=0
+                var realEstate=0
+                var business=0
+                var price=0
+                var userId = data.userID
+
+                if(data.interests!!.contains("Education")){
+                    education = 1
+                }
+                if(data.interests!!.contains("Safety")){
+                    safety = 1
+                }
+                if(data.interests!!.contains("Empowerment")){
+                    empowerment = 1
+                }
+                if(data.interests!!.contains("Daily Guidance")){
+                    dailyGuidance = 1
+                }
+                if(data.interests!!.contains("Arts")){
+                    arts = 1
+                }
+                if(data.interests!!.contains("Technical")){
+                    technical = 1
+                }
+                if(data.interests!!.contains("Social Affairs")){
+                    socialAffairs = 1
+                }
+                if(data.interests!!.contains("Child Problems")){
+                    childProblems = 1
+                }
+                if(data.interests!!.contains("astrology")){
+                    astrology = 1
+                }
+                if(data.interests!!.contains("health")){
+                    health = 1
+                }
+                if(data.interests!!.contains("spiritual")){
+                    spiritual = 1
+                }
+                if(data.interests!!.contains("history")){
+                    history = 1
+                }
+                if(data.interests!!.contains("sports")){
+                    sports = 1
+                }
+                if(data.interests!!.contains("politics")){
+                    politics = 1
+                }
+                if(data.interests!!.contains("exploratory")){
+                    exploratory = 1
+                }
+                if(data.interests!!.contains("realEstate")){
+                    realEstate = 1
+                }
+                if(data.interests!!.contains("business")){
+                    business = 1
+                }
+                var tuple = JsonUser(userId, education, safety, empowerment, dailyGuidance, arts, technical, socialAffairs, childProblems, astrology, health, spiritual, history, sports, politics, exploratory, realEstate, business, price)
+                if(currentFirebaseUser == data.userID){
+                    targetUser = JsonUser(currentFirebaseUser, education, safety, empowerment, dailyGuidance, arts, technical, socialAffairs, childProblems, astrology, health, spiritual, history, sports, politics, exploratory, realEstate, business, price)
+                    continue
+                }
+                userData.add(tuple)
+            }
+
+            val gson = Gson()
+            val jsonData = JSONArray(gson.toJson(userData))
+            Log.d("test", jsonData.toString())
+            val jsonTarget = JSONObject(gson.toJson(targetUser))
+            val mergedJson = JSONObject()
+            mergedJson.put("jsonData", jsonData)
+            mergedJson.put("jsonTarget", jsonTarget)
+
+            Log.d("test", jsonTarget.toString())
+            sendJsonData(
+                context,
+                "https://modelapi-yz8c.onrender.com/predict",
+                mergedJson,
+                onSuccess = { response ->
+                    Log.d("API_CALL", "Success: $response")
+                },
+                onError = { error ->
+                    Log.d("API_CALL", "Error: $error")
+                }
+            )
         }
         is DataState.Failure->{
 
@@ -176,7 +307,7 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
         is DataState.SuccessSlot -> TODO()
         is DataState.SuccessSlots -> TODO()
         is DataState.SuccessFetchUser -> {
-            Log.d("test", result.data.toString())
+
         }
     }
 
