@@ -13,6 +13,7 @@ import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -62,6 +63,7 @@ import com.example.empoweher.activities.Payment
 import com.example.empoweher.activities.PaymentEvent
 import com.example.empoweher.activities.VideoConferencing
 import com.example.empoweher.model.Screen
+import com.example.empoweher.model.eventUserData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -101,9 +103,9 @@ fun DetailedEventCard(eventId:String?="",navigateToNextScreen: (route: String)->
         FirebaseDatabase.getInstance().getReference("Users/$currentFirebaseUser/bookedEvents").addListenerForSingleValueEvent(object:ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (data in snapshot.children) {
-                    val e = data.getValue(String::class.java)
+                    val e = data.getValue(eventUserData::class.java)
                     Log.d("jwsh",e.toString())
-                    list.add(e!!)
+                    list.add(e!!.eventId!!)
                 }
 
             }
@@ -174,6 +176,12 @@ fun DetailedEventCard(eventId:String?="",navigateToNextScreen: (route: String)->
     var meetingId by remember {
         mutableStateOf("")
     }
+    var attendees by remember {
+        mutableStateOf("")
+    }
+    var rated by remember {
+        mutableStateOf("")
+    }
     eventTitle= getInfo("eventName", eventId)
     eventAddress= getInfo("address", eventId)
     eventDescription= getInfo("description", eventId)
@@ -190,15 +198,23 @@ fun DetailedEventCard(eventId:String?="",navigateToNextScreen: (route: String)->
     vacancy=getInfo("vacancy",eventId)
     meetingId=getInfo("meetingId", eventId)
     status= getInfo("status",eventId)
+    attendees= getInfo("attendees",eventId)
     val name = getInfoUser("name", currentFirebaseUser)
     var painter= rememberAsyncImagePainter(model = eventImage)
     var scroll =rememberScrollState()
+    var columnHeight by remember{
+        mutableStateOf(0.90f)
+    }
+
+    if (status=="completed"){
+        columnHeight==1f
+    }
     Column(modifier=Modifier.fillMaxSize()) {
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.90f)
+                .fillMaxHeight(columnHeight)
                 .background(colorResource(id = R.color.cream))
                 .verticalScroll(scroll)
         ) {
@@ -315,32 +331,57 @@ fun DetailedEventCard(eventId:String?="",navigateToNextScreen: (route: String)->
                             Text(text="Join Now")
                         }
                     }
-                    if (status=="completed"){
+                }
+            }
+        }
+        if (status=="completed"){
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colorScheme.background
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
 
-                        Surface(
-                            modifier = Modifier.fillMaxSize(),
-                            color = MaterialTheme.colorScheme.background
+                    var rating1 by remember {
+                        mutableDoubleStateOf(0.0)
+                    }
+                    var rated by remember {
+                        mutableStateOf("")
+                    }
+                    var finalRating by remember { mutableStateOf(0.0) }
+                    rated= getInfoUser("bookedEvents/${eventId}/rated",currentFirebaseUser)
+                    if(rated=="false") {
+                        SampleText("Rate This Event", fontSize = 16)
+                        Row(
+                            modifier=Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            Column(
-                                modifier = Modifier.fillMaxSize(),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
-
-                                var rating1 by remember {
-                                    mutableDoubleStateOf(0.0)
+                            RatingBar(
+                                initialRating = finalRating,
+                                onRatingChanged = { newRating ->
+                                    finalRating = newRating
                                 }
-                                RatingBar(
-                                    modifier = Modifier
-                                        .size(50.dp),
-                                    rating = rating1,
-                                    onRatingChanged = {
-                                        rating1 = it
-                                    },
-                                    starsColor = colorResource(R.color.redorange)
-                                )
+                            )
+                            var rating = getInfo("totalRating", eventId)
+                            Button(onClick = {
+                                dbref.child(currentFirebaseUser!!)
+                                    .child("bookedEvents/${eventId}/rated").setValue("true")
+                                    .addOnSuccessListener {
+                                        rating = (rating.toInt() + finalRating).toString()
+                                        FirebaseDatabase.getInstance().getReference("Event")
+                                            .child(eventId).child("totalRating").setValue(rating)
+                                    }
+                            }) {
+                                Text("Done")
                             }
                         }
+                    }
+                    else if(rated=="true"){
+                        SampleText("You Have Already Rated This Event")
                     }
                 }
             }
@@ -357,23 +398,30 @@ fun DetailedEventCard(eventId:String?="",navigateToNextScreen: (route: String)->
                 textAlign = TextAlign.Center,
                 fontSize = 18.sp
             )
+            Log.d("outsideButtonTags",attendees)
             Button(modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(),
                 shape = RoundedCornerShape(0),
                 onClick = {
-
                     if (Integer.parseInt(vacancy) > 0 && !booked) {
                         Toast.makeText(context, "Enrolled", Toast.LENGTH_SHORT).show()
                         var vacancyUpdated = Integer.parseInt(vacancy) - 1
                         val dbref = FirebaseDatabase.getInstance().getReference("Event");
                         dbref.child(eventId!!).child("vacancy").setValue(vacancyUpdated.toString())
                         val Users = FirebaseDatabase.getInstance().getReference("Users");
-
+                        val eventUserData=eventUserData(eventId,"false")
                         Users.child(currentUser).child("bookedEvents").child(eventId)
-                            .setValue(eventId).addOnSuccessListener {
+                            .setValue(eventUserData).addOnSuccessListener {
+                                if(attendees=="null"){
+                                    attendees="0"
+                                }
+                                else {
+                                    attendees = (attendees.toInt() + 1).toString()
+                                }
                             booked = true
                             val intent = Intent(context, PaymentEvent::class.java)
+                            intent.putExtra("attendees", attendees)
                             intent.putExtra("eventId", eventId)
                             intent.putExtra("feesEvent", feesEvent)
                             context.startActivity(intent)

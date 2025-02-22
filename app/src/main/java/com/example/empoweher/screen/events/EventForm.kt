@@ -849,7 +849,9 @@ fun EventForm(){
                             contactNumber,
                             "" + currentFirebaseUser!!.uid,
                             meetingId.toString(),
-                            "ongoing"
+                            "ongoing",
+                            "0",
+                            "0"
                         )
                         dbref.child(id).setValue(e);
                         val storage = FirebaseStorage.getInstance()
