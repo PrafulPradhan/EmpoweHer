@@ -8,6 +8,7 @@ sealed class DataState {
     class  SuccessAnswer(val data:MutableList<Answer>):DataState()
     class  SuccessUser(val data:MutableList<User>):DataState()
     class  SuccessSlots(val data:MutableList<Slot>):DataState()
+    class  SuccessFetchUser(val data:MutableList<User>):DataState()
     class  SuccessSlot(
         val data: MutableList<MutableList<Slot>>,
         val data2: MutableList<MutableList<Slot>>,
