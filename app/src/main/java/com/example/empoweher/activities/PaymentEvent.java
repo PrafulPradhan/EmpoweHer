@@ -88,7 +88,7 @@ public class PaymentEvent extends AppCompatActivity implements PaymentResultList
     public void onPaymentSuccess(String s) {
         if(currentFirebaseUser!=null && currentFirebaseUser!=""){
             String eventId = getIntent().getStringExtra("eventId");
-            FirebaseDatabase.getInstance().getReference("Users").child(currentFirebaseUser).child("bookedevents").child(eventId).setValue(eventId);
+            FirebaseDatabase.getInstance().getReference("Users").child(currentFirebaseUser).child("bookedEvents").child(eventId).setValue(eventId);
         }
     }
 

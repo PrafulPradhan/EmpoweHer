@@ -18,5 +18,6 @@ data class Event (
     var vacancy:String?=null,
     var contact:String?=null,
     var hostId:String?=null,
-    var meetingId:String?=null
+    var meetingId:String?=null,
+    var status:String?=null
 )

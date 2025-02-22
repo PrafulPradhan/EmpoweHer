@@ -6,14 +6,20 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Quiz
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Face
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Quiz
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
+import com.example.empoweher.R
 
 sealed class BottomNavigationItem(
     val title: String,
@@ -33,8 +39,8 @@ sealed class BottomNavigationItem(
 
     object Ask: BottomNavigationItem(
         title = "Ask",
-        selectedIcon = Icons.Filled.Search,
-        unselectedIcon = Icons.Outlined.Search,
+        selectedIcon = Icons.Filled.Quiz,
+        unselectedIcon = Icons.Outlined.Quiz,
         hasNews = false,
         route = Screen.Ask.route,
     )

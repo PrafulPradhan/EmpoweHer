@@ -50,7 +50,8 @@ fun EventCard(navigateToNextScreen: (route: String) -> Unit,
               eventTiming:String?="",
               eventCost:String?="",
               eventImage:String?="",
-              eventTag: String?=""
+              eventTag: String?="",
+              eventStatus:String?="ongoing"
 ){
 
     var color = colorResource(id = R.color.mauve)
