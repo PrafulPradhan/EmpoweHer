@@ -173,6 +173,7 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                             index++
                         }
                         else if(index==3){
+
                             post3=e
                             index++
                         }
