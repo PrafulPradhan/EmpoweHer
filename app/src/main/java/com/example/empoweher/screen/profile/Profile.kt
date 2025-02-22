@@ -535,15 +535,6 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                     color = colorResource(R.color.teal_700),
                     modifier = Modifier.clickable {
                         launcher.launch("image/*")
-                    }
-                )
-                Text(
-                    text = "ADD NEW +",
-                    fontSize = 25.sp,
-                    fontFamily = FontFamily(Font(R.font.font1)),
-                    fontWeight = FontWeight.Bold,
-                    color = colorResource(R.color.teal_700),
-                    modifier = Modifier.clickable {
                         val currentMillis=System.currentTimeMillis().toString()
                         val ref= storage.getReference()
                             .child(currentFirebaseUser +"/"+"Post"+"/"+currentMillis)
@@ -552,10 +543,8 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                                 dbref.child(currentFirebaseUser).child("Posts/"+currentMillis).setValue(it.toString())
                             }
                         }
-
                     }
                 )
-
 
             }
         }
