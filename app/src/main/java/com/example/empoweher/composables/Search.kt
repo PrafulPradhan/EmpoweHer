@@ -115,6 +115,7 @@ fun Search(navigateToNextScreen: (route: String)->Unit){
         is DataState.SuccessQuestion -> TODO()
         is DataState.SuccessSlot -> TODO()
         is DataState.SuccessSlots -> TODO()
+        is DataState.SuccessFetchUser -> TODO()
     }
 }
 

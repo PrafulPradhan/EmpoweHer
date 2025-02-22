@@ -70,6 +70,7 @@ import kotlinx.coroutines.delay
 import org.json.JSONArray
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -79,9 +80,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
+import com.example.empoweher.composables.ColumnItem
+import com.example.empoweher.composables.SampleText
 import com.example.empoweher.composables.Search
 import com.example.empoweher.composables.getInfoUser
+import com.example.empoweher.model.DataState
+import com.example.empoweher.viewmodel.ProfileViewModel
 import com.google.firebase.database.FirebaseDatabase
 
 
@@ -150,6 +156,32 @@ fun fetchJsonData(context: Context, url: String, onSuccess: (JSONObject) -> Unit
     catch (e:Exception){
         Log.d("API", "${e}")
     }
+
+    val viewModel= viewModel{ ProfileViewModel() }
+    when( val result= viewModel.response.value){
+        is DataState.Loading -> {
+
+        }
+        is DataState.SuccessUser->{
+
+        }
+        is DataState.Failure->{
+
+        }
+
+        DataState.Empty -> TODO()
+        is DataState.Success -> TODO()
+        is DataState.SuccessAnswer -> TODO()
+        is DataState.SuccessQuestion -> TODO()
+        is DataState.SuccessSlot -> TODO()
+        is DataState.SuccessSlots -> TODO()
+        is DataState.SuccessFetchUser -> {
+            Log.d("test", result.data.toString())
+        }
+    }
+
+
+
     Column(
         modifier = Modifier
             .fillMaxHeight(0.9f)
