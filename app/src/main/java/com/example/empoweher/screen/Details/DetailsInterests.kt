@@ -55,6 +55,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
 
+private const val s = "Spiritual"
+
 @Composable
 fun DetailsInterests(navigateToNextScreen: (route: String)->Unit){
 

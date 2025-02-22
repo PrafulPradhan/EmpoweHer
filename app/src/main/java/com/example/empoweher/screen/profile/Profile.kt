@@ -69,6 +69,7 @@ import com.example.empoweher.composables.Search
 import com.example.empoweher.composables.getChildCount
 import com.example.empoweher.composables.getInfoUser
 import com.example.empoweher.model.DataState
+import com.example.empoweher.model.Event
 import com.example.empoweher.model.Screen
 import com.example.empoweher.model.User
 import com.example.empoweher.screen.Details.converterHeight
@@ -122,6 +123,63 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
     if (isEnt != null && isEnt == "true") {
         color = colorResource(R.color.emeraldgreen)
     }
+
+    //Posts ka code
+
+    var postsRef = FirebaseDatabase.getInstance().getReference("Users"+"/"+currentFirebaseUser+"/Posts")
+        .limitToLast(4)
+
+    var post1 by remember {
+        mutableStateOf("")
+    }
+    var post2 by remember {
+        mutableStateOf("")
+    }
+    var post3 by remember {
+        mutableStateOf("")
+    }
+    var post4 by remember {
+        mutableStateOf("")
+    }
+    var index=1
+
+    val postImage1 = rememberAsyncImagePainter(model = post1)
+    val postImage2 = rememberAsyncImagePainter(model = post2)
+    val postImage3 = rememberAsyncImagePainter(model = post3)
+    val postImage4 = rememberAsyncImagePainter(model = post4)
+
+
+    postsRef.addListenerForSingleValueEvent(object:ValueEventListener{
+        override fun onDataChange(snapshot: DataSnapshot) {
+                for (data in snapshot.children) {
+                    val e = data.getValue(String::class.java)
+                    if (e != null) {
+                        if(index==1){
+                            post1=e
+                            index++
+                        }
+                        if(index==2){
+                            post2=e
+                            index++
+                        }
+                        if(index==3){
+                            post3=e
+                            index++
+                        }
+                        if(index==4){
+                            post1=e
+                            index++
+                        }
+                    }
+                }
+        }
+        override fun onCancelled(error: DatabaseError) {
+        }
+
+    })
+
+    //Posts ka code end
+
 
     Column(
         modifier = Modifier
@@ -288,8 +346,54 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                 )
             }
         }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(BorderStroke(2.dp, Color.Black)),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ){
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+            ){
+
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+            ){
+
+            }
+
+        }
+
+
 
         Spacer(modifier = Modifier.height(converterHeight(20, context).dp))
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset(y = -converterHeight(15, context).dp)
+                .padding(
+                    start = converterHeight(20, context).dp,
+                    end = converterHeight(20, context).dp,
+                    bottom = converterHeight(5, context).dp
+                )
+                .clip(RoundedCornerShape(converterHeight(10, context).dp))
+                .clickable {
+                }
+                .shadow(ambientColor = Color.Blue, elevation = converterHeight(30, context).dp),
+            elevation = CardDefaults.cardElevation(converterHeight(20, context).dp),
+            colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.lightorange))
+
+        ){
+
+
+        }
+
+
 
         if (isEnt == "true" && userId == currentFirebaseUser) {
             Card(
@@ -320,7 +424,7 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
 
                     Image(
                         painter = painterResource(id = R.drawable.schedule),
-                        contentDescription = "addContact",
+                        contentDescription = "Schedule",
                         modifier = Modifier
                             .padding(bottom = 20.dp)
                             .clip(RoundedCornerShape(converterHeight(20, context).dp))

@@ -59,9 +59,6 @@ fun DetailsDp(navigateToNextScreen: (route: String)->Unit){
     val dbref = FirebaseDatabase.getInstance()
         .getReference("Users");
 
-//    dbref.child(currentFirebaseUser).child("name").setValue("hello")
-//    dbref.child("Pokemon").child("name").setValue("hello")
-
     Column(
         modifier= Modifier
             .fillMaxSize()
@@ -152,8 +149,21 @@ fun DetailsDp(navigateToNextScreen: (route: String)->Unit){
                         dbref.child(currentFirebaseUser).child("Dp").setValue(it.toString())
                     }
                 }
-                navigateToNextScreen(Screen.Home.route)
+                for (i in 1..4){
+                    val currentMillis=System.currentTimeMillis().toString()
+                    val ref= storage.getReference()
+                        .child(currentFirebaseUser +"/"+"Post"+"/"+currentMillis)
+                    ref.putFile(uri).addOnSuccessListener {
+                        ref.getDownloadUrl().addOnSuccessListener { it
+                            dbref.child(currentFirebaseUser).child("Posts/"+currentMillis).setValue(it.toString())
+                        }
+                    }.addOnSuccessListener {
+                        if (i==4){
+                            navigateToNextScreen(Screen.Home.route)
+                        }
+                    }
 
+                }
             }) {
 
             Text(
