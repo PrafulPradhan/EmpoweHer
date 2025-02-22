@@ -249,6 +249,7 @@ fun ShowLazyList(event: MutableList<Event>,navigateToNextScreen: (route: String)
 
                     },
             ) {
+
                 EventCard(
                     eventId=each.eventId!!,
                     eventTitle = each.eventName!!,

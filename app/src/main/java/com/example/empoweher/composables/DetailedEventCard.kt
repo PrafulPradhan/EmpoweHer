@@ -10,13 +10,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,6 +27,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +38,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,10 +73,12 @@ import java.time.LocalDateTime
 @Composable
 fun DetailedEventCard(eventId:String?="",navigateToNextScreen: (route: String)->Unit) {
 
-
     var currentUser="24Si2cNeD8Uq7vIbGCTDUSAHNOg1"
     var currentFirebaseUser:String?=""
     var feesEvent by remember {
+        mutableStateOf("")
+    }
+    var status by remember {
         mutableStateOf("")
     }
     try {
@@ -181,6 +189,7 @@ fun DetailedEventCard(eventId:String?="",navigateToNextScreen: (route: String)->
     contact=getInfo("contact",eventId)
     vacancy=getInfo("vacancy",eventId)
     meetingId=getInfo("meetingId", eventId)
+    status= getInfo("status",eventId)
     val name = getInfoUser("name", currentFirebaseUser)
     var painter= rememberAsyncImagePainter(model = eventImage)
     var scroll =rememberScrollState()
@@ -292,7 +301,7 @@ fun DetailedEventCard(eventId:String?="",navigateToNextScreen: (route: String)->
                     PrintText(text = "Timing : $timing")
                     PrintText(text = "Duration in Hours : $duration")
                     PrintText(text = "Capacity : $capacity")
-                    if(booked){
+                    if(booked && status=="ongoing"){
                         Button(
                             onClick = {
                                 val navigate = Intent(context, VideoConferencing::class.java)
@@ -306,54 +315,83 @@ fun DetailedEventCard(eventId:String?="",navigateToNextScreen: (route: String)->
                             Text(text="Join Now")
                         }
                     }
+                    if (status=="completed"){
+
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = MaterialTheme.colorScheme.background
+                        ) {
+                            Column(
+                                modifier = Modifier.fillMaxSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+
+                                var rating1 by remember {
+                                    mutableDoubleStateOf(0.0)
+                                }
+                                RatingBar(
+                                    modifier = Modifier
+                                        .size(50.dp),
+                                    rating = rating1,
+                                    onRatingChanged = {
+                                        rating1 = it
+                                    },
+                                    starsColor = colorResource(R.color.redorange)
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
-        Text(text = "Seats Left : $vacancy", modifier = Modifier
-            .background(colorResource(id = R.color.teal_200))
-            .fillMaxWidth(),
-            fontFamily = FontFamily(
-                Font(R.font.font1)
-            ),
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            fontSize = 18.sp)
-        Button(modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(),
-            shape = RoundedCornerShape(0),
-            onClick = {
+        if (status=="ongoing") {
+            Text(
+                text = "Seats Left : $vacancy", modifier = Modifier
+                    .background(colorResource(id = R.color.teal_200))
+                    .fillMaxWidth(),
+                fontFamily = FontFamily(
+                    Font(R.font.font1)
+                ),
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                fontSize = 18.sp
+            )
+            Button(modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(),
+                shape = RoundedCornerShape(0),
+                onClick = {
 
-                if (Integer.parseInt(vacancy)>0 && !booked){
-                    Toast.makeText(context,"Enrolled",Toast.LENGTH_SHORT).show()
-                    var vacancyUpdated=Integer.parseInt(vacancy)-1
-                    val dbref = FirebaseDatabase.getInstance().getReference("Event");
-                    dbref.child(eventId!!).child("vacancy").setValue(vacancyUpdated.toString())
-                    val Users = FirebaseDatabase.getInstance().getReference("Users");
+                    if (Integer.parseInt(vacancy) > 0 && !booked) {
+                        Toast.makeText(context, "Enrolled", Toast.LENGTH_SHORT).show()
+                        var vacancyUpdated = Integer.parseInt(vacancy) - 1
+                        val dbref = FirebaseDatabase.getInstance().getReference("Event");
+                        dbref.child(eventId!!).child("vacancy").setValue(vacancyUpdated.toString())
+                        val Users = FirebaseDatabase.getInstance().getReference("Users");
 
-                    Users.child(currentUser).child("bookedEvents").child(eventId).setValue(eventId).addOnSuccessListener {
-                        booked=true
-                        val intent = Intent(context, PaymentEvent::class.java)
-                        intent.putExtra("eventId", eventId)
-                        intent.putExtra("feesEvent",feesEvent)
-                        context.startActivity(intent)
+                        Users.child(currentUser).child("bookedEvents").child(eventId)
+                            .setValue(eventId).addOnSuccessListener {
+                            booked = true
+                            val intent = Intent(context, PaymentEvent::class.java)
+                            intent.putExtra("eventId", eventId)
+                            intent.putExtra("feesEvent", feesEvent)
+                            context.startActivity(intent)
+                        }
+
+
+                    } else {
+                        if (booked) {
+                            Toast.makeText(context, "Already Booked", Toast.LENGTH_SHORT).show()
+
+                        } else {
+                            Toast.makeText(context, "No Seats Left", Toast.LENGTH_SHORT).show()
+                        }
                     }
+                }) {
 
-
-                }
-
-                else{
-                    if (booked){
-                        Toast.makeText(context,"Already Booked",Toast.LENGTH_SHORT).show()
-
-                    }
-                    else{
-                        Toast.makeText(context,"No Seats Left",Toast.LENGTH_SHORT).show()
-                    }
-                }
-        }) {
-
-            Text(text = "Enroll Now", fontSize = 18.sp)
+                Text(text = "Enroll Now", fontSize = 18.sp)
+            }
         }
     }
 }

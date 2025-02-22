@@ -1,7 +1,9 @@
 package com.example.empoweher.screen.events
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
@@ -41,9 +44,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.empoweher.R
 import com.example.empoweher.composables.SampleText
 import com.example.empoweher.model.DataState
+import com.example.empoweher.model.Event
 import com.example.empoweher.model.Screen
 import com.example.empoweher.screen.Details.converterHeight
 import com.example.empoweher.viewmodel.bookedEvents
+import com.example.empoweher.viewmodel.convertToMillis
 
 @Composable
 fun BookedEvents(navigateToNextScreen: (route: String)->Unit){
@@ -79,7 +84,8 @@ fun BookedEvents(navigateToNextScreen: (route: String)->Unit){
             }
         }
         is DataState.Success -> {
-
+            val eventsOngoing= mutableListOf<Event>()
+            val eventsCompleted= mutableListOf<Event>()
             Column(
                 modifier= Modifier
                     .fillMaxSize()
@@ -87,8 +93,37 @@ fun BookedEvents(navigateToNextScreen: (route: String)->Unit){
                 horizontalAlignment = Alignment.CenterHorizontally
 
             ) {
-                ShowLazyList(result.data,navigateToNextScreen)
-
+                for (i in result.data){
+                    val millis= convertToMillis(i.endDate!!,i.timing!!)
+                    val currentMillis=System.currentTimeMillis()
+                    Log.d("millis",millis.toString())
+                    Log.d("currentmillis",currentMillis.toString())
+                    if (currentMillis>=millis){
+                        eventsCompleted.add(i)
+                    }else{
+                        eventsOngoing.add(i)
+                    }
+                }
+                Log.d("eventsCompleted",eventsCompleted.toString())
+                Log.d("eventsOngoing",eventsOngoing.toString())
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                        .padding(5.dp)
+                    ) {
+                    SampleText("Ongoing", fontSize = 18)
+                    ShowLazyList(eventsOngoing, navigateToNextScreen)
+                }
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                        .padding(5.dp)
+                ) {
+                    SampleText("Completed", fontSize = 18)
+                    ShowLazyList(eventsCompleted, navigateToNextScreen)
+                }
             }
 
         }
