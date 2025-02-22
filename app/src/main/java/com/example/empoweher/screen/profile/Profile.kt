@@ -55,7 +55,10 @@ import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -87,6 +90,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.internal.wait
 
 
 @Composable
@@ -106,13 +110,14 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
     val uri = Uri.parse("android.resource://com.example.empoweher/drawable/alert")
     var selectedImage by remember { mutableStateOf<Uri?>(uri) }
 
-    val dbref = FirebaseDatabase.getInstance()
-        .getReference("Users");
-
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
             selectedImage = uri
         }
+
+    val dbref = FirebaseDatabase.getInstance()
+        .getReference("Users");
+
     val painter = rememberAsyncImagePainter(selectedImage)
     val scrollState = rememberScrollState()
 
@@ -148,6 +153,11 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
     val postImage3 = rememberAsyncImagePainter(model = post3)
     val postImage4 = rememberAsyncImagePainter(model = post4)
 
+    Log.d("Post1",post1)
+    Log.d("Post2",post2)
+    Log.d("Post3",post3)
+    Log.d("Post4",post4)
+
 
     postsRef.addListenerForSingleValueEvent(object:ValueEventListener{
         override fun onDataChange(snapshot: DataSnapshot) {
@@ -158,15 +168,15 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                             post1=e
                             index++
                         }
-                        if(index==2){
+                        else if(index==2){
                             post2=e
                             index++
                         }
-                        if(index==3){
+                        else if(index==3){
                             post3=e
                             index++
                         }
-                        if(index==4){
+                        else if(index==4){
                             post1=e
                             index++
                         }
@@ -192,7 +202,7 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(converterHeight(4,context).dp)
+                .padding(converterHeight(4, context).dp)
         )
         {
 
@@ -215,16 +225,16 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                         .clip(CircleShape)
                         .size(converterHeight(100, context).dp)
                         .clickable {
-                            if (userId==currentFirebaseUser){
-                            launcher.launch("image/*")
-                            ref.putFile(selectedImage!!).addOnSuccessListener {
-                                ref.getDownloadUrl().addOnSuccessListener {
-                                    it
-                                    dbref.child(currentFirebaseUser).child("Dp")
-                                        .setValue(it.toString()).addOnSuccessListener {
-                                            Log.d("dp","3")
+                            if (userId == currentFirebaseUser) {
+                                launcher.launch("image/*")
+                                ref.putFile(selectedImage!!).addOnSuccessListener {
+                                    ref.getDownloadUrl().addOnSuccessListener {
+                                        it
+                                        dbref.child(currentFirebaseUser).child("Dp")
+                                            .setValue(it.toString()).addOnSuccessListener {
+                                                Log.d("dp", "3")
 
-                                        }
+                                            }
                                     }
                                 }
                             }
@@ -238,7 +248,8 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
         }
         Icon(
             imageVector = Icons.Outlined.Add, contentDescription = "Change",
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .offset(converterHeight(35, context).dp, -converterHeight(17, context).dp)
         )
 
@@ -368,8 +379,6 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
 
         }
 
-
-
         Spacer(modifier = Modifier.height(converterHeight(20, context).dp))
 
         Card(
@@ -386,14 +395,171 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                 }
                 .shadow(ambientColor = Color.Blue, elevation = converterHeight(30, context).dp),
             elevation = CardDefaults.cardElevation(converterHeight(20, context).dp),
-            colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.lightorange))
+            colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.white))
 
         ){
+            Column(
+                modifier = Modifier.fillMaxWidth()
+
+            ) {
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ){
+                    Text(
+                        text = "New Posts!",
+                        fontSize = 25.sp,
+                        fontFamily = FontFamily(Font(R.font.font1)),
+                        fontWeight = FontWeight.Bold,
+                        color = colorResource(R.color.black)
+
+                    )
+                }
+                Divider(
+                    modifier=Modifier.fillMaxWidth(),
+                    thickness = 2.dp
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .padding(converterHeight(20,context).dp)
+                            .shadow(
+                                ambientColor = Color.Blue,
+                                elevation = converterHeight(10, context).dp
+                            ),
+                        elevation = CardDefaults.cardElevation(converterHeight(20, context).dp),
+                        colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.white))
+
+                    ) {
+                        Image(
+                            painter = postImage1,
+                            contentDescription = "ProfilePic",
+                            modifier = Modifier
+                                .size(converterHeight(150, context).dp)
+
+                        )
+                    }
+                    Card(
+                        modifier = Modifier
+                            .padding(converterHeight(20,context).dp)
+                            .shadow(
+                                ambientColor = Color.Blue,
+                                elevation = converterHeight(10, context).dp
+                            ),
+                        elevation = CardDefaults.cardElevation(converterHeight(20, context).dp),
+                        colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.white))
+
+                    ) {
+                        Image(
+                            painter = postImage2,
+                            contentDescription = "ProfilePic",
+                            modifier = Modifier
+                                .size(converterHeight(150, context).dp)
+
+                        )
+                    }
+
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .padding(converterHeight(20,context).dp)
+                            .shadow(
+                                ambientColor = Color.Blue,
+                                elevation = converterHeight(10, context).dp
+                            ),
+                        elevation = CardDefaults.cardElevation(converterHeight(20, context).dp),
+                        colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.white))
+
+                    ) {
+                        Image(
+                            painter = postImage3,
+                            contentDescription = "ProfilePic",
+                            modifier = Modifier
+                                .size(converterHeight(150, context).dp)
+
+                        )
+                    }
+                    Card(
+                        modifier = Modifier
+                            .padding(converterHeight(20,context).dp)
+                            .shadow(
+                                ambientColor = Color.Blue,
+                                elevation = converterHeight(10, context).dp
+                            ),
+                        elevation = CardDefaults.cardElevation(converterHeight(20, context).dp),
+                        colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.white))
+
+                    ) {
+                        Image(
+                            painter = postImage4,
+                            contentDescription = "ProfilePic",
+                            modifier = Modifier
+                                .size(converterHeight(150, context).dp)
+
+                        )
+                    }
+
+                }
+            }
+            Divider(
+                modifier=Modifier.fillMaxWidth(),
+                thickness = 2.dp
+            )
+            Row(
+                modifier = Modifier
+                        .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ){
+                Text(
+                    text = "VIEW ALL",
+                    fontSize = 25.sp,
+                    fontFamily = FontFamily(Font(R.font.font1)),
+                    fontWeight = FontWeight.Bold,
+                    color = colorResource(R.color.lightorange)
+
+                )
+                Text(
+                    text = "ADD NEW +",
+                    fontSize = 25.sp,
+                    fontFamily = FontFamily(Font(R.font.font1)),
+                    fontWeight = FontWeight.Bold,
+                    color = colorResource(R.color.teal_700),
+                    modifier = Modifier.clickable {
+                        launcher.launch("image/*")
+                    }
+                )
+                Text(
+                    text = "ADD NEW +",
+                    fontSize = 25.sp,
+                    fontFamily = FontFamily(Font(R.font.font1)),
+                    fontWeight = FontWeight.Bold,
+                    color = colorResource(R.color.teal_700),
+                    modifier = Modifier.clickable {
+                        val currentMillis=System.currentTimeMillis().toString()
+                        val ref= storage.getReference()
+                            .child(currentFirebaseUser +"/"+"Post"+"/"+currentMillis)
+                        ref.putFile(selectedImage!!).addOnSuccessListener {
+                            ref.getDownloadUrl().addOnSuccessListener { it
+                                dbref.child(currentFirebaseUser).child("Posts/"+currentMillis).setValue(it.toString())
+                            }
+                        }
+
+                    }
+                )
 
 
+            }
         }
 
-
+        Spacer(Modifier.height(converterHeight(50,context).dp))
 
         if (isEnt == "true" && userId == currentFirebaseUser) {
             Card(
@@ -407,7 +573,7 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                     )
                     .clip(RoundedCornerShape(converterHeight(10, context).dp))
                     .clickable {
-                        navigateToNextScreen(Screen.Timings.route+"/"+currentFirebaseUser)
+                        navigateToNextScreen(Screen.Timings.route + "/" + currentFirebaseUser)
                     }
                     .shadow(ambientColor = Color.Blue, elevation = converterHeight(30, context).dp),
                 elevation = CardDefaults.cardElevation(converterHeight(20, context).dp),
@@ -452,7 +618,7 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                     )
                     .clip(RoundedCornerShape(converterHeight(10, context).dp))
                     .clickable {
-                        navigateToNextScreen(Screen.Timings.route+"/"+userId)
+                        navigateToNextScreen(Screen.Timings.route + "/" + userId)
                     }
                     .shadow(ambientColor = Color.Blue, elevation = converterHeight(30, context).dp),
                 elevation = CardDefaults.cardElevation(converterHeight(20, context).dp),
