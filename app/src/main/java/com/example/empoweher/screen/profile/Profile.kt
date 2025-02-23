@@ -252,7 +252,8 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                         .border(
                             BorderStroke(converterHeight(3, context).dp, color),
                             CircleShape
-                        )
+                        ),
+                    contentScale = ContentScale.Crop
 
                 )
         }
@@ -450,7 +451,8 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                             painter = postImage1,
                             contentDescription = "ProfilePic",
                             modifier = Modifier
-                                .size(converterHeight(150, context).dp)
+                                .size(converterHeight(150, context).dp),
+                            contentScale = ContentScale.Crop
 
                         )
                     }
@@ -469,7 +471,8 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                             painter = postImage2,
                             contentDescription = "ProfilePic",
                             modifier = Modifier
-                                .size(converterHeight(150, context).dp)
+                                .size(converterHeight(150, context).dp),
+                            contentScale = ContentScale.Crop
 
                         )
                     }
@@ -493,7 +496,8 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                             painter = postImage3,
                             contentDescription = "ProfilePic",
                             modifier = Modifier
-                                .size(converterHeight(150, context).dp)
+                                .size(converterHeight(150, context).dp),
+                            contentScale = ContentScale.Crop
 
                         )
                     }
@@ -512,7 +516,8 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                             painter = postImage4,
                             contentDescription = "ProfilePic",
                             modifier = Modifier
-                                .size(converterHeight(150, context).dp)
+                                .size(converterHeight(150, context).dp),
+                            contentScale = ContentScale.Crop
 
                         )
                     }
