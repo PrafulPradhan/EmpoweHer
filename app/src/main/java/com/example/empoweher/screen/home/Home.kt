@@ -60,6 +60,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
@@ -325,10 +326,12 @@ fun logisticModel(context: Context, url: String, jsonData: JSONArray, onSuccess:
                 mergedJson,
                 onSuccess = { response ->
                     Log.d("API_CALL", "Success: $response")
+                    val similar_users=response.getJSONArray("similar_users")
+                    Log.d("similar_users", "Success: $similar_users")
                     val jsonArray = JSONArray()
-
                     val obj1 = JSONObject()
                         .put("userID", "user1")
+                        .put("eventId","event1")
                         .put("Education", 1)
                         .put("Safety", 0)
                         .put("Empowerment", 1)
@@ -354,6 +357,7 @@ fun logisticModel(context: Context, url: String, jsonData: JSONArray, onSuccess:
 
                     val obj2 = JSONObject()
                         .put("userID", "user2")
+                        .put("eventId","event2")
                         .put("Education", 0)
                         .put("Safety", 1)
                         .put("Empowerment", 0)
@@ -463,20 +467,6 @@ fun logisticModel(context: Context, url: String, jsonData: JSONArray, onSuccess:
             }
         }
 
-//        Box(modifier= Modifier
-//            .fillMaxWidth()
-//            .height(converterHeight(400, context).dp)
-//            .padding(converterHeight(10, context).dp)
-//        )
-//        {
-//
-//            Column(modifier = Modifier.fillMaxWidth()){
-//                Spacer(modifier = Modifier.height(10.dp))
-//                Search(navigateToNextScreen)
-//            }
-//
-//        }
-
         Box(modifier= Modifier
             .fillMaxWidth()
             .height(converterHeight(400, context).dp)
@@ -506,8 +496,6 @@ fun logisticModel(context: Context, url: String, jsonData: JSONArray, onSuccess:
                     .padding(top = converterHeight(5, context).dp)
             )
             if (schemesArray == null) {
-                // Show loading indicator
-//                CircularProgressIndicator(modifier = Modifier.fillMaxSize())
             } else {
                 LazyColumn {
                     items(schemesArray!!.length()) { index ->
