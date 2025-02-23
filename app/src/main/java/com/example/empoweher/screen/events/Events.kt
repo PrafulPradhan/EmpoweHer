@@ -233,12 +233,12 @@ fun Events(navigateToNextScreen: (route: String)->Unit){
 }
 
 @Composable
-fun ShowLazyList(event: MutableList<Event>,navigateToNextScreen: (route: String)->Unit) {
+fun ShowLazyList(event: MutableList<Event>,navigateToNextScreen: (route: String)->Unit,color: Color?= colorResource(R.color.cream),eventBooked:String?="false") {
     LazyColumn(modifier= Modifier
         .clip(shape = RoundedCornerShape(25.dp))
         .fillMaxHeight(0.9f)
         .fillMaxWidth()
-        .background(colorResource(id = R.color.cream))){
+        .background(color!!)){
        items(event){each->
             Box(
                 modifier = Modifier
@@ -261,7 +261,8 @@ fun ShowLazyList(event: MutableList<Event>,navigateToNextScreen: (route: String)
                     eventCost = each.eventCost!!,
                     eventImage = each.eventImage!!,
                     navigateToNextScreen = navigateToNextScreen,
-                    eventTag=each.tag!!
+                    eventTag=each.tag!!,
+                    eventStatus=each.status
                 )
             }
         }

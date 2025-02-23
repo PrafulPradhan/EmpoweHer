@@ -376,7 +376,7 @@ fun DetailedEventCard(eventId:String?="",navigateToNextScreen: (route: String)->
                                             .child(eventId).child("totalRating").setValue(rating)
                                     }
                             }) {
-                                Text("Done")
+                                Text("Rate")
                             }
                         }
                     }
