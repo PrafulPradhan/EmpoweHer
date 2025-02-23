@@ -211,13 +211,13 @@ fun DetailsInterests(navigateToNextScreen: (route: String)->Unit){
 
                 val list= mutableListOf<String>()
                 if (education){
-                    list+="Education"
+                    list.add("Education")
                 }
                 if (socialAffairs){
                     list.add("Social Affairs")
                 }
                 if (safety){
-                    list.add("Education")
+                    list.add("Safety")
                 }
                 if (dailyGuidance){
                     list.add("Daily Guidance")

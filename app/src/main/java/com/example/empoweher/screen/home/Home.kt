@@ -154,7 +154,7 @@ fun logisticModel(context: Context, url: String, jsonData: JSONArray, onSuccess:
     val requestBody = JSONObject()
     requestBody.put("jsonData", jsonData)
 
-    Log.d("Request Body", requestBody.toString())
+    Log.d("Request Body Logistic Model", requestBody.toString())
 
     val jsonObjectRequest = object : JsonObjectRequest(
         Request.Method.POST, url, requestBody,
@@ -328,7 +328,7 @@ fun logisticModel(context: Context, url: String, jsonData: JSONArray, onSuccess:
                     val jsonArray = JSONArray()
 
                     val obj1 = JSONObject()
-                        .put("userId", "user1")
+                        .put("userID", "user1")
                         .put("Education", 1)
                         .put("Safety", 0)
                         .put("Empowerment", 1)
@@ -353,7 +353,7 @@ fun logisticModel(context: Context, url: String, jsonData: JSONArray, onSuccess:
                         .put("Rating", 3.2)
 
                     val obj2 = JSONObject()
-                        .put("userId", "user2")
+                        .put("userID", "user2")
                         .put("Education", 0)
                         .put("Safety", 1)
                         .put("Empowerment", 0)
