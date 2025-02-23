@@ -68,6 +68,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.android.volley.RequestQueue
 import com.android.volley.Response
+import com.example.empoweher.activities.Model
 import com.example.empoweher.composables.getInfoUser
 import com.example.empoweher.model.DataState
 import com.example.empoweher.model.JsonUser
@@ -147,6 +148,40 @@ fun sendJsonData(context: Context, url: String, mergedJson: JSONObject, onSucces
     queue.add(jsonObjectRequest)
 }
 
+fun logisticModel(context: Context, url: String, jsonData: JSONArray, onSuccess: (JSONObject) -> Unit, onError: (String) -> Unit) {
+    val queue: RequestQueue = Volley.newRequestQueue(context)
+    Log.d("Final", jsonData.toString())
+    val requestBody = JSONObject()
+    requestBody.put("jsonData", jsonData)
+
+    Log.d("Request Body", requestBody.toString())
+
+    val jsonObjectRequest = object : JsonObjectRequest(
+        Request.Method.POST, url, requestBody,
+        Response.Listener { response ->
+            try {
+                Log.d("RESPONSE_SUCCESS", "Response: $response")
+                onSuccess(response)
+            } catch (e: Exception) {
+                Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+                Log.e("JSON_ERROR", "Error parsing JSON: ${e.message}")
+                onError("Error parsing response")
+            }
+        },
+        Response.ErrorListener { error ->
+            Log.e("VOLLEY_ERROR", "Request failed: ${error.message}")
+            onError("Request failed: ${error.message}")
+        }
+    ) {
+        override fun getHeaders(): MutableMap<String, String> {
+            val headers = HashMap<String, String>()
+            headers["Content-Type"] = "application/json"
+            return headers
+        }
+    }
+    // Add the request to the queue
+    queue.add(jsonObjectRequest)
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -290,6 +325,73 @@ fun sendJsonData(context: Context, url: String, mergedJson: JSONObject, onSucces
                 mergedJson,
                 onSuccess = { response ->
                     Log.d("API_CALL", "Success: $response")
+                    val jsonArray = JSONArray()
+
+                    val obj1 = JSONObject()
+                        .put("userId", "user1")
+                        .put("Education", 1)
+                        .put("Safety", 0)
+                        .put("Empowerment", 1)
+                        .put("Daily Guidance", 0)
+                        .put("Arts", 0)
+                        .put("Technical", 1)
+                        .put("Social Affairs", 0)
+                        .put("Child Problems", 1)
+                        .put("Astrology", 0)
+                        .put("Health", 1)
+                        .put("Spiritual", 0)
+                        .put("History", 0)
+                        .put("Career Guidance", 1)
+                        .put("Sports", 1)
+                        .put("Politics", 1)
+                        .put("Exploratory", 1)
+                        .put("Entertainment", 1)
+                        .put("Real Estate", 0)
+                        .put("Business", 0)
+                        .put("Event_Domain", 0)
+                        .put("Price", 1000)
+                        .put("Rating", 3.2)
+
+                    val obj2 = JSONObject()
+                        .put("userId", "user2")
+                        .put("Education", 0)
+                        .put("Safety", 1)
+                        .put("Empowerment", 0)
+                        .put("Daily Guidance", 1)
+                        .put("Arts", 1)
+                        .put("Technical", 0)
+                        .put("Social Affairs", 1)
+                        .put("Child Problems", 0)
+                        .put("Astrology", 1)
+                        .put("Health", 0)
+                        .put("Spiritual", 1)
+                        .put("History", 1)
+                        .put("Career Guidance", 0)
+                        .put("Sports", 0)
+                        .put("Politics", 0)
+                        .put("Exploratory", 0)
+                        .put("Entertainment", 1)
+                        .put("Real Estate", 1)
+                        .put("Business", 1)
+                        .put("Event_Domain", 1)
+                        .put("Price", 500)
+                        .put("Rating", 4.5)
+
+                    jsonArray.put(obj1)
+                    jsonArray.put(obj2)
+
+                    Log.d("checkpoint", jsonArray.toString())
+                    logisticModel(
+                        context = context,
+                        url ="https://modelapi-yz8c.onrender.com/logistic",
+                        jsonArray,
+                        onSuccess = { resp->
+                            Log.d("RESPONSE_SUCC", resp.toString())
+                        },
+                        onError = { error->
+                            Log.d("API_CALL", "Error: $error")
+                        }
+                    )
                 },
                 onError = { error ->
                     Log.d("API_CALL", "Error: $error")

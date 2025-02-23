@@ -9,7 +9,6 @@ buildscript {
     val agp_version5 by extra("8.3.0")
     dependencies {
         classpath ("com.google.gms:google-services:4.4.0")
-
     }
     repositories {
         maven {

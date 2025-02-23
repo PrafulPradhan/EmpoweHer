@@ -36,6 +36,9 @@
         android:theme="@style/Theme.MaterialComponents.Bridge"
         tools:targetApi="31">
         <activity
+            android:name=".activities.Model"
+            android:exported="false" />
+        <activity
             android:name=".activities.FakeCallActivity"
             android:exported="false" />
         <activity
