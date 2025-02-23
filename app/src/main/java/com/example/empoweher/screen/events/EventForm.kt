@@ -58,6 +58,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
+import androidx.work.BackoffPolicy
+import androidx.work.Data
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkManager
 import coil.compose.rememberAsyncImagePainter
 import com.example.empoweher.R
 import com.example.empoweher.activities.Twitter
@@ -70,14 +74,17 @@ import java.util.Date
 import java.util.Locale
 import com.example.empoweher.model.Event
 import com.example.empoweher.screen.Details.converterHeight
+import com.example.empoweher.workers.EventWorker
+import com.example.empoweher.workers.SmsWorker
 import com.google.firebase.storage.FirebaseStorage
+import java.util.concurrent.TimeUnit
 
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventForm(){
-
+    lateinit var periodicWorkRequest: PeriodicWorkRequest
     val min = 100000000
     val max = 999999999
     val meetingId = (min..max).random()
@@ -885,6 +892,20 @@ fun EventForm(){
                         contactNumber = ""
                         startDate = calendar1.timeInMillis
                         endDate = calendar2.timeInMillis
+                        val data: Data =
+                            Data.Builder().putString("Events", id).build()
+                        periodicWorkRequest=PeriodicWorkRequest.Builder(
+                            EventWorker::class.java,
+                            15,
+                            TimeUnit.MINUTES
+                        )
+                            .addTag("Events")
+                            .setBackoffCriteria(
+                                BackoffPolicy.LINEAR,
+                                PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS,
+                                TimeUnit.MILLISECONDS
+                            ).setInputData(data).build()
+                        WorkManager.getInstance(context).enqueue(periodicWorkRequest)
                     }
                     else{
                         Toast.makeText(context,"Please Fill All Fields",Toast.LENGTH_SHORT).show()

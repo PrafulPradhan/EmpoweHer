@@ -44,6 +44,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -83,6 +84,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
@@ -109,21 +111,38 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
 
     val uri = Uri.parse("android.resource://com.example.empoweher/drawable/alert")
     var selectedImage by remember { mutableStateOf<Uri?>(uri) }
-
-    val launcher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
-            selectedImage = uri
-        }
-
+    val coroutineScope = rememberCoroutineScope()
     val dbref = FirebaseDatabase.getInstance()
         .getReference("Users");
+    val storage = FirebaseStorage.getInstance()
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            selectedImage = uri
+            coroutineScope.launch {
+                uploadImage(uri, storage, dbref, currentFirebaseUser)
+            }
+        }
+    }
+
+    val launcherDp = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            selectedImage = uri
+            coroutineScope.launch {
+                uploadDp(uri, storage, dbref, currentFirebaseUser)
+            }
+        }
+    }
+
 
     val painter = rememberAsyncImagePainter(selectedImage)
     val scrollState = rememberScrollState()
 
-    val storage = FirebaseStorage.getInstance()
-    val ref = storage.getReference()
-        .child(currentFirebaseUser + "/" + "Profile Picture")
+
 
     if (isEnt != null && isEnt == "true") {
         color = colorResource(R.color.emeraldgreen)
@@ -165,16 +184,16 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                     val e = data.getValue(String::class.java)
                     if (e != null) {
                         if(index==1){
-                            post1=e
+                            post4=e
                             index++
                         }
                         else if(index==2){
-                            post2=e
+                            post3=e
                             index++
                         }
                         else if(index==3){
 
-                            post3=e
+                            post2=e
                             index++
                         }
                         else if(index==4){
@@ -227,23 +246,14 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                         .size(converterHeight(100, context).dp)
                         .clickable {
                             if (userId == currentFirebaseUser) {
-                                launcher.launch("image/*")
-                                ref.putFile(selectedImage!!).addOnSuccessListener {
-                                    ref.getDownloadUrl().addOnSuccessListener {
-                                        it
-                                        dbref.child(currentFirebaseUser).child("Dp")
-                                            .setValue(it.toString()).addOnSuccessListener {
-                                                Log.d("dp", "3")
-
-                                            }
-                                    }
-                                }
+                                launcherDp.launch("image/*")
                             }
                         }
                         .border(
                             BorderStroke(converterHeight(3, context).dp, color),
                             CircleShape
-                        )
+                        ),
+                    contentScale = ContentScale.Crop
 
                 )
         }
@@ -392,8 +402,6 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                     bottom = converterHeight(5, context).dp
                 )
                 .clip(RoundedCornerShape(converterHeight(10, context).dp))
-                .clickable {
-                }
                 .shadow(ambientColor = Color.Blue, elevation = converterHeight(30, context).dp),
             elevation = CardDefaults.cardElevation(converterHeight(20, context).dp),
             colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.white))
@@ -410,7 +418,7 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ){
                     Text(
-                        text = "New Posts!",
+                        text = "New Posts \uD83D\uDCE2",
                         fontSize = 25.sp,
                         fontFamily = FontFamily(Font(R.font.font1)),
                         fontWeight = FontWeight.Bold,
@@ -441,7 +449,8 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                             painter = postImage1,
                             contentDescription = "ProfilePic",
                             modifier = Modifier
-                                .size(converterHeight(150, context).dp)
+                                .size(converterHeight(150, context).dp),
+                            contentScale = ContentScale.Crop
 
                         )
                     }
@@ -460,7 +469,8 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                             painter = postImage2,
                             contentDescription = "ProfilePic",
                             modifier = Modifier
-                                .size(converterHeight(150, context).dp)
+                                .size(converterHeight(150, context).dp),
+                            contentScale = ContentScale.Crop
 
                         )
                     }
@@ -484,7 +494,8 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                             painter = postImage3,
                             contentDescription = "ProfilePic",
                             modifier = Modifier
-                                .size(converterHeight(150, context).dp)
+                                .size(converterHeight(150, context).dp),
+                            contentScale = ContentScale.Crop
 
                         )
                     }
@@ -503,7 +514,8 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                             painter = postImage4,
                             contentDescription = "ProfilePic",
                             modifier = Modifier
-                                .size(converterHeight(150, context).dp)
+                                .size(converterHeight(150, context).dp),
+                            contentScale = ContentScale.Crop
 
                         )
                     }
@@ -520,29 +532,22 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                 horizontalArrangement = Arrangement.SpaceEvenly
             ){
                 Text(
-                    text = "VIEW ALL",
+                    text = "VIEW ALL \uD83D\uDD0E",
                     fontSize = 25.sp,
                     fontFamily = FontFamily(Font(R.font.font1)),
                     fontWeight = FontWeight.Bold,
                     color = colorResource(R.color.lightorange)
 
+
                 )
                 Text(
-                    text = "ADD NEW +",
+                    text = "ADD NEW ➕",
                     fontSize = 25.sp,
                     fontFamily = FontFamily(Font(R.font.font1)),
                     fontWeight = FontWeight.Bold,
-                    color = colorResource(R.color.teal_700),
+                    color = colorResource(R.color.purple),
                     modifier = Modifier.clickable {
                         launcher.launch("image/*")
-                        val currentMillis=System.currentTimeMillis().toString()
-                        val ref= storage.getReference()
-                            .child(currentFirebaseUser +"/"+"Post"+"/"+currentMillis)
-                        ref.putFile(selectedImage!!).addOnSuccessListener {
-                            ref.getDownloadUrl().addOnSuccessListener { it
-                                dbref.child(currentFirebaseUser).child("Posts/"+currentMillis).setValue(it.toString())
-                            }
-                        }
                     }
                 )
 
@@ -695,6 +700,39 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                 Text(text = "Logout")
             }
             Spacer(modifier = Modifier.height(converterHeight(150, context).dp))
+        }
+    }
+}
+
+suspend fun uploadImage(
+    imageUri: Uri,
+    storage: FirebaseStorage,
+    dbref: DatabaseReference,
+    currentFirebaseUser: String
+) {
+    val currentMillis=System.currentTimeMillis().toString()
+    val ref= storage.getReference()
+        .child(currentFirebaseUser +"/"+"Post"+"/"+currentMillis)
+    ref.putFile(imageUri!!).addOnSuccessListener {
+        ref.getDownloadUrl().addOnSuccessListener { it
+            dbref.child(currentFirebaseUser).child("Posts/"+currentMillis).setValue(it.toString())
+        }
+    }
+}
+suspend fun uploadDp(
+    imageUri: Uri,
+    storage: FirebaseStorage,
+    dbref: DatabaseReference,
+    currentFirebaseUser: String
+) {
+    val ref = storage.getReference()
+        .child(currentFirebaseUser + "/" + "Profile Picture")
+    ref.putFile(imageUri!!).addOnSuccessListener {
+        ref.getDownloadUrl().addOnSuccessListener {
+            it
+            dbref.child(currentFirebaseUser).child("Dp")
+                .setValue(it.toString()).addOnSuccessListener {
+                }
         }
     }
 }

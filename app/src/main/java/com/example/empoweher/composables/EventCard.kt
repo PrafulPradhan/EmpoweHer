@@ -51,15 +51,22 @@ fun EventCard(navigateToNextScreen: (route: String) -> Unit,
               eventCost:String?="",
               eventImage:String?="",
               eventTag: String?="",
-              eventStatus:String?="ongoing"
+              eventStatus:String?="ongoing",
+              eventBooked:String?="false"
 ){
 
     var color = colorResource(id = R.color.mauve)
+    if(eventStatus=="completed" && eventStatus!="null"){
+        color= colorResource(R.color.light_gray)
+    }
 
     if(eventCost!!.isNotEmpty()){
-    if(Integer.parseInt(eventCost!!)==1) {
-        color = colorResource(id = R.color.emeraldgreen)
+//    if(Integer.parseInt(eventCost!!)==1) {
+//        color = colorResource(id = R.color.emeraldgreen)
+//    }
     }
+    if(eventBooked=="true"){
+        color = colorResource(id = R.color.emeraldgreen)
     }
 
     Card(

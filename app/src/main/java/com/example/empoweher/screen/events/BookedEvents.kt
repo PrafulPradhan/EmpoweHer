@@ -106,26 +106,9 @@ fun BookedEvents(navigateToNextScreen: (route: String)->Unit){
                 }
                 Log.d("eventsCompleted",eventsCompleted.toString())
                 Log.d("eventsOngoing",eventsOngoing.toString())
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp)
-                        .padding(5.dp)
-                    ) {
-                    SampleText("Ongoing", fontSize = 18)
-                    ShowLazyList(eventsOngoing, navigateToNextScreen)
-                }
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp)
-                        .padding(5.dp)
-                ) {
-                    SampleText("Completed", fontSize = 18)
-                    ShowLazyList(eventsCompleted, navigateToNextScreen)
-                }
-            }
 
+            }
+            ShowLazyList(result.data,navigateToNextScreen)
         }
         is DataState.Failure -> {
             Box(
