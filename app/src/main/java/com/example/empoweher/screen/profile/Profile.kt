@@ -402,8 +402,6 @@ fun Profile(userId : String?=null,navigateToNextScreen: (route: String)->Unit,vm
                     bottom = converterHeight(5, context).dp
                 )
                 .clip(RoundedCornerShape(converterHeight(10, context).dp))
-                .clickable {
-                }
                 .shadow(ambientColor = Color.Blue, elevation = converterHeight(30, context).dp),
             elevation = CardDefaults.cardElevation(converterHeight(20, context).dp),
             colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.white))

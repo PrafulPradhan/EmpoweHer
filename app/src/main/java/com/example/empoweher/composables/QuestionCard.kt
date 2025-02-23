@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.empoweher.R
 import com.example.empoweher.model.Screen
+import com.example.empoweher.screen.Details.converterHeight
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -60,26 +62,27 @@ fun QuestionCard (navigateToNextScreen:(route:String)->Unit,
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(150.dp)
-            .padding(5.dp)
+            .height(converterHeight(150, context = LocalContext.current).dp)
+            .padding(converterHeight(5, context = LocalContext.current).dp)
             .clickable {
                 navigateToNextScreen(Screen.Answer.route + "/" + questionId!!)
             },
         colors =CardDefaults.cardColors(containerColor = colorResource(id = R.color.pale_brown), contentColor = Color.White)
     ){
         Row {
-            Box(modifier=Modifier.padding(10.dp)) {
+            Box(modifier=Modifier.padding(converterHeight(10, context = LocalContext.current).dp)) {
                 val painter = rememberAsyncImagePainter(model = dp)
                 Image(
                     painter = painter,
                     contentDescription = "cd",
-                    contentScale = ContentScale.FillBounds,
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .height(45.dp)
+                        .height(converterHeight(45, context = LocalContext.current).dp)
+                        .width(converterHeight(45, context = LocalContext.current).dp)
                         .clip(CircleShape)
                 )
             }
-            Column(modifier=Modifier.padding(2.dp,10.dp)) {
+            Column(modifier=Modifier.padding(converterHeight(2, context = LocalContext.current).dp,converterHeight(10, context = LocalContext.current).dp)) {
                 Text(
                     text = userName!!,
                     fontFamily = FontFamily(Font(R.font.font1)),
@@ -88,15 +91,15 @@ fun QuestionCard (navigateToNextScreen:(route:String)->Unit,
                 Text(
                     text = profession!!,
                     fontFamily = FontFamily(Font(R.font.font1)),
-                    fontSize = 10.sp
+                    fontSize = converterHeight(10, context = LocalContext.current).sp
                 )
             }
         }
         Text(text = question!!,
             fontFamily = FontFamily(Font(R.font.font1)),
-            fontSize = 20.sp,
+            fontSize = converterHeight(20, context = LocalContext.current).sp,
             fontWeight = FontWeight.Bold,
-            modifier=Modifier.padding(10.dp,0.dp)
+            modifier=Modifier.padding(converterHeight(10, context = LocalContext.current).dp,0.dp)
             )
     }
 }
