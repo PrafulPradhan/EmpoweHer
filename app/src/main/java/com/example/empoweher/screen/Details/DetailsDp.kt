@@ -149,21 +149,22 @@ fun DetailsDp(navigateToNextScreen: (route: String)->Unit){
                         dbref.child(currentFirebaseUser).child("Dp").setValue(it.toString())
                     }
                 }
-                for (i in 1..4){
-                    val currentMillis=System.currentTimeMillis().toString()
-                    val ref= storage.getReference()
-                        .child(currentFirebaseUser +"/"+"Post"+"/"+currentMillis)
-                    ref.putFile(uri).addOnSuccessListener {
-                        ref.getDownloadUrl().addOnSuccessListener { it
-                            dbref.child(currentFirebaseUser).child("Posts/"+currentMillis).setValue(it.toString())
-                        }
-                    }.addOnSuccessListener {
-                        if (i==4){
-                            navigateToNextScreen(Screen.Home.route)
-                        }
-                    }
-
-                }
+//                for (i in 1..4){
+//                    val currentMillis=System.currentTimeMillis().toString()
+//                    val ref= storage.getReference()
+//                        .child(currentFirebaseUser +"/"+"Post"+"/"+currentMillis)
+//                    ref.putFile(uri).addOnSuccessListener {
+//                        ref.getDownloadUrl().addOnSuccessListener { it
+//                            dbref.child(currentFirebaseUser).child("Posts/"+currentMillis).setValue(it.toString())
+//                        }
+//                    }.addOnSuccessListener {
+//                        if (i==4){
+//                            navigateToNextScreen(Screen.Home.route)
+//                        }
+//                    }
+//
+//                }
+                navigateToNextScreen(Screen.Home.route)
             }) {
 
             Text(
