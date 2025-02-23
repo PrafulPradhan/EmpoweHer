@@ -19,5 +19,12 @@ data class Event (
     var contact:String?=null,
     var hostId:String?=null,
     var meetingId:String?=null,
-    var status:String?=null
+    var status:String?=null,
+    val attendees:String?=null,
+    val totalRating:String?=null
+)
+
+data class eventUserData(
+    val eventId: String?=null,
+    val rated:String?="false"
 )
