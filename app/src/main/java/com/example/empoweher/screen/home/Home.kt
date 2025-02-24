@@ -65,6 +65,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.android.volley.RequestQueue
@@ -73,6 +74,7 @@ import com.example.empoweher.activities.Model
 import com.example.empoweher.composables.getInfoUser
 import com.example.empoweher.model.DataState
 import com.example.empoweher.model.JsonUser
+import com.example.empoweher.viewmodel.JsonUserDataViewModel
 import com.example.empoweher.viewmodel.ProfileViewModel
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.merge
@@ -221,6 +223,27 @@ fun logisticModel(context: Context, url: String, jsonData: JSONArray, onSuccess:
     catch (e:Exception){
         Log.d("API", "${e}")
     }
+    var education by remember { mutableStateOf(0) }
+    var safety by remember { mutableStateOf(0) }
+    var empowerment by remember { mutableStateOf(0) }
+    var dailyGuidance by remember { mutableStateOf(0) }
+    var arts by remember { mutableStateOf(0) }
+    var technical by remember { mutableStateOf(0) }
+    var socialAffairs by remember { mutableStateOf(0) }
+    var childProblems by remember { mutableStateOf(0) }
+    var astrology by remember { mutableStateOf(0) }
+    var health by remember { mutableStateOf(0) }
+    var spiritual by remember { mutableStateOf(0) }
+    var history by remember { mutableStateOf(0) }
+    var sports by remember { mutableStateOf(0) }
+    var politics by remember { mutableStateOf(0) }
+    var exploratory by remember { mutableStateOf(0) }
+    var realEstate by remember { mutableStateOf(0) }
+    var business by remember { mutableStateOf(0) }
+    var price by remember { mutableStateOf(0) }
+    var entertainment by remember { mutableStateOf(0) }
+    var careerguidance by remember { mutableStateOf(0) }
+
 
     val viewModel= viewModel{ ProfileViewModel() }
     when( val result= viewModel.response.value){
@@ -232,24 +255,6 @@ fun logisticModel(context: Context, url: String, jsonData: JSONArray, onSuccess:
             var targetUser: JsonUser? = null
             for(data in result.data){
 
-                var education=0
-                var safety=0
-                var empowerment=0
-                var dailyGuidance=0
-                var arts=0
-                var technical=0
-                var socialAffairs=0
-                var childProblems=0
-                var astrology=0
-                var health=0
-                var spiritual=0
-                var history=0
-                var sports=0
-                var politics=0
-                var exploratory=0
-                var realEstate=0
-                var business=0
-                var price=0
                 var userId = data.userID
 
                 if(data.interests!!.contains("Education")){
@@ -276,32 +281,38 @@ fun logisticModel(context: Context, url: String, jsonData: JSONArray, onSuccess:
                 if(data.interests!!.contains("Child Problems")){
                     childProblems = 1
                 }
-                if(data.interests!!.contains("astrology")){
+                if(data.interests!!.contains("Astrology")){
                     astrology = 1
                 }
-                if(data.interests!!.contains("health")){
+                if(data.interests!!.contains("Health")){
                     health = 1
                 }
-                if(data.interests!!.contains("spiritual")){
+                if(data.interests!!.contains("Spiritual")){
                     spiritual = 1
                 }
-                if(data.interests!!.contains("history")){
+                if(data.interests!!.contains("History")){
                     history = 1
                 }
-                if(data.interests!!.contains("sports")){
+                if(data.interests!!.contains("Sports")){
                     sports = 1
                 }
-                if(data.interests!!.contains("politics")){
+                if(data.interests!!.contains("Politics")){
                     politics = 1
                 }
-                if(data.interests!!.contains("exploratory")){
+                if(data.interests!!.contains("Exploratory")){
                     exploratory = 1
                 }
-                if(data.interests!!.contains("realEstate")){
+                if(data.interests!!.contains("Real Estate")){
                     realEstate = 1
                 }
-                if(data.interests!!.contains("business")){
+                if(data.interests!!.contains("Business")){
                     business = 1
+                }
+                if(data.interests!!.contains("Entertainment")){
+                    entertainment = 1
+                }
+                if(data.interests!!.contains("Career Guidance")){
+                    careerguidance = 1
                 }
                 var tuple = JsonUser(userId, education, safety, empowerment, dailyGuidance, arts, technical, socialAffairs, childProblems, astrology, health, spiritual, history, sports, politics, exploratory, realEstate, business, price)
                 if(currentFirebaseUser == data.userID){
@@ -318,7 +329,7 @@ fun logisticModel(context: Context, url: String, jsonData: JSONArray, onSuccess:
             val mergedJson = JSONObject()
             mergedJson.put("jsonData", jsonData)
             mergedJson.put("jsonTarget", jsonTarget)
-
+            val viewModel2= viewModel{ JsonUserDataViewModel() }
             Log.d("test", jsonTarget.toString())
             sendJsonData(
                 context,
@@ -329,73 +340,55 @@ fun logisticModel(context: Context, url: String, jsonData: JSONArray, onSuccess:
                     val similar_users=response.getJSONArray("similar_users")
                     Log.d("similar_users", "Success: $similar_users")
                     val jsonArray = JSONArray()
-                    val obj1 = JSONObject()
-                        .put("userID", "user1")
-                        .put("eventId","event1")
-                        .put("Education", 1)
-                        .put("Safety", 0)
-                        .put("Empowerment", 1)
-                        .put("Daily Guidance", 0)
-                        .put("Arts", 0)
-                        .put("Technical", 1)
-                        .put("Social Affairs", 0)
-                        .put("Child Problems", 1)
-                        .put("Astrology", 0)
-                        .put("Health", 1)
-                        .put("Spiritual", 0)
-                        .put("History", 0)
-                        .put("Career Guidance", 1)
-                        .put("Sports", 1)
-                        .put("Politics", 1)
-                        .put("Exploratory", 1)
-                        .put("Entertainment", 1)
-                        .put("Real Estate", 0)
-                        .put("Business", 0)
-                        .put("Event_Domain", 0)
-                        .put("Price", 1000)
-                        .put("Rating", 3.2)
+                    for (i in 0 until similar_users.length()) {
+                        val userIdentify = similar_users[i].toString()
+                        viewModel2.fetch(userIdentify) { data ->
+                            for (i2 in data) {
+                                val obj = JSONObject()
+                                    .put("userID", userIdentify)
+                                    .put("eventId", i2.eventId)
+                                    .put("Education", education)
+                                    .put("Safety", safety)
+                                    .put("Empowerment", empowerment)
+                                    .put("Daily Guidance", dailyGuidance)
+                                    .put("Arts", arts)
+                                    .put("Technical", technical)
+                                    .put("Social Affairs", socialAffairs)
+                                    .put("Child Problems", childProblems)
+                                    .put("Astrology", astrology)
+                                    .put("Health", health)
+                                    .put("Spiritual", spiritual)
+                                    .put("History", history)
+                                    .put("Career Guidance", careerguidance)
+                                    .put("Sports", sports)
+                                    .put("Politics", politics)
+                                    .put("Exploratory", exploratory)
+                                    .put("Entertainment", entertainment)
+                                    .put("Real Estate", realEstate)
+                                    .put("Business", business)
+                                    .put("Event_Domain", i2.eventDomain)
+                                    .put("Price", i2.price)
+                                    .put("Rating", i2.rating)
+                                jsonArray.put(obj)
+                            }
 
-                    val obj2 = JSONObject()
-                        .put("userID", "user2")
-                        .put("eventId","event2")
-                        .put("Education", 0)
-                        .put("Safety", 1)
-                        .put("Empowerment", 0)
-                        .put("Daily Guidance", 1)
-                        .put("Arts", 1)
-                        .put("Technical", 0)
-                        .put("Social Affairs", 1)
-                        .put("Child Problems", 0)
-                        .put("Astrology", 1)
-                        .put("Health", 0)
-                        .put("Spiritual", 1)
-                        .put("History", 1)
-                        .put("Career Guidance", 0)
-                        .put("Sports", 0)
-                        .put("Politics", 0)
-                        .put("Exploratory", 0)
-                        .put("Entertainment", 1)
-                        .put("Real Estate", 1)
-                        .put("Business", 1)
-                        .put("Event_Domain", 1)
-                        .put("Price", 500)
-                        .put("Rating", 4.5)
+                            if (i == similar_users.length() - 1) {
+                                Log.d("checkpoint", jsonArray.toString())
 
-                    jsonArray.put(obj1)
-                    jsonArray.put(obj2)
-
-                    Log.d("checkpoint", jsonArray.toString())
-                    logisticModel(
-                        context = context,
-                        url ="https://modelapi-yz8c.onrender.com/logistic",
-                        jsonArray,
-                        onSuccess = { resp->
-                            Log.d("RESPONSE_SUCC", resp.toString())
-                        },
-                        onError = { error->
-                            Log.d("API_CALL", "Error: $error")
+                                logisticModel(
+                                    context = context,
+                                    url = "https://modelapi-yz8c.onrender.com/logistic",
+                                    jsonArray,
+                                    onSuccess = { resp ->
+                                        Log.d("RESPONSE_SUCC_LOGISTIC_Model", resp.toString())
+                                    },
+                                    onError = { error ->
+                                        Log.d("API_CALL", "Error: $error")
+                                    }
+                                )
+                            }
                         }
-                    )
+                    }
                 },
                 onError = { error ->
                     Log.d("API_CALL", "Error: $error")
@@ -415,6 +408,8 @@ fun logisticModel(context: Context, url: String, jsonData: JSONArray, onSuccess:
         is DataState.SuccessFetchUser -> {
 
         }
+
+        is DataState.SuccessJsonUser -> TODO()
     }
 
 
@@ -437,7 +432,7 @@ fun logisticModel(context: Context, url: String, jsonData: JSONArray, onSuccess:
                     imageVector = ImageVector.vectorResource(id = R.drawable.logo_svg),
                     contentDescription = "Logo",
                     modifier = Modifier
-                        .size(converterHeight(120,context).dp)
+                        .size(converterHeight(120, context).dp)
                         .clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
@@ -460,7 +455,7 @@ fun logisticModel(context: Context, url: String, jsonData: JSONArray, onSuccess:
                     painter= image,
                     contentDescription = "Profile",
                     modifier = Modifier
-                        .size(converterHeight(120,context).dp)
+                        .size(converterHeight(120, context).dp)
                         .clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
@@ -543,7 +538,8 @@ fun logisticModel(context: Context, url: String, jsonData: JSONArray, onSuccess:
                 fontSize = converterHeight(20,context).sp,
                 fontFamily = FontFamily(Font(R.font.font1)),
                 textAlign = TextAlign.Center,
-                modifier=Modifier.fillMaxWidth()
+                modifier=Modifier
+                    .fillMaxWidth()
                     .padding(top = converterHeight(5, context).dp),
                 color=Color.White
             )
@@ -590,7 +586,8 @@ fun SchemeCard(schemeName:String,uriString:String){
 
 @Composable
 fun FloatingActionButtonExample(navigateToNextScreen: (route: String) -> Unit) {
-    Box(modifier = Modifier.fillMaxSize()
+    Box(modifier = Modifier
+        .fillMaxSize()
         .zIndex(1F)) {
         FloatingActionButton(
             onClick = {navigateToNextScreen(Screen.ChatBot.route)},

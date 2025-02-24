@@ -14,6 +14,7 @@ sealed class DataState {
         val data2: MutableList<MutableList<Slot>>,
         val data3: MutableList<String>,
     ):DataState()
+    class  SuccessJsonUser(val data:MutableList<JsonUserEvent>):DataState()
     class  Failure(val message:String):DataState()
     object Loading:DataState()
     object Empty:DataState()

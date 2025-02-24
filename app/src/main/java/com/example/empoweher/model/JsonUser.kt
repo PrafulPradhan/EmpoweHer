@@ -21,3 +21,10 @@ data class JsonUser(
     var business: Int? =0,
     var price: Int? =0,
 )
+
+data class JsonUserEvent(
+    var eventId:String?=null,
+    var price: Int?=0,
+    var rating:Double?=0.0,
+    var eventDomain:Int?=0
+)
