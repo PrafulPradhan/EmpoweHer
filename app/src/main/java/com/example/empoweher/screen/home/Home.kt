@@ -57,6 +57,7 @@ import org.json.JSONObject
 import com.android.volley.Request
 import org.json.JSONArray
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -71,6 +72,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.example.empoweher.activities.Model
+import com.example.empoweher.composables.getInfo
 import com.example.empoweher.composables.getInfoUser
 import com.example.empoweher.model.DataState
 import com.example.empoweher.model.JsonUser
@@ -243,8 +245,7 @@ fun logisticModel(context: Context, url: String, jsonData: JSONArray, onSuccess:
     var price by remember { mutableStateOf(0) }
     var entertainment by remember { mutableStateOf(0) }
     var careerguidance by remember { mutableStateOf(0) }
-
-
+    var recommendedEvents by remember  { mutableStateOf(JSONArray()) }
     val viewModel= viewModel{ ProfileViewModel() }
     when( val result= viewModel.response.value){
         is DataState.Loading -> {
@@ -381,6 +382,8 @@ fun logisticModel(context: Context, url: String, jsonData: JSONArray, onSuccess:
                                     jsonArray,
                                     onSuccess = { resp ->
                                         Log.d("RESPONSE_SUCC_LOGISTIC_Model", resp.toString())
+                                        recommendedEvents = resp.getJSONArray("attended_users")
+                                        Log.d("jsonArrayLogistic",recommendedEvents.toString())
                                     },
                                     onError = { error ->
                                         Log.d("API_CALL", "Error: $error")
@@ -461,7 +464,9 @@ fun logisticModel(context: Context, url: String, jsonData: JSONArray, onSuccess:
                 )
             }
         }
-
+        var eventId by remember {
+            mutableStateOf("")
+        }
         Box(modifier= Modifier
             .fillMaxWidth()
             .height(converterHeight(400, context).dp)
@@ -510,7 +515,6 @@ fun logisticModel(context: Context, url: String, jsonData: JSONArray, onSuccess:
                 .clip(RoundedCornerShape(converterHeight(10, context).dp))
                 .background(colorResource(id = R.color.lightblue))
         ) {
-//            FloatingActionButtonExample(navigateToNextScreen)
             Text(text = "Recommended Events",
                 fontSize = converterHeight(20,context).sp,
                 fontFamily = FontFamily(Font(R.font.font1)),
@@ -520,12 +524,28 @@ fun logisticModel(context: Context, url: String, jsonData: JSONArray, onSuccess:
                     .padding(top = converterHeight(5, context).dp),
                 color=Color.White
             )
-            val eventId="-Njp7ySPE-z629UhUxVk"
-            val eventImage= "https://firebasestorage.googleapis.com/v0/b/empowerher-39d60.appspot.com/o/b0Yra1fWvHbPuGJgsijrfFvHaSD2%2F2023-11-22T09%3A17%3A32.545967?alt=media&token=f58cb4fa-9b31-487f-a59e-b7ca13440502"
-            val eventTag= "Empowerment"
-            val eventName= "TCS CareerNext"
-            val eventCost="250"
+            if (recommendedEvents.length()>0) {
+                eventId = recommendedEvents.getString(0)
+            }
+            else {
+                eventId="-Njp7ySPE-z629UhUxVk"
+            }
+            val eventImage = getInfo("eventImage", eventId)
+            val eventTag = getInfo("tag", eventId)
+            val eventName = getInfo("eventName", eventId)
+            val eventCost = getInfo("eventCost", eventId)
             EventCard(navigateToNextScreen = navigateToNextScreen,eventId=eventId,eventCost=eventCost, eventTag = eventTag, eventImage = eventImage, eventTitle = eventName)
+            Button(
+                onClick = {
+                    navigateToNextScreen(Screen.RecommendedEvents.route+"/"+recommendedEvents.toString())
+                },
+                modifier=Modifier
+                    .fillMaxWidth(0.6f)
+                    .align(Alignment.CenterHorizontally)
+
+            ) {
+                Text("View More")
+            }
         }
         Column(
             modifier= Modifier

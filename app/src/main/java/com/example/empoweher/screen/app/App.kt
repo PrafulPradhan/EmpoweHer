@@ -67,6 +67,7 @@ import com.example.empoweher.screen.Details.Registration
 import com.example.empoweher.screen.ask.AskQuestion
 import com.example.empoweher.screen.ask.GiveAnswer
 import com.example.empoweher.screen.events.BookedEvents
+import com.example.empoweher.screen.events.RecommendedEvents
 import com.example.empoweher.screen.home.FloatingActionButtonExample
 import com.example.empoweher.screen.message.ChatViewModel
 import com.example.empoweher.screen.message.SingleChatScreen
@@ -74,6 +75,7 @@ import com.google.firebase.auth.EmailAuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.launch
+import org.json.JSONArray
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -489,6 +491,26 @@ fun App(
                     val questionId = it.arguments!!.getString("questionId")
                     if (questionId!= null) {
                         GiveAnswer(questionId = questionId,
+                            navigateToNextScreen = { route ->
+                                navController.navigate(route)
+                            })
+                    }
+                }
+
+                composable(route = Screen.RecommendedEvents.route+"/{jsonArray}",arguments = listOf(
+                    navArgument("jsonArray"){
+                        type = NavType.StringType
+                    }
+                )) {
+                    LaunchedEffect(shouldShowScaffold) {
+                        shouldShowScaffold = false
+                    }
+                    val jsonArrayString = it.arguments?.getString("jsonArray")
+
+                    val jsonArray = if (!jsonArrayString.isNullOrEmpty()) JSONArray(jsonArrayString) else JSONArray()
+
+                    if (jsonArrayString!= null) {
+                        RecommendedEvents(jsonArray = jsonArray,
                             navigateToNextScreen = { route ->
                                 navController.navigate(route)
                             })
