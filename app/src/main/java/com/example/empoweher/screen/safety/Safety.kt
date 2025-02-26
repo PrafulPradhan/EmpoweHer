@@ -97,7 +97,7 @@ fun Safety(navigateToNextScreen: (route: String)->Unit) {
                     val intentFake = Intent(context, FakeCallActivity::class.java)
                     context.startActivity(intentFake)
                 },
-                true,
+                false,
             )
             SafetyCard(
                 navigateToNextScreen = navigateToNextScreen,

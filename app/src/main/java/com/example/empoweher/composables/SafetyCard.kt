@@ -43,7 +43,7 @@ fun SafetyCard(navigateToNextScreen: (route: String)->Unit, route: String, urist
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(converterHeight(150, context).dp)
+            .height(converterHeight(158, context).dp)
             .padding(converterHeight(15, context).dp)
             .clickable {
                 if (boolean == false) {

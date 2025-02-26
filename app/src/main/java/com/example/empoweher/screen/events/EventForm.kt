@@ -606,9 +606,9 @@ fun EventForm(){
                     // Create a list of cities
                     var tags = listOf(
                         "Education", "Safety", "Empowerment", "Daily Guidance", "Arts", "Technical",
-                        "Social Affairs", "Child Problems", "Astrology", "Healthcare", "Spiritual",
-                        "History", "Career Guidance", "Sports", "Politics", "Exploratory",
-                        "Real Estate", "Business", "Entertainment"
+                        "Social Affairs", "Child Problems", "Astrology", "Health", "Spiritual",
+                        "History", "Sports", "Politics", "Exploratory",
+                        "Real Estate", "Business", "Entertainment","Career Guidance"
                     )
                     tags=tags.sorted()
 
